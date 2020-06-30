@@ -1,9 +1,10 @@
 ﻿using Domian.Common;
+using Domian.Entities.Accounts;
 using System;
 
 namespace Domian.Entities.Products
 {
-    public class ProductComment : Entity, IHasCreateDate
+    public class ProductComment : Entity
     {
         public string Body { get; set; }
         public DateTime CreateDate { get; set; }

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace WebApi.Controllers
 {
-    public class ProductsController : BaseODataController
+    public class ProductsController : BaseController
     {
         public async Task<IActionResult> Create(CreateProductCommand request)
         {

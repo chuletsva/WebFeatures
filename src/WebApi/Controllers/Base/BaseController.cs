@@ -1,12 +1,12 @@
 ﻿using MediatR;
-using Microsoft.AspNet.OData;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace WebApi.Controllers
 {
     [ApiController]
-    public class BaseODataController : ODataController
+    public class BaseController : ControllerBase
     {
         protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
         private IMediator _mediator;

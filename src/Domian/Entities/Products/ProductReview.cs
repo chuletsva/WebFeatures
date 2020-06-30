@@ -1,10 +1,11 @@
 ﻿using Domian.Common;
+using Domian.Entities.Accounts;
 using Domian.Enums;
 using System;
 
 namespace Domian.Entities.Products
 {
-    public class ProductReview : Entity, IHasCreateDate
+    public class ProductReview : Entity
     {
         public string Title { get; set; }
         public string Comment { get; set; }

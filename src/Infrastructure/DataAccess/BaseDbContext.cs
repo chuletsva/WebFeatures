@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Common;
 using Application.Interfaces.DataAccess;
+using Application.Interfaces.Services;
 using Domian.Common;
 using Domian.Entities;
 using Domian.Entities.Accounts;
@@ -13,25 +14,52 @@ namespace Infrastructure.DataAccess
 {
     class BaseDbContext : DbContext, IDbContext
     {
+        private readonly ICurrentUserService _currentUser;
         private readonly IDateTime _dateTime;
 
-        protected BaseDbContext(IDateTime dateTime)
+        protected BaseDbContext(
+            DbContextOptions<BaseDbContext> options, 
+            ICurrentUserService currentUser, 
+            IDateTime dateTime) : base(options)
         {
+            _currentUser = currentUser;
             _dateTime = dateTime;
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserRole>().HasIndex(x => new { x.UserId, x.RoleId });
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             foreach (EntityEntry entiry in ChangeTracker.Entries())
             {
-                if (entiry.State == EntityState.Added)
+                if (entiry.Entity is IAuditable auditable)
                 {
-                    if (entiry.Entity is IHasCreateDate cd)
+                    switch (entiry.State)
                     {
-                        cd.CreateDate = _dateTime.Now;
+                        case EntityState.Added:
+                            {
+                                auditable.CreateDate = _dateTime.Now;
+                                auditable.CreatedById = _currentUser.UserId;
+
+                                break;
+                            }
+
+                        case EntityState.Modified:
+                            {
+                                auditable.UpdateDate = _dateTime.Now;
+                                auditable.UpdatedById = _currentUser.UserId;
+
+                                break;
+                            }
+
+                        default: break;
                     }
                 }
             }
+
             return base.SaveChangesAsync(cancellationToken);
         }
 

@@ -1,7 +1,7 @@
 ﻿using Domian.Common;
 using System;
 
-namespace Domian.Entities
+namespace Domian.Entities.Accounts
 {
     public class User : Entity
     {

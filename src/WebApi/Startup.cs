@@ -1,8 +1,8 @@
-using Microsoft.AspNet.OData.Extensions;
+using Application;
+using Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OData.Edm;
 using WebApi.Configuration;
 
 namespace WebApi
@@ -18,6 +18,9 @@ namespace WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplication();
+            services.AddInfrastructure(Configuration);
+
             services.AddControllers();
         }
 
@@ -35,9 +38,7 @@ namespace WebApi
 
             app.UseEndpoints(endpoints =>
             {
-                IEdmModel model = endpoints.ServiceProvider.GetService<IEdmModel>();
-
-                endpoints.MapODataRoute("odata", "odata", model);
+                endpoints.MapControllers();
             });
         }
     }

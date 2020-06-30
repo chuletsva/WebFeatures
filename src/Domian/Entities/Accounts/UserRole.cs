@@ -1,9 +1,8 @@
-﻿using Domian.Common;
-using System;
+﻿using System;
 
 namespace Domian.Entities.Accounts
 {
-    public class UserRole : Entity
+    public class UserRole
     {
         public Guid UserId { get; set; }
         public User User { get; set; }
