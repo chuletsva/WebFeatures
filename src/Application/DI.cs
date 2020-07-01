@@ -24,6 +24,7 @@ namespace Application
 
             // Common
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
 
             // Commands
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));

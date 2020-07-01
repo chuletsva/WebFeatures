@@ -66,13 +66,11 @@ namespace WebApi.Controllers
         /// </summary>
         /// <response code="200">Успех</response>
         /// <response code="400" cref="ValidationError">Ошибка валидации</response>
-        /// <response code="403">Доступ запрещен</response>
         [HttpPut("{id:guid}")]
         [Authorize]
-        [ValidateAntiForgeryToken]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update(Guid id, [FromForm, Required] UpdateProductCommand request)
+        public async Task<IActionResult> Update(Guid id, [Required] UpdateProductCommand request)
         {
             await Mediator.Send(request);
 
@@ -84,10 +82,8 @@ namespace WebApi.Controllers
         /// </summary>
         /// <response code="204">Успех</response>
         /// <response code="400" cref="ValidationError">Товар отсутствует</response>
-        /// <response code="403">Доступ запрещен</response>
         [HttpDelete("{id:guid}")]
         [Authorize]
-        [ValidateAntiForgeryToken]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(Guid id)

@@ -1,5 +1,4 @@
-﻿using Application.Features.Products.GetProduct;
-using Application.Infrastructure.Requests;
+﻿using Application.Infrastructure.Requests;
 using System;
 
 namespace Application.Features.Products.GetProduct
