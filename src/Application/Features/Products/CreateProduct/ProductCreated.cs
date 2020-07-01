@@ -3,7 +3,7 @@ using System;
 
 namespace Application.Features.Products.CreateProduct
 {
-    public class ProductCreated : INotification
+    class ProductCreated : INotification
     {
         public Guid Id { get; }
 

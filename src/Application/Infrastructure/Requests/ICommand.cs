@@ -5,16 +5,16 @@ namespace Application.Infrastructure.Requests
 {
     public interface ICommand<TResult> : IRequest<TResult>
     {
-        public Guid Id { get; }
+        public Guid CommandId { get; }
     }
 
     public abstract class CommandBase<TResult> : ICommand<TResult>
     {
-        public Guid Id { get; }
+        public Guid CommandId { get; }
 
         protected CommandBase()
         {
-            Id = Guid.NewGuid();
+            CommandId = Guid.NewGuid();
         }
     }
 }

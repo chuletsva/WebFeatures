@@ -12,13 +12,11 @@ namespace Application.Features.Products.CreateProduct
     {
         private readonly IDbContext _db;
         private readonly IMapper _mapper;
-        private readonly IMediator _mediator;
 
-        public CreateProductCommandHandler(IDbContext db, IMapper mapper, IMediator mediator)
+        public CreateProductCommandHandler(IDbContext db, IMapper mapper)
         {
             _db = db;
             _mapper = mapper;
-            _mediator = mediator;
         }
 
         public async Task<Guid> Handle(CreateProductCommand request, CancellationToken cancellationToken)
@@ -27,7 +25,7 @@ namespace Application.Features.Products.CreateProduct
 
             await _db.Products.AddAsync(product, cancellationToken);
 
-            await _mediator.Send(new ProductCreated(product.Id), cancellationToken);
+            product.Events.Add(new ProductCreated(product.Id));
 
             return product.Id;
         }

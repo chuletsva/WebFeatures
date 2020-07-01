@@ -6,9 +6,16 @@ using Microsoft.Extensions.DependencyInjection;
 namespace WebApi.Controllers
 {
     [ApiController]
+    [Route("api/[controller]")]
+    [Produces("application/json")]
     public class BaseController : ControllerBase
     {
         protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
         private IMediator _mediator;
+
+        protected IActionResult Created(object value)
+        {
+            return StatusCode(StatusCodes.Status201Created, value);
+        }
     }
 }

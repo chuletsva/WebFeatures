@@ -23,6 +23,7 @@ namespace Application.Interfaces.DataAccess
         DbSet<Shipper> Shippers { get; }
         DbSet<City> Cities { get; }
         DbSet<Country> Countries { get; }
+        DbSet<Currency> Currencies { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

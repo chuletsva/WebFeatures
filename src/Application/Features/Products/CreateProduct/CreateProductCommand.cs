@@ -11,14 +11,19 @@ namespace Application.Features.Products.CreateProduct
         public string Name { get; set; }
 
         /// <summary>
-        /// Цена
-        /// </summary>
-        public decimal? Price { get; set; }
-
-        /// <summary>
         /// Описание
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Цена
+        /// </summary>
+        public decimal PriceAmount { get; set; }
+
+        /// <summary>
+        /// Валюта
+        /// </summary>
+        public Guid PriceCurrencyId { get; set; }
 
         /// <summary>
         /// Идентификатор производителя

@@ -7,7 +7,7 @@ namespace Application.Features.Products.CreateProduct
     {
         public CreateProductCommandProfile()
         {
-            CreateMap<CreateProductCommand, Product>(MemberList.Source);
+            CreateMap<Product, CreateProductCommand>().ReverseMap();
         }
     }
 }

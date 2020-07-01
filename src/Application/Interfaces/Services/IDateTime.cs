@@ -2,8 +2,8 @@
 
 namespace Application.Interfaces.Services
 {
-    public interface ICurrentUserService
+    public interface IDateTime
     {
-        Guid UserId { get; }
+        DateTime Now { get; }
     }
 }
