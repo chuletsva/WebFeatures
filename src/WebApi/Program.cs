@@ -6,9 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Events;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ILogger = Serilog.ILogger;
 
 namespace WebApi
 {
@@ -16,20 +21,71 @@ namespace WebApi
     {
         public static async Task Main(string[] args)
         {
-            IHost host = CreateHostBuilder(args).Build();
+            Log.Logger = CreateLogger();
 
-            await InitDatabase(host);
+            try
+            {
+                Log.Information("Starting up");
 
-            await host.RunAsync();
+                IHost host = CreateHostBuilder(args).Build();
+
+                await InitDatabase(host);
+
+                await host.RunAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Application start-up failed");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseSerilog()
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+        private static ILogger CreateLogger()
+        {
+            var configuration = new LoggerConfiguration();
+
+            configuration.WriteTo.Console(
+                restrictedToMinimumLevel: LogEventLevel.Information);
+
+            string logsPath = CreateLogFilePath();
+
+            configuration.WriteTo.File(
+                path: logsPath,
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 7,
+                restrictedToMinimumLevel: LogEventLevel.Information);
+
+            var logger = configuration.CreateLogger();
+
+            logger.Information($"Writing logs to '{logsPath}'");
+
+            return logger;
+        }
+
+        private static string CreateLogFilePath()
+        {
+            string projectDir = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            string logsDir = Path.Combine(projectDir, "Logs");
+
+            if (!Directory.Exists(logsDir))
+            {
+                Directory.CreateDirectory(logsDir);
+            }
+
+            return Path.Combine(logsDir, "log.txt");
+        }
 
         private static async Task InitDatabase(IHost host)
         {
