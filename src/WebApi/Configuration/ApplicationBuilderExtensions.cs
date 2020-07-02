@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System;
 
 namespace WebApi.Configuration
 {
@@ -28,7 +27,7 @@ namespace WebApi.Configuration
                         ValidationException validation => (400, JsonConvert.SerializeObject(validation.Error)),
                         ODataExeption odata => (400, odata.Message),
                         FailedAuthorizationException authorization => (400, authorization.Message),
-                        Exception other => (500, "Something went wrong")
+                        _ => (500, "Something went wrong")
                     };
 
                     context.Response.StatusCode = response.Code;

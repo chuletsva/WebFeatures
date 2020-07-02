@@ -19,7 +19,7 @@ namespace Application.Behaviours
 
             try
             {
-                return elements;
+                return elements; // TODO: apply query
             }
             catch
             {
