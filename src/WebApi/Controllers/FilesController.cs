@@ -1,6 +1,7 @@
 ﻿using Application.Features.Files.DownloadFile;
 using Application.Infrastructure.Results;
 using Application.Interfaces.Files;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -38,6 +39,7 @@ namespace WebApi.Controllers
         /// <response code="201" cref="Guid">Успех</response>
         /// <response code="403">Доступ запрещен</response>
         [HttpPost]
+        [Authorize]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Upload([FromForm] IFile file)

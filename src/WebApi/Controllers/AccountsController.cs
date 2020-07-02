@@ -1,15 +1,21 @@
 ﻿using Application.Features.Accounts.Login;
 using Application.Features.Accounts.Register;
 using Application.Infrastructure.Results;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
+using WebApi.Settings;
 
 namespace WebApi.Controllers
 {
@@ -18,6 +24,15 @@ namespace WebApi.Controllers
     /// </summary>
     public class AccountsController : BaseController
     {
+        private readonly IDateTime _dateTime;
+        private readonly JwtSettings _jwtSettings;
+
+        public AccountsController(IDateTime dateTime, IOptions<JwtSettings> jwtSettings)
+        {
+            _dateTime = dateTime;
+            _jwtSettings = jwtSettings.Value;
+        }
+
         /// <summary>
         /// Зарегистрировать нового пользователя
         /// </summary>
@@ -30,9 +45,9 @@ namespace WebApi.Controllers
         {
             UserCreateDto user = await Mediator.Send(request);
 
-            await SignInUser((user.Id, user.Roles));
+            string token = CreateToken((user.Id, user.Roles));
 
-            return Ok();
+            return Ok(token);
         }
 
         /// <summary>
@@ -47,12 +62,12 @@ namespace WebApi.Controllers
         {
             UserLoginDto user = await Mediator.Send(request);
 
-            await SignInUser((user.Id, user.Roles));
+            string token = CreateToken((user.Id, user.Roles));
 
-            return Ok();
+            return Ok(token);
         }
 
-        private async Task SignInUser((Guid Id, string[] Roles) user)
+        private string CreateToken((Guid Id, string[] Roles) user)
         {
             var claims = new List<Claim>()
             {
@@ -61,11 +76,23 @@ namespace WebApi.Controllers
 
             claims.AddRange(user.Roles.Select(x => new Claim(ClaimTypes.Role, x)));
 
-            var identity = new ClaimsIdentity(
-                claims,
-                CookieAuthenticationDefaults.AuthenticationScheme);
+            var descriptor = new SecurityTokenDescriptor()
+            {
+                Subject = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme),
+                Issuer = _jwtSettings.Issuer,
+                Audience = _jwtSettings.Audience,
+                Expires = _dateTime.Now.AddMinutes(_jwtSettings.Lifetime),
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(_jwtSettings.Key)),
+                    SecurityAlgorithms.HmacSha256Signature)
+            };
 
-            // TODO: token
+            var handler = new JwtSecurityTokenHandler();
+
+            SecurityToken token = handler.CreateToken(descriptor);
+
+            return handler.WriteToken(token);
         }
     }
 }

@@ -13,14 +13,14 @@ namespace Infrastructure.Security
             _dataProtector = protectionProvider.CreateProtector("Hashing passwords");
         }
 
-        public string ComputeHash(string passord)
+        public string ComputeHash(string password)
         {
-            return passord;
+            return password;
         }
 
         public bool Verify(string hash, string expectedPassword)
         {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

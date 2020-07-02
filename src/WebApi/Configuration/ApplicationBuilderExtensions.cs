@@ -19,46 +19,21 @@ namespace WebApi.Configuration
                 {
                     var errorFeature = context.Features.Get<IExceptionHandlerPathFeature>();
 
-                    switch (errorFeature.Error)
+                    var logger = context.RequestServices.GetService<ILogger<Startup>>();
+
+                    logger.LogError("Request error", errorFeature.Error);
+
+                    (int Code, string Body) response = errorFeature.Error switch
                     {
-                        case ValidationException validation:
+                        ValidationException validation => (400, JsonConvert.SerializeObject(validation.Error)),
+                        ODataExeption odata => (400, odata.Message),
+                        FailedAuthorizationException authorization => (400, authorization.Message),
+                        Exception other => (500, "Something went wrong")
+                    };
 
-                            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    context.Response.StatusCode = response.Code;
 
-                            string body = JsonConvert.SerializeObject(validation.Error);
-
-                            await context.Response.WriteAsync(body);
-
-                            break;
-
-                        case ODataExeption odata:
-
-                            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-
-                            await context.Response.WriteAsync(odata.Message);
-
-                            break;
-
-                        case FailedAuthorizationException authorization:
-
-                            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-
-                            await context.Response.WriteAsync(authorization.Message);
-
-                            break;
-
-                        case Exception ex:
-
-                            var logger = context.RequestServices.GetService<ILogger<Startup>>();
-
-                            logger.LogError(null, ex);
-
-                            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-
-                            await context.Response.WriteAsync("Something went wrong");
-
-                            break;
-                    }
+                    await context.Response.WriteAsync(response.Body);
                 });
             });
         }
