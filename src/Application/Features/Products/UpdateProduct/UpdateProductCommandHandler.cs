@@ -18,7 +18,7 @@ namespace Application.Features.Products.UpdateProduct
             _mapper = mapper;
         }
 
-        public async Task<Unit> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+        public Task<Unit> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
             Product product = _mapper.Map<Product>(request);
 
@@ -26,7 +26,7 @@ namespace Application.Features.Products.UpdateProduct
 
             product.Events.Add(new ProductUpdated(product.Id));
 
-            return Unit.Value;
+            return Unit.Task;
         }
     }
 }

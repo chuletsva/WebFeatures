@@ -1,9 +1,8 @@
-﻿using Domian.Common;
-using System;
+﻿using System;
 
 namespace Domian.Entities.Products
 {
-    public class ProductPicture : Entity
+    public class ProductPicture
     {
         public Guid ProductId { get; set; }
         public Product Product { get; set; }
