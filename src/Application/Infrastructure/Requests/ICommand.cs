@@ -5,7 +5,7 @@ namespace Application.Infrastructure.Requests
 {
     public interface ICommand<TResult> : IRequest<TResult>
     {
-        public Guid CommandId { get; }
+        Guid CommandId { get; }
     }
 
     public abstract class CommandBase<TResult> : ICommand<TResult>

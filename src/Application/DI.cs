@@ -29,9 +29,6 @@ namespace Application
             // Commands
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(SaveChangesBehaviour<,>));
-
-            // Queries
-            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ODataBehaviour<,>));
         }
 
         private static void AddMapperProfiles(IServiceCollection services)

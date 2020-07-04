@@ -1,8 +1,9 @@
 ﻿using Application.Infrastructure.Requests;
+using System.Linq;
 
 namespace Application.Features.Products.GetProducts
 {
-    public class GetProductsQuery : ODataQuery<ProductListDto>
+    public class GetProductsQuery : IQuery<IQueryable<ProductListDto>>
     {
     }
 }

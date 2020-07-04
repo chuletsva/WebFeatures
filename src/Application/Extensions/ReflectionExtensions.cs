@@ -6,7 +6,7 @@ namespace Application.Extensions
     {
         public static bool IsSubclassOfGeneric(this Type type, Type genericTypeDefinition)
         {
-            if (!genericTypeDefinition.IsGenericTypeDefinition || type.BaseType == null)
+            if (type.BaseType == null || !genericTypeDefinition.IsGenericTypeDefinition)
             {
                 return false;
             }

@@ -35,12 +35,17 @@ namespace Infrastructure.DataAccess
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
+            IgnoreEvents(modelBuilder);
+        }
+
+        private void IgnoreEvents(ModelBuilder modelBuilder)
+        {
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 if (entityType.ClrType.IsSubclassOf(typeof(Entity)))
                 {
                     MethodInfo ignoreEvents = typeof(AppDbContext).GetMethod(
-                            nameof(IgnoreEvents),
+                            nameof(IgnoreEventsImpl),
                             BindingFlags.NonPublic | BindingFlags.Instance)
                         .MakeGenericMethod(entityType.ClrType);
 
@@ -49,7 +54,7 @@ namespace Infrastructure.DataAccess
             }
         }
 
-        private void IgnoreEvents<T>(ModelBuilder modelBuilder) where T : Entity
+        private void IgnoreEventsImpl<T>(ModelBuilder modelBuilder) where T : Entity
         {
             modelBuilder.Entity<T>().Ignore(x => x.Events);
         }

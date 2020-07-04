@@ -1,8 +1,8 @@
-﻿using Application.Infrastructure.Requests;
+﻿using System;
+using Application.Infrastructure.Requests;
 using Application.Interfaces.Files;
-using System;
 
-namespace WebFeatures.Application.Features.Files.UploadFile
+namespace Application.Features.Files.UploadFile
 {
     /// <summary>
     /// Загрузить файл

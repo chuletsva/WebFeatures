@@ -20,7 +20,7 @@ namespace WebApi
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -43,12 +43,11 @@ namespace WebApi
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "WebFeatures", Version = "v1" });
             });
 
+            var jwtSettingsSection = Configuration.GetSection("JwtSettings");
 
-            var jwtSection = Configuration.GetSection("JwtSettings");
+            services.Configure<JwtSettings>(jwtSettingsSection);
 
-            services.Configure<JwtSettings>(jwtSection);
-
-            var jwtSetting = jwtSection.Get<JwtSettings>();
+            var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -56,15 +55,15 @@ namespace WebApi
                     options.TokenValidationParameters = new TokenValidationParameters()
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = jwtSetting.Issuer,
+                        ValidIssuer = jwtSettings.Issuer,
 
                         ValidateAudience = true,
-                        ValidAudience = jwtSetting.Audience,
+                        ValidAudience = jwtSettings.Audience,
 
                         ValidateLifetime = true,
 
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSetting.Key)),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
                     };
                 });
         }

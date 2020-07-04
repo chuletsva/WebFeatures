@@ -77,6 +77,7 @@ namespace WebApi
         private static string CreateLogFilePath()
         {
             string projectDir = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+
             string logsDir = Path.Combine(projectDir, "Logs");
 
             if (!Directory.Exists(logsDir))

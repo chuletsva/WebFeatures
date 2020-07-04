@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Application.Interfaces.DataAccess;
+using MediatR;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Interfaces.DataAccess;
-using MediatR;
 using File = Domian.Entities.File;
 
 namespace Application.Features.Files.UploadFile
@@ -19,9 +19,9 @@ namespace Application.Features.Files.UploadFile
 
         public async Task<Guid> Handle(UploadFileCommand request, CancellationToken cancellationToken)
         {
-            await using var ms = new MemoryStream();
+            using var ms = new MemoryStream();
 
-            await using var fs = request.File.OpenReadStream();
+            using var fs = request.File.OpenReadStream();
 
             await fs.CopyToAsync(ms, cancellationToken);
 

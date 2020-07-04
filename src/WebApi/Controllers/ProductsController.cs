@@ -1,6 +1,8 @@
 ﻿using Application.Features.Products.CreateProduct;
 using Application.Features.Products.DeleteProduct;
 using Application.Features.Products.GetProduct;
+using Application.Features.Products.GetProductComments;
+using Application.Features.Products.GetProductReviews;
 using Application.Features.Products.GetProducts;
 using Application.Features.Products.UpdateProduct;
 using Application.Infrastructure.Results;
@@ -11,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using WebApi.Attributes;
+using WebApi.Controllers.Base;
 
 namespace WebApi.Controllers
 {
@@ -39,11 +43,40 @@ namespace WebApi.Controllers
         /// </summary>
         /// <returns>Список товаров</returns>
         /// <response code="200" cref="IEnumerable{ProductInfoDto}">Успех</response>
+        [OData]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<ProductListDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> Get()
         {
             return Ok(await Mediator.Send(new GetProductsQuery()));
+        }
+
+        /// <summary>
+        /// Получить обзоры на товар
+        /// </summary>
+        /// <param name="id">Идентификатор товара</param>
+        /// <returns>Обзоры</returns>
+        /// <response code="200" cref="IEnumerable{ProductReviewInfoDto}">Успех</response>
+        [OData]
+        [HttpGet("{id:guid}/reviews")]
+        [ProducesResponseType(typeof(IEnumerable<ProductReviewInfoDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetReviews(Guid id)
+        {
+            return Ok(await Mediator.Send(new GetProductReviewsQuery() { ProductId = id }));
+        }
+
+        /// <summary>
+        /// Получить комментарии к товару
+        /// </summary>
+        /// <param name="id">Идентификатор товара</param>
+        /// <returns>Комментарии</returns>
+        /// <response code="200" cref="IEnumerable{ProductCommentInfoDto}">Успех</response>
+        [OData]
+        [HttpGet("{id:guid}/comments")]
+        [ProducesResponseType(typeof(IEnumerable<ProductCommentInfoDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetComments(Guid id)
+        {
+            return Ok(await Mediator.Send(new GetProductCommentsQuery() { ProductId = id }));
         }
 
         /// <summary>

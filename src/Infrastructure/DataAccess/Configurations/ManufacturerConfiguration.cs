@@ -8,7 +8,19 @@ namespace Infrastructure.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<Manufacturer> builder)
         {
-            builder.OwnsOne(x => x.StreetAddress);
+            builder.Property(x => x.OrganizationName).IsRequired();
+
+            builder.OwnsOne(x => x.HeadOffice, navigation =>
+            {
+                navigation.Property(x => x.StreetName).IsRequired();
+
+                navigation.Property(x => x.ZipCode).IsRequired();
+
+                navigation.HasOne(x => x.City)
+                    .WithMany()
+                    .HasForeignKey(x => x.CityId)
+                    .IsRequired();
+            });
         }
     }
 }

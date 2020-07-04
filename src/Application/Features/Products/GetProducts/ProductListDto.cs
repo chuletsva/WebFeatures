@@ -12,7 +12,7 @@ namespace Application.Features.Products.GetProducts
 
         public decimal Price { get; set; }
 
-        public Guid? MainPictureId { get; set; }
+        public Guid? PictureId { get; set; }
 
         public Guid CurrencyId { get; set; }
         public string CurrencyCode { get; set; }

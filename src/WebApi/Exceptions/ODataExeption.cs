@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Application.Exceptions
+namespace WebApi.Exceptions
 {
-    public class ODataExeption : Exception
+    class ODataExeption : Exception
     {
         public ODataExeption(string message) : base(message)
         {

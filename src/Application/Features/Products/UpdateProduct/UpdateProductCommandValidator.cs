@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.DataAccess;
 using FluentValidation;
+using System.IO;
 
 namespace Application.Features.Products.UpdateProduct
 {
@@ -16,6 +17,18 @@ namespace Application.Features.Products.UpdateProduct
 
             RuleFor(x => x.PriceCurrencyId)
                 .MustAsync(async (x, t) => (await db.Currencies.FindAsync(x, t)) != null);
+
+            RuleFor(x => x.PictureId)
+                .MustAsync(async (x, t) =>
+                {
+                    Domian.Entities.File picture = await db.Files.FindAsync(x, t);
+
+                    if (picture == null)
+                        return false;
+
+                    return Path.GetExtension(picture.Name) == ".jpg";
+                })
+                .When(x => x.PictureId.HasValue);
 
             RuleFor(x => x.ManufacturerId)
                 .MustAsync(async (x, t) => (await db.Manufacturers.FindAsync(x, t)) != null);

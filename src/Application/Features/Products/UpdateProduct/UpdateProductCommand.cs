@@ -35,6 +35,11 @@ namespace Application.Features.Products.UpdateProduct
         public Guid PriceCurrencyId { get; set; }
 
         /// <summary>
+        /// Изображение товара
+        /// </summary>
+        public Guid? PictureId { get; set; }
+
+        /// <summary>
         /// Идентификатор производителя
         /// </summary>
         public Guid ManufacturerId { get; set; }

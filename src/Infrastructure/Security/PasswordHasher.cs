@@ -1,26 +1,27 @@
 ﻿using Application.Interfaces.Security;
-using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System;
+using System.Text;
 
 namespace Infrastructure.Security
 {
     class PasswordHasher : IPasswordHasher
     {
-        private readonly IDataProtector _dataProtector;
-
-        public PasswordHasher(IDataProtectionProvider protectionProvider)
-        {
-            _dataProtector = protectionProvider.CreateProtector("Hashing passwords");
-        }
-
         public string ComputeHash(string password)
         {
-            return password;
+            var hash = KeyDerivation.Pbkdf2(
+                password: password,
+                salt: Encoding.UTF8.GetBytes("1ec5cf41-a882-4fc8-806d-0d90ddfd488d"),
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: 10000,
+                numBytesRequested: 256 / 8);
+
+            return Convert.ToBase64String(hash);
         }
 
         public bool Verify(string hash, string expectedPassword)
         {
-            return true;
+            return hash == ComputeHash(expectedPassword);
         }
     }
 }

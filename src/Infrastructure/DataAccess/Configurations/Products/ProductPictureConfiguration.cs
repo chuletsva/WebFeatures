@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.DataAccess.Configurations
+namespace Infrastructure.DataAccess.Configurations.Products
 {
     class ProductPictureConfiguration : IEntityTypeConfiguration<ProductPicture>
     {

@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using WebFeatures.Application.Features.Files.UploadFile;
+using Application.Features.Files.UploadFile;
+using WebApi.Controllers.Base;
 
 namespace WebApi.Controllers
 {

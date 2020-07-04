@@ -55,7 +55,6 @@ namespace Infrastructure
 
         private static void AddSecurity(IServiceCollection services)
         {
-            services.AddDataProtection();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
         }
 

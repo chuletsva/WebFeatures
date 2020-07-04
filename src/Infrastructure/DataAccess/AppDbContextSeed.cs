@@ -42,7 +42,7 @@ namespace Infrastructure.DataAccess
                 {
                     Id = new Guid("0ea02742-3566-416f-94e5-bc9d878769f3"),
                     OrganizationName = "manufacturer",
-                    StreetAddress = new Address()
+                    HeadOffice = new Address()
                     {
                         CityId = new Guid("685e8905-bad5-4767-ac2c-2bae7ead13be"),
                         StreetName = "streetname",
