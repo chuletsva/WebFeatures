@@ -8,3 +8,4 @@
 * FluentValidation
 * Serilog
 * Swashbuckle
+* LinqToQuerystring
