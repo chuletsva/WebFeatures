@@ -1,12 +1,12 @@
-﻿using Application.Interfaces.DataAccess;
-using MediatR;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Interfaces.DataAccess;
+using MediatR;
 using File = Domian.Entities.File;
 
-namespace WebFeatures.Application.Features.Files.UploadFile
+namespace Application.Features.Files.UploadFile
 {
     class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Guid>
     {
