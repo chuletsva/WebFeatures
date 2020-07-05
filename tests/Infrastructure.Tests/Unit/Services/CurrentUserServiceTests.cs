@@ -12,7 +12,7 @@ namespace Infrastructure.Tests.Unit.Services
     public class CurrentUserServiceTests
     {
         [Theory, AutoMoq]
-        public void ShouldSetCurrentUser_WhenUserClaimExists(
+        public void ShouldSetUser_WhenUserClaimExists(
             Guid userId,
             Mock<HttpContext> context,
             Mock<IHttpContextAccessor> contextAccessor)
@@ -32,6 +32,22 @@ namespace Infrastructure.Tests.Unit.Services
             // Assert
             sut.UserId.Should().Be(userId);
             sut.IsAuthenticated.Should().BeTrue();
+        }
+
+        [Fact]
+        public void ShouldNotAutenticate_WhenUserClaimDoesntExists()
+        {
+            // Arrange
+            var context = Mock.Of<HttpContext>(x => x.User == null);
+
+            var contextAccessor = Mock.Of<HttpContextAccessor>(x => x.HttpContext == context);
+
+            // Act
+            var sut = new CurrentUserService(contextAccessor);
+
+            // Assert
+            sut.UserId.Should().BeEmpty();
+            sut.IsAuthenticated.Should().BeFalse();
         }
     }
 }
