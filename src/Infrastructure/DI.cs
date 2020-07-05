@@ -9,6 +9,7 @@ using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Infrastructure
 {
@@ -17,8 +18,7 @@ namespace Infrastructure
         public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             AddCommonServices(services);
-            AddInMemoryContext(services);
-            //AddPostgreContext(services, configuration);
+            AddDataAccess(services, configuration);
             AddSecurity(services);
             AddLogging(services);
         }
@@ -31,19 +31,16 @@ namespace Infrastructure
             services.AddSingleton<IDateTime, DateTimeService>();
         }
 
-        private static void AddInMemoryContext(IServiceCollection services)
+        private static void AddDataAccess(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<AppDbContext>(builder =>
+            string env = configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT");
+
+            string connectionString = env switch
             {
-                builder.UseInMemoryDatabase("webfeatures_db");
-            }, ServiceLifetime.Scoped);
-
-            services.AddScoped<IDbContext>(provider => provider.GetService<AppDbContext>());
-        }
-
-        private static void AddPostgreContext(IServiceCollection services, IConfiguration configuration)
-        {
-            string connectionString = configuration.GetConnectionString("AppConnectionString");
+                "Development" => configuration.GetConnectionString("Default"),
+                "Testing" => configuration.GetConnectionString("Testing"),
+                _ => throw new IndexOutOfRangeException()
+            };
 
             services.AddDbContext<AppDbContext>(builder =>
             {
