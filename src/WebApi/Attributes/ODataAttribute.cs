@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Logging;
 using LinqToQuerystring;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,19 +36,19 @@ namespace WebApi.Attributes
                 throw new InvalidOperationException("Response value type should implement IQueryable<>");
             }
 
-            Type elementType = responseType.GetGenericArguments()[0];
-
-            var queryString = context.HttpContext.Request.QueryString;
+            QueryString queryString = context.HttpContext.Request.QueryString;
 
             if (!queryString.HasValue)
             {
                 return;
             }
 
-            string query = Uri.UnescapeDataString(queryString.Value.TrimStart('?'));
+            string query = Uri.UnescapeDataString(queryString.Value);
 
             try
             {
+                Type elementType = responseType.GetGenericArguments()[0];
+
                 objectResult.Value = ((IQueryable)objectResult.Value).LinqToQuerystring(elementType, query);
             }
             catch (Exception ex)

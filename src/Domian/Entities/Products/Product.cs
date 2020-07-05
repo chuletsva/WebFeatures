@@ -5,12 +5,14 @@ using System.Collections.Generic;
 
 namespace Domian.Entities.Products
 {
-    public class Product : AuditableEntity
+    public class Product : AuditableEntity, ISoftDelete
     {
         public Product()
         {
             Reviews = new HashSet<ProductReview>();
         }
+
+        public bool IsDeleted { get; set; }
 
         public string Name { get; set; }
         public string Description { get; set; }

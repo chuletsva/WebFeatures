@@ -36,6 +36,8 @@ namespace Infrastructure.DataAccess
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
             IgnoreEvents(modelBuilder);
+
+            SetSoftDeleteFilter(modelBuilder);
         }
 
         private void IgnoreEvents(ModelBuilder modelBuilder)
@@ -59,7 +61,39 @@ namespace Infrastructure.DataAccess
             modelBuilder.Entity<T>().Ignore(x => x.Events);
         }
 
+        private void SetSoftDeleteFilter(ModelBuilder modelBuilder)
+        {
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (entityType.ClrType.GetInterfaces().Any(x => x == typeof(ISoftDelete)))
+                {
+                    MethodInfo setFilter = typeof(AppDbContext).GetMethod(
+                            nameof(SetSoftDeleteFilterImpl),
+                            BindingFlags.NonPublic | BindingFlags.Instance)
+                        .MakeGenericMethod(entityType.ClrType);
+
+                    setFilter.Invoke(this, new[] { modelBuilder });
+                }
+            }
+        }
+
+        private void SetSoftDeleteFilterImpl<T>(ModelBuilder modelBuilder) where T : class, ISoftDelete
+        {
+            modelBuilder.Entity<T>().HasQueryFilter(x => !x.IsDeleted);
+        }
+
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            SetAuditable();
+
+            SetSoftDelete();
+
+            await PublishEventsAsync(cancellationToken);
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void SetAuditable()
         {
             foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
             {
@@ -82,17 +116,31 @@ namespace Infrastructure.DataAccess
                         }
                 }
             }
+        }
 
+        private void SetSoftDelete()
+        {
+            foreach (var entry in ChangeTracker.Entries<ISoftDelete>())
+            {
+                if (entry.State == EntityState.Deleted)
+                {
+                    entry.State = EntityState.Modified;
+
+                    entry.Entity.IsDeleted = true;
+                }
+            }
+        }
+
+        private async Task PublishEventsAsync(CancellationToken cancellationToken)
+        {
             INotification[] notifications = ChangeTracker.Entries<Entity>()
                 .SelectMany(x => x.Entity.Events)
                 .ToArray();
 
             foreach (INotification notification in notifications)
             {
-                await _mediator.Publish(notification);
+                await _mediator.Publish(notification, cancellationToken);
             }
-
-            return await base.SaveChangesAsync(cancellationToken);
         }
 
         public DbSet<User> Users { get; set; }
