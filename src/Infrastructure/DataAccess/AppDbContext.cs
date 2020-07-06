@@ -7,6 +7,7 @@ using Domian.Entities.Products;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -141,6 +142,11 @@ namespace Infrastructure.DataAccess
             {
                 await _mediator.Publish(notification, cancellationToken);
             }
+        }
+
+        public async Task<TEntity> FindAsync<TEntity>(Guid id) where TEntity : class
+        {
+            return await base.FindAsync<TEntity>(id);
         }
 
         public DbSet<User> Users { get; set; }

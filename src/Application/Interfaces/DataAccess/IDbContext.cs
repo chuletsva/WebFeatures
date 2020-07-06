@@ -2,6 +2,7 @@
 using Domian.Entities.Accounts;
 using Domian.Entities.Products;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,6 +26,7 @@ namespace Application.Interfaces.DataAccess
         DbSet<Country> Countries { get; }
         DbSet<Currency> Currencies { get; }
 
+        Task<TEntity> FindAsync<TEntity>(Guid id) where TEntity : class;
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }
