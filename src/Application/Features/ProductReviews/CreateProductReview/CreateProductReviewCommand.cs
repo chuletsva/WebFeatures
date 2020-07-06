@@ -7,7 +7,7 @@ namespace Application.Features.ProductReviews.CreateProductReview
     /// <summary>
     /// Создать обзор на товар
     /// </summary>
-    public class CreateProductReviewCommand : CommandBase<Guid>
+    public class CreateProductReviewCommand : CommandBase<Guid>, IAuthorizedRequest
     {
         /// <summary>
         /// Идентификатор товара

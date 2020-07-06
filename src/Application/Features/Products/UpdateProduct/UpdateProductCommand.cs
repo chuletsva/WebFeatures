@@ -7,7 +7,7 @@ namespace Application.Features.Products.UpdateProduct
     /// <summary>
     /// Редактировать товар
     /// </summary>
-    public class UpdateProductCommand : CommandBase<Unit>
+    public class UpdateProductCommand : CommandBase<Unit>, IAuthorizedRequest
     {
         /// <summary>
         /// Идентификатор

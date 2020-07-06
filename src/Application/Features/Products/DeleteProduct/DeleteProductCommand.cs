@@ -7,7 +7,7 @@ namespace Application.Features.Products.DeleteProduct
     /// <summary>
     /// Удалить товар
     /// </summary>
-    public class DeleteProductCommand : CommandBase<Unit>
+    public class DeleteProductCommand : CommandBase<Unit>, IAuthorizedRequest
     {
         /// <summary>
         /// Идентификатор товара
