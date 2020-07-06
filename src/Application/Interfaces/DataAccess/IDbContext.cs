@@ -26,7 +26,6 @@ namespace Application.Interfaces.DataAccess
         DbSet<Country> Countries { get; }
         DbSet<Currency> Currencies { get; }
 
-        Task<TEntity> FindAsync<TEntity>(Guid id) where TEntity : class;
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

@@ -38,7 +38,7 @@ namespace Infrastructure.Tests.Unit.Services
         public void ShouldNotAutenticate_WhenUserClaimDoesntExists()
         {
             // Arrange
-            var context = Mock.Of<HttpContext>(x => x.User == null);
+            var context = Mock.Of<HttpContext>();
 
             var contextAccessor = Mock.Of<HttpContextAccessor>(x => x.HttpContext == context);
 

@@ -3,13 +3,11 @@ using Autofac.Extensions.DependencyInjection;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -94,17 +92,13 @@ namespace WebApi
 
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            if (!context.Database.IsInMemory())
+            await context.Database.EnsureCreatedAsync();
+
+            var migrations = await context.Database.GetPendingMigrationsAsync();
+
+            if (migrations.Any())
             {
-                await context.Database.EnsureDeletedAsync();
-                await context.Database.EnsureCreatedAsync();
-
-                IEnumerable<string> migrations = await context.Database.GetPendingMigrationsAsync();
-
-                if (migrations.Any())
-                {
-                    await context.Database.MigrateAsync();
-                }
+                await context.Database.MigrateAsync();
             }
 
             var hasher = scope.ServiceProvider.GetService<IPasswordHasher>();

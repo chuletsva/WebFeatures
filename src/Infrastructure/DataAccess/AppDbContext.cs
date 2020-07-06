@@ -144,11 +144,6 @@ namespace Infrastructure.DataAccess
             }
         }
 
-        public async Task<TEntity> FindAsync<TEntity>(Guid id) where TEntity : class
-        {
-            return await base.FindAsync<TEntity>(id);
-        }
-
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }

@@ -3,6 +3,7 @@ using Domian.Entities;
 using Domian.Entities.Accounts;
 using Domian.Entities.Products;
 using Domian.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 
@@ -12,6 +13,11 @@ namespace Infrastructure.DataAccess
     {
         public static async Task Seed(AppDbContext dbContext, IPasswordHasher hasher)
         {
+            if (await dbContext.Users.AnyAsync())
+            {
+                return;
+            }
+
             await dbContext.Users.AddRangeAsync(
                 new User()
                 {
