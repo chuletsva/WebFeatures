@@ -38,8 +38,11 @@ namespace Application.Tests.Integration.Features.Accounts
         [Fact]
         public void ShouldThrow_WhenInvalidCredentials()
         {
+            // Arrange
+            var register = new RegisterCommand();
+
             // Act
-            Func<Task<UserCreateDto>> actual = () => SendAsync(new RegisterCommand());
+            Func<Task<UserCreateDto>> actual = () => SendAsync(register);
 
             // Assert
             actual.Should().Throw<ValidationException>().And.Error.Should().NotBeNull();
