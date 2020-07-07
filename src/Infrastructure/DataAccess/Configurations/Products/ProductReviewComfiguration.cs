@@ -20,7 +20,7 @@ namespace Infrastructure.DataAccess.Configurations.Products
             builder.HasOne(x => x.UpdatedBy)
                 .WithMany()
                 .HasForeignKey(x => x.UpdatedById)
-                .IsRequired();
+                .IsRequired(false);
         }
     }
 }

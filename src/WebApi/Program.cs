@@ -92,8 +92,6 @@ namespace WebApi
 
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            await context.Database.EnsureCreatedAsync();
-
             var migrations = await context.Database.GetPendingMigrationsAsync();
 
             if (migrations.Any())

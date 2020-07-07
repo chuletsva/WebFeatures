@@ -43,7 +43,7 @@ namespace Application.Features.Accounts.Register
             Role role = await _db.Roles.SingleOrDefaultAsync(x => x.Name == AuthorizationConstants.Roles.Users, cancellationToken)
                 ?? throw new InvalidOperationException("Cannot find role for new user");
 
-            user.Roles.Add(new UserRole() { Role = role });
+            user.Roles.Add(new UserRole() { User = user, Role = role });
 
             _logger.LogInformation("{@User} registered", user);
 

@@ -1,10 +1,10 @@
-﻿using Application.Interfaces.DataAccess;
+﻿using Application.Exceptions;
+using Application.Interfaces.DataAccess;
 using Application.Interfaces.Logging;
 using Application.Interfaces.Security;
 using Domian.Entities.Accounts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;

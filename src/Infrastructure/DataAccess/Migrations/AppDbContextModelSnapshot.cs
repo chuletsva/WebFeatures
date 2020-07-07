@@ -3,17 +3,15 @@ using System;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20200706194841_Initial")]
-    partial class Initial
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -277,7 +275,6 @@ namespace Infrastructure.DataAccess.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid?>("UpdatedById")
-                        .IsRequired()
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -325,7 +322,6 @@ namespace Infrastructure.DataAccess.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid?>("UpdatedById")
-                        .IsRequired()
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -386,7 +382,6 @@ namespace Infrastructure.DataAccess.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid?>("UpdatedById")
-                        .IsRequired()
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -530,9 +525,7 @@ namespace Infrastructure.DataAccess.Migrations
 
                     b.HasOne("Domian.Entities.Accounts.User", "UpdatedBy")
                         .WithOne()
-                        .HasForeignKey("Domian.Entities.Products.Product", "UpdatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Domian.Entities.Products.Product", "UpdatedById");
 
                     b.OwnsOne("Domian.ValueObjects.Money", "Price", b1 =>
                         {
@@ -582,9 +575,7 @@ namespace Infrastructure.DataAccess.Migrations
 
                     b.HasOne("Domian.Entities.Accounts.User", "UpdatedBy")
                         .WithMany()
-                        .HasForeignKey("UpdatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UpdatedById");
                 });
 
             modelBuilder.Entity("Domian.Entities.Products.ProductPicture", b =>
@@ -618,9 +609,7 @@ namespace Infrastructure.DataAccess.Migrations
 
                     b.HasOne("Domian.Entities.Accounts.User", "UpdatedBy")
                         .WithMany()
-                        .HasForeignKey("UpdatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UpdatedById");
                 });
 
             modelBuilder.Entity("Domian.Entities.Shipper", b =>

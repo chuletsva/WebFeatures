@@ -1,4 +1,8 @@
-﻿using Infrastructure;
+﻿using Application.Interfaces.Security;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Domian.Entities.Accounts;
+using Infrastructure;
 using Infrastructure.DataAccess;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -25,21 +29,28 @@ namespace Application.Tests.Common
                 .AddInMemoryCollection(new Dictionary<string, string>()
                 {
                     { "ASPNETCORE_ENVIRONMENT", "Testing" },
-                    { "ConnectionStrings:Testing", "server=localhost;port=5432;database=webfeatures_test_db;username=postgres;password=postgres"}
+                    { "ConnectionStrings:Testing", "server=localhost;port=5432;database=webfeatures_test_db;username=postgres;password=postgres;"}
                 })
                 .Build();
 
             var services = new ServiceCollection();
 
+            services.AddLogging();
+
             services.AddApplication();
             services.AddInfrastructure(configuration);
 
-            _serviceProvider = services.BuildServiceProvider();
+            var containerBuilder = new ContainerBuilder();
+
+            containerBuilder.Populate(services);
+
+            _serviceProvider = new AutofacServiceProvider(containerBuilder.Build());
 
             _checkpoint = new Checkpoint()
             {
+                SchemasToInclude = new[] { "public" },
+                TablesToIgnore = new[] { "__EFMigrationsHistory" },
                 DbAdapter = DbAdapter.Postgres,
-                TablesToIgnore = new[] { "__EFMigrationsHistory" }
             };
 
             EnsureDatabase();
@@ -50,6 +61,8 @@ namespace Application.Tests.Common
             using IServiceScope scope = _serviceProvider.CreateScope();
 
             using AppDbContext context = scope.ServiceProvider.GetService<AppDbContext>();
+
+            context.Database.EnsureDeleted();
 
             context.Database.Migrate();
         }
@@ -69,7 +82,7 @@ namespace Application.Tests.Common
 
             var db = scope.ServiceProvider.GetService<AppDbContext>();
 
-            return await db.FindAsync<TEntity>(predicate);
+            return await db.Set<TEntity>().FirstOrDefaultAsync(predicate);
         }
 
         protected static async Task AddAsync<TEntity>(TEntity entity) where TEntity : class
@@ -79,19 +92,30 @@ namespace Application.Tests.Common
             var db = scope.ServiceProvider.GetService<AppDbContext>();
 
             await db.AddAsync(entity);
+
+            await db.SaveChangesAsync();
         }
 
         public async Task InitializeAsync()
         {
             using IServiceScope scope = _serviceProvider.CreateScope();
 
-            AppDbContext db = scope.ServiceProvider.GetService<AppDbContext>();
+            AppDbContext context = scope.ServiceProvider.GetService<AppDbContext>();
 
-            DbConnection connection = db.Database.GetDbConnection();
+            DbConnection connection = context.Database.GetDbConnection();
 
             await connection.OpenAsync();
 
             await _checkpoint.Reset(connection);
+
+            await SeedAsync(context);
+        }
+
+        private async Task SeedAsync(AppDbContext context)
+        {
+            await context.Roles.AddAsync(new Role() { Name = "users" });
+
+            await context.SaveChangesAsync();
         }
 
         public async Task DisposeAsync()

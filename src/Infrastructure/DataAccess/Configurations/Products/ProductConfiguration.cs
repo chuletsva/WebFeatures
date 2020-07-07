@@ -20,7 +20,7 @@ namespace Infrastructure.DataAccess.Configurations.Products
             builder.HasOne(x => x.UpdatedBy)
                 .WithOne()
                 .HasForeignKey<Product>(x => x.UpdatedById)
-                .IsRequired();
+                .IsRequired(false);
 
             builder.OwnsOne(x => x.Price, navigation =>
             {

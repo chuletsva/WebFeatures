@@ -34,7 +34,7 @@ namespace Application.Behaviours
 
         private async Task<ValidationFailure[]> GetErrors(TRequest request)
         {
-            ValidationFailure[] errors = (await Task.WhenAll(_validators.Select(x => x.ValidateAsync(x))))
+            ValidationFailure[] errors = (await Task.WhenAll(_validators.Select(x => x.ValidateAsync(request))))
                 .Where(x => !x.IsValid)
                 .SelectMany(x => x.Errors)
                 .ToArray();

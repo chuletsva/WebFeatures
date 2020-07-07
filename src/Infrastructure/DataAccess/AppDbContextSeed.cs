@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Security;
+﻿using Application.Constants;
+using Application.Interfaces.Security;
 using Domian.Entities;
 using Domian.Entities.Accounts;
 using Domian.Entities.Products;
@@ -11,14 +12,14 @@ namespace Infrastructure.DataAccess
 {
     public static class AppDbContextSeed
     {
-        public static async Task Seed(AppDbContext dbContext, IPasswordHasher hasher)
+        public static async Task Seed(AppDbContext db, IPasswordHasher hasher)
         {
-            if (await dbContext.Users.AnyAsync())
+            if (await db.Users.AnyAsync())
             {
                 return;
             }
 
-            await dbContext.Users.AddRangeAsync(
+            await db.Users.AddRangeAsync(
                 new User()
                 {
                     Id = new Guid("f9fb9878-6236-44d0-9941-21417ec8d5f6"),
@@ -27,7 +28,14 @@ namespace Infrastructure.DataAccess
                     PasswordHash = hasher.ComputeHash("12345")
                 });
 
-            await dbContext.Products.AddRangeAsync(
+            await db.Brands.AddRangeAsync(
+                new Brand()
+                {
+                    Id = new Guid("873d861e-14e1-4757-91f4-cae6beba4010"),
+                    Name = "name"
+                });
+
+            await db.Products.AddRangeAsync(
                 new Product()
                 {
                     Name = "product",
@@ -43,7 +51,7 @@ namespace Infrastructure.DataAccess
                     }
                 });
 
-            await dbContext.Manufacturers.AddRangeAsync(
+            await db.Manufacturers.AddRangeAsync(
                 new Manufacturer()
                 {
                     Id = new Guid("0ea02742-3566-416f-94e5-bc9d878769f3"),
@@ -56,7 +64,7 @@ namespace Infrastructure.DataAccess
                     }
                 });
 
-            await dbContext.Cities.AddRangeAsync(
+            await db.Cities.AddRangeAsync(
                 new City()
                 {
                     Id = new Guid("685e8905-bad5-4767-ac2c-2bae7ead13be"),
@@ -64,7 +72,7 @@ namespace Infrastructure.DataAccess
                     Name = "city"
                 });
 
-            await dbContext.Countries.AddRangeAsync(
+            await db.Countries.AddRangeAsync(
                 new Country()
                 {
                     Id = new Guid("46bd74a1-e141-45e2-aaec-ba3616d95819"),
@@ -72,21 +80,21 @@ namespace Infrastructure.DataAccess
                     Name = "country"
                 });
 
-            await dbContext.Brands.AddRangeAsync(
-                new Brand()
-                {
-                    Id = new Guid("873d861e-14e1-4757-91f4-cae6beba4010"),
-                    Name = "name"
-                });
-
-            await dbContext.Currencies.AddRangeAsync(
+            await db.Currencies.AddRangeAsync(
                 new Currency()
                 {
                     Id = new Guid("d39e9efe-07af-40d7-bb5e-9904f4bc0fc2"),
                     Code = "RUB"
                 });
 
-            await dbContext.SaveChangesAsync();
+            await db.Roles.AddRangeAsync(
+                new Role()
+                {
+                    Name = AuthorizationConstants.Roles.Users,
+                    Description = "Пользователи"
+                });
+
+            await db.SaveChangesAsync();
         }
     }
 }

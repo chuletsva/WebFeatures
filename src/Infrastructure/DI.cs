@@ -44,7 +44,9 @@ namespace Infrastructure
 
             services.AddDbContext<AppDbContext>(builder =>
             {
-                builder.UseNpgsql(connectionString);
+                builder.UseNpgsql(
+                    connectionString,
+                    opt => opt.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName));
             });
 
             services.AddScoped<IDbContext>(provider => provider.GetService<AppDbContext>());

@@ -53,13 +53,18 @@ namespace Application
 
         private static void AddValidators(IServiceCollection services)
         {
-            Type[] validatorTypes = typeof(DI).Assembly.GetTypes()
-                .Where(x => x.IsSubclassOfGeneric(typeof(AbstractValidator<>)))
+            var validators = typeof(DI).Assembly.GetTypes()
+                .Where(x => x.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IValidator<>)))
+                .Select(x => new
+                {
+                    Service = x.GetInterfaces().First(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IValidator<>)),
+                    Implementation = x
+                })
                 .ToArray();
 
-            foreach (Type validatorType in validatorTypes)
+            foreach (var validator in validators)
             {
-                services.AddScoped(validatorType.BaseType, validatorType);
+                services.AddScoped(validator.Service, validator.Implementation);
             }
         }
     }
