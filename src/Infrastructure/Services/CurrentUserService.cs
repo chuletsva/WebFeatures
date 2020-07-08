@@ -19,9 +19,9 @@ namespace Infrastructure.Services
                 if (idClaim != null && Guid.TryParse(idClaim.Value, out Guid id))
                 {
                     UserId = new Guid(idClaim.Value);
-                }
 
-                IsAuthenticated = true;
+                    IsAuthenticated = true;
+                }
             }
         }
 

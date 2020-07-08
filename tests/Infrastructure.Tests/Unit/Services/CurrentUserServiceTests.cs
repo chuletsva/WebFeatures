@@ -34,16 +34,11 @@ namespace Infrastructure.Tests.Unit.Services
             sut.IsAuthenticated.Should().BeTrue();
         }
 
-        [Fact]
-        public void ShouldNotAutenticate_WhenUserClaimDoesntExists()
+        [Theory, AutoMoq]
+        public void ShouldNotAutenticate_WhenUserClaimDoesntExist(Mock<IHttpContextAccessor> contextAccessor)
         {
-            // Arrange
-            var context = Mock.Of<HttpContext>();
-
-            var contextAccessor = Mock.Of<HttpContextAccessor>(x => x.HttpContext == context);
-
             // Act
-            var sut = new CurrentUserService(contextAccessor);
+            var sut = new CurrentUserService(contextAccessor.Object);
 
             // Assert
             sut.UserId.Should().BeEmpty();
