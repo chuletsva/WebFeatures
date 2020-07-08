@@ -85,7 +85,7 @@ namespace Infrastructure.DataAccess
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            SetAuditable();
+            SetAuditData();
 
             SetSoftDelete();
 
@@ -94,7 +94,7 @@ namespace Infrastructure.DataAccess
             return await base.SaveChangesAsync(cancellationToken);
         }
 
-        private void SetAuditable()
+        private void SetAuditData()
         {
             foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
             {

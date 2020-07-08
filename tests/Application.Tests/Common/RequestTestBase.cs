@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using Respawn;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ using Xunit;
 
 namespace Application.Tests.Common
 {
+    [Collection("Integration")]
     public class RequestTestBase : IAsyncLifetime
     {
         private static IServiceProvider _serviceProvider;
@@ -50,7 +52,7 @@ namespace Application.Tests.Common
             {
                 SchemasToInclude = new[] { "public" },
                 TablesToIgnore = new[] { "__EFMigrationsHistory" },
-                DbAdapter = DbAdapter.Postgres,
+                DbAdapter = DbAdapter.Postgres
             };
 
             EnsureDatabase();
@@ -76,27 +78,60 @@ namespace Application.Tests.Common
             return await mediator.Send(request);
         }
 
-        protected static async Task<TEntity> FindAsync<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class
-        {
-            using IServiceScope scope = _serviceProvider.CreateScope();
-
-            var db = scope.ServiceProvider.GetService<AppDbContext>();
-
-            return await db.Set<TEntity>().FirstOrDefaultAsync(predicate);
-        }
-
         protected static async Task AddAsync<TEntity>(TEntity entity) where TEntity : class
         {
             using IServiceScope scope = _serviceProvider.CreateScope();
 
-            var db = scope.ServiceProvider.GetService<AppDbContext>();
+            AppDbContext context = scope.ServiceProvider.GetService<AppDbContext>();
 
-            await db.AddAsync(entity);
+            await context.AddAsync(entity);
 
-            await db.SaveChangesAsync();
+            await context.SaveChangesAsync();
+        }
+
+        protected static async Task<TEntity> FindAsync<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class
+        {
+            using IServiceScope scope = _serviceProvider.CreateScope();
+
+            AppDbContext context = scope.ServiceProvider.GetService<AppDbContext>();
+
+            return await context.Set<TEntity>().FirstOrDefaultAsync(predicate);
+        }
+
+        protected async Task<Guid> LoginAsDefaultUserAsync()
+        {
+            return await LoginAsUserAsync("user@mail.com", "12345");
+        }
+
+        protected async Task<Guid> LoginAsUserAsync(string email, string password)
+        {
+            using IServiceScope scope = _serviceProvider.CreateScope();
+
+            AppDbContext context = scope.ServiceProvider.GetService<AppDbContext>();
+
+            IPasswordHasher hasher = scope.ServiceProvider.GetService<IPasswordHasher>();
+
+            var user = new User()
+            {
+                Email = email,
+                PasswordHash = hasher.ComputeHash(password)
+            };
+
+            await context.AddAsync(user);
+
+            await context.SaveChangesAsync();
+
+            return user.Id;
         }
 
         public async Task InitializeAsync()
+        {
+            await CleanUpContextAsync();
+
+            await SeedContextAsync();
+        }
+
+        private async Task CleanUpContextAsync()
         {
             using IServiceScope scope = _serviceProvider.CreateScope();
 
@@ -107,15 +142,11 @@ namespace Application.Tests.Common
             await connection.OpenAsync();
 
             await _checkpoint.Reset(connection);
-
-            await SeedAsync(context);
         }
 
-        private async Task SeedAsync(AppDbContext context)
+        private async Task SeedContextAsync()
         {
-            await context.Roles.AddAsync(new Role() { Name = "users" });
-
-            await context.SaveChangesAsync();
+            await AddAsync(new Role() { Name = "users" });
         }
 
         public async Task DisposeAsync()

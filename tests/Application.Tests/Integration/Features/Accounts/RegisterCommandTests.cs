@@ -12,7 +12,7 @@ namespace Application.Tests.Integration.Features.Accounts
     public class RegisterCommandTests : RequestTestBase
     {
         [Fact]
-        public async Task ShouldCreateUser_WhenUserWithProvidedEmailDoesntExists()
+        public async Task ShouldCreateUser_WhenEmailDoesntExist()
         {
             // Arrange
             var request = new RegisterCommand()

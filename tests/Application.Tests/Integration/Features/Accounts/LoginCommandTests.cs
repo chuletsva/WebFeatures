@@ -41,16 +41,51 @@ namespace Application.Tests.Integration.Features.Accounts
         }
 
         [Fact]
-        public void ShouldThrow_WhenUserDoesntExists()
+        public void ShouldThrow_WhenEmailDoesntExists()
         {
             // Arrange
-            var login = new LoginCommand();
+            var login = new LoginCommand()
+            {
+                Email = "wrong@mail.com",
+                Password = "12345"
+            };
 
             // Act
             Func<Task<UserLoginDto>> actual = () => SendAsync(login);
 
             // Assert
-            actual.Should().Throw<ValidationException>().And.Message.Should().NotBeNullOrEmpty();
+            actual.Should()
+                .Throw<ValidationException>()
+                .Where(x => x.Error != null)
+                .And.Error.Message.Should().Be("Wrong login or password");
+        }
+
+        [Fact]
+        public async Task ShouldThrow_WhenWrongPassword()
+        {
+            // Arrange & act
+            var register = new RegisterCommand()
+            {
+                Name = "User",
+                Email = "user@email.com",
+                Password = "12345"
+            };
+
+            await SendAsync(register);
+
+            var login = new LoginCommand()
+            {
+                Email = "user@email.com",
+                Password = "1234"
+            };
+
+            Func<Task<UserLoginDto>> actual = () => SendAsync(login);
+
+            // Assert
+            actual.Should()
+                .Throw<ValidationException>()
+                .Where(x => x.Error != null)
+                .And.Error.Message.Should().Be("Wrong login or password");
         }
     }
 }
