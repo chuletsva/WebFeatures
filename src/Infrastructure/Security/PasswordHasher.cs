@@ -5,11 +5,16 @@ using System.Text;
 
 namespace Infrastructure.Security
 {
-    class PasswordHasher : IPasswordHasher
+    public class PasswordHasher : IPasswordHasher
     {
         public string ComputeHash(string password)
         {
-            var hash = KeyDerivation.Pbkdf2(
+            if (string.IsNullOrEmpty(password))
+            {
+                throw new ArgumentException("Cannot be null or empty", nameof(password));
+            }
+
+            byte[] hash = KeyDerivation.Pbkdf2(
                 password: password,
                 salt: Encoding.UTF8.GetBytes("1ec5cf41-a882-4fc8-806d-0d90ddfd488d"),
                 prf: KeyDerivationPrf.HMACSHA256,

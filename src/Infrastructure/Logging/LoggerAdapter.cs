@@ -3,7 +3,7 @@ using System;
 
 namespace Infrastructure.Logging
 {
-    class LoggerAdapter<T> : Application.Interfaces.Logging.ILogger<T>
+    public class LoggerAdapter<T> : Application.Interfaces.Logging.ILogger<T>
     {
         private readonly ILogger<T> _logger;
 
