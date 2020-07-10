@@ -1,10 +1,9 @@
-﻿using Application.Exceptions;
+﻿using System.Threading.Tasks;
+using Application.Exceptions;
 using Application.Features.Accounts.Register;
 using Application.Tests.Common;
 using Domian.Entities.Accounts;
 using FluentAssertions;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Application.Tests.Integration.Features.Accounts
@@ -38,14 +37,9 @@ namespace Application.Tests.Integration.Features.Accounts
         [Fact]
         public void ShouldThrow_WhenInvalidCredentials()
         {
-            // Arrange
-            var register = new RegisterCommand();
-
-            // Act
-            Func<Task<UserCreateDto>> actual = () => SendAsync(register);
-
-            // Assert
-            actual.Should().Throw<ValidationException>().And.Error.Should().NotBeNull();
+            FluentActions.Awaiting(() => SendAsync(new RegisterCommand()))
+                .Should().Throw<ValidationException>()
+                .And.Error.Should().NotBeNull();
         }
     }
 }

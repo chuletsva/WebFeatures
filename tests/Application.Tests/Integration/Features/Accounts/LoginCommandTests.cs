@@ -1,11 +1,11 @@
-﻿using Application.Exceptions;
+﻿using System;
+using System.Threading.Tasks;
+using Application.Exceptions;
 using Application.Features.Accounts.Login;
 using Application.Features.Accounts.Register;
 using Application.Tests.Common;
 using Domian.Entities.Accounts;
 using FluentAssertions;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Application.Tests.Integration.Features.Accounts
@@ -16,7 +16,7 @@ namespace Application.Tests.Integration.Features.Accounts
         public async Task ShouldLoginUser_WhenUserExists()
         {
             // Arrange & act
-            var register = new RegisterCommand()
+            var register = new RegisterCommand
             {
                 Name = "User",
                 Email = "user@email.com",
@@ -25,15 +25,15 @@ namespace Application.Tests.Integration.Features.Accounts
 
             await SendAsync(register);
 
-            var login = new LoginCommand()
+            var login = new LoginCommand
             {
                 Email = register.Email,
                 Password = register.Password
             };
 
-            UserLoginDto dto = await SendAsync(login);
+            var dto = await SendAsync(login);
 
-            User user = await FindAsync<User>(x => x.Email == register.Email);
+            var user = await FindAsync<User>(x => x.Email == register.Email);
 
             // Assert
             user.Should().NotBeNull();
@@ -41,10 +41,10 @@ namespace Application.Tests.Integration.Features.Accounts
         }
 
         [Fact]
-        public void ShouldThrow_WhenEmailDoesntExists()
+        public void ShouldThrow_WhenEmailDoesntExist()
         {
             // Arrange
-            var login = new LoginCommand()
+            var login = new LoginCommand
             {
                 Email = "wrong@mail.com",
                 Password = "12345"
@@ -64,7 +64,7 @@ namespace Application.Tests.Integration.Features.Accounts
         public async Task ShouldThrow_WhenWrongPassword()
         {
             // Arrange & act
-            var register = new RegisterCommand()
+            var register = new RegisterCommand
             {
                 Name = "User",
                 Email = "user@email.com",
@@ -73,7 +73,7 @@ namespace Application.Tests.Integration.Features.Accounts
 
             await SendAsync(register);
 
-            var login = new LoginCommand()
+            var login = new LoginCommand
             {
                 Email = "user@email.com",
                 Password = "1234"
