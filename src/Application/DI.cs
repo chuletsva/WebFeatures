@@ -1,5 +1,4 @@
 ﻿using Application.Behaviours;
-using Application.Extensions;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
