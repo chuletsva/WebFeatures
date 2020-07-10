@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.Security;
+using Application.Interfaces.Services;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Domian.Entities.Accounts;
@@ -8,11 +9,12 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
+using Moq;
 using Respawn;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
@@ -24,8 +26,31 @@ namespace Application.Tests.Common
     {
         private static IServiceProvider _serviceProvider;
         private static Checkpoint _checkpoint;
+        private static Guid _currentUserId;
 
         static RequestTestBase()
+        {
+            IConfiguration configuration = CreateConfiguration();
+
+            var services = new ServiceCollection();
+
+            AddServices(services, configuration);
+
+            var serviceProvider = CreateServiceProvider(services);
+
+            EnsureDatabase(serviceProvider);
+
+            _serviceProvider = serviceProvider;
+
+            _checkpoint = new Checkpoint()
+            {
+                SchemasToInclude = new[] { "public" },
+                TablesToIgnore = new[] { "__EFMigrationsHistory" },
+                DbAdapter = DbAdapter.Postgres
+            };
+        }
+
+        private static IConfiguration CreateConfiguration()
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>()
@@ -35,32 +60,37 @@ namespace Application.Tests.Common
                 })
                 .Build();
 
-            var services = new ServiceCollection();
+            return configuration;
+        }
 
+        private static void AddServices(IServiceCollection services, IConfiguration configuration)
+        {
             services.AddLogging();
 
             services.AddApplication();
             services.AddInfrastructure(configuration);
 
+            var currentUserServiceDescription = services.First(x => x.ServiceType == typeof(ICurrentUser));
+
+            services.Remove(currentUserServiceDescription);
+
+            services.AddSingleton(Mock.Of<ICurrentUser>(x =>
+                x.UserId == _currentUserId &&
+                x.IsAuthenticated == true));
+        }
+
+        private static IServiceProvider CreateServiceProvider(IServiceCollection services)
+        {
             var containerBuilder = new ContainerBuilder();
 
             containerBuilder.Populate(services);
 
-            _serviceProvider = new AutofacServiceProvider(containerBuilder.Build());
-
-            _checkpoint = new Checkpoint()
-            {
-                SchemasToInclude = new[] { "public" },
-                TablesToIgnore = new[] { "__EFMigrationsHistory" },
-                DbAdapter = DbAdapter.Postgres
-            };
-
-            EnsureDatabase();
+            return new AutofacServiceProvider(containerBuilder.Build());
         }
 
-        private static void EnsureDatabase()
+        private static void EnsureDatabase(IServiceProvider serviceProvider)
         {
-            using IServiceScope scope = _serviceProvider.CreateScope();
+            using IServiceScope scope = serviceProvider.CreateScope();
 
             using AppDbContext context = scope.ServiceProvider.GetService<AppDbContext>();
 
@@ -121,7 +151,9 @@ namespace Application.Tests.Common
 
             await context.SaveChangesAsync();
 
-            return user.Id;
+            _currentUserId = user.Id;
+
+            return _currentUserId;
         }
 
         public async Task InitializeAsync()
