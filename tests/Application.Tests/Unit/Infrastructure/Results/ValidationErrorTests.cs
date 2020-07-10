@@ -12,17 +12,14 @@ namespace Application.Tests.Unit.Infrastructure.Results
         [Fact]
         public void ShouldSetErrors()
         {
+            // Arrange
             var fixture = new Fixture();
 
             string propertyName = fixture.Create<string>();
 
-            int errorsCount = fixture.Create<int>();
-
-            string[] errors = fixture.CreateMany<string>(errorsCount).ToArray();
-
-            // Arrange
-            ValidationFailure[] failures = errors
-                .Select(x => new ValidationFailure(propertyName, x))
+            ValidationFailure[] failures = fixture.Build<ValidationFailure>()
+                .With(x => x.PropertyName == propertyName)
+                .CreateMany()
                 .ToArray();
 
             // Act
@@ -32,7 +29,7 @@ namespace Application.Tests.Unit.Infrastructure.Results
             sut.Errors.Should().NotBeNull();
             sut.Errors.Should().HaveCount(1);
             sut.Errors.Should().ContainKey(propertyName);
-            sut.Errors[propertyName].Should().Equal(errors);
+            sut.Errors[propertyName].Should().Equal(failures.Select(x => x.ErrorMessage));
         }
     }
 }

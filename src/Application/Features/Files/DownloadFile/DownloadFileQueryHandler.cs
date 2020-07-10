@@ -18,7 +18,7 @@ namespace Application.Features.Files.DownloadFile
 
         public async Task<FileDownloadDto> Handle(DownloadFileQuery request, CancellationToken cancellationToken)
         {
-            File file = await _db.Files.FindAsync(request.Id, cancellationToken)
+            File file = await _db.Files.FindAsync(new object[] { request.Id }, cancellationToken)
                 ?? throw new ValidationException("File doesn't exist");
 
             return new FileDownloadDto()
