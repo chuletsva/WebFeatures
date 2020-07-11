@@ -56,7 +56,7 @@ namespace Application
                 .Where(x => x.GetInterfaces().Any(y => y.IsGenericType && y.GetGenericTypeDefinition() == typeof(IValidator<>)))
                 .Select(x => new
                 {
-                    Service = x.GetInterfaces().First(y => x.IsGenericType && y.GetGenericTypeDefinition() == typeof(IValidator<>)),
+                    Service = x.GetInterfaces().First(y => y.IsGenericType && y.GetGenericTypeDefinition() == typeof(IValidator<>)),
                     Implementation = x
                 })
                 .ToArray();

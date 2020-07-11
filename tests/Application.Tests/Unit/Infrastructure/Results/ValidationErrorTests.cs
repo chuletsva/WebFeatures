@@ -17,10 +17,9 @@ namespace Application.Tests.Unit.Infrastructure.Results
 
             string propertyName = fixture.Create<string>();
 
-            ValidationFailure[] failures = fixture.Build<ValidationFailure>()
-                .With(x => x.PropertyName == propertyName)
-                .CreateMany()
-                .ToArray();
+            string[] errors = fixture.CreateMany<string>().ToArray();
+
+            ValidationFailure[] failures = errors.Select(error => new ValidationFailure(propertyName, error)).ToArray();
 
             // Act
             var sut = new ValidationError(failures);
