@@ -3,7 +3,7 @@ using System;
 
 namespace Application.Infrastructure.Requests
 {
-    public interface ICommand<TResult> : IRequest<TResult>
+    public interface ICommand<out TResult> : IRequest<TResult>
     {
         Guid CommandId { get; }
     }

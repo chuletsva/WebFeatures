@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Products.DeleteProduct
 {
-    class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, Unit>
+    internal class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, Unit>
     {
         private readonly IDbContext _db;
 
@@ -18,8 +18,8 @@ namespace Application.Features.Products.DeleteProduct
 
         public async Task<Unit> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            Product product = await _db.Products.FindAsync(request.Id, cancellationToken)
-                ?? throw new ValidationException("Product doesn't exist");
+            Product product = await _db.Products.FindAsync(request.Id, cancellationToken) ?? 
+                              throw new ValidationException("Product doesn't exist");
 
             _db.Products.Remove(product);
 

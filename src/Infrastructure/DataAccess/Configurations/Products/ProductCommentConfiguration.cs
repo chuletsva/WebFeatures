@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.DataAccess.Configurations.Products
 {
-    class ProductCommentConfiguration : IEntityTypeConfiguration<ProductComment>
+    internal class ProductCommentConfiguration : IEntityTypeConfiguration<ProductComment>
     {
         public void Configure(EntityTypeBuilder<ProductComment> builder)
         {

@@ -53,10 +53,10 @@ namespace Application
         private static void AddValidators(IServiceCollection services)
         {
             var validators = typeof(DI).Assembly.GetTypes()
-                .Where(x => x.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IValidator<>)))
+                .Where(x => x.GetInterfaces().Any(y => y.IsGenericType && y.GetGenericTypeDefinition() == typeof(IValidator<>)))
                 .Select(x => new
                 {
-                    Service = x.GetInterfaces().First(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IValidator<>)),
+                    Service = x.GetInterfaces().First(y => x.IsGenericType && y.GetGenericTypeDefinition() == typeof(IValidator<>)),
                     Implementation = x
                 })
                 .ToArray();

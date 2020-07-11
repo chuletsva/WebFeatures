@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.DataAccess.Configurations.Products
 {
-    class ProductPictureConfiguration : IEntityTypeConfiguration<ProductPicture>
+    internal class ProductPictureConfiguration : IEntityTypeConfiguration<ProductPicture>
     {
         public void Configure(EntityTypeBuilder<ProductPicture> builder)
         {

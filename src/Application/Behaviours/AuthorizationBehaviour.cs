@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Application.Behaviours
 {
-    class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    internal class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IAuthorizedRequest
     {
         private readonly IDbContext _db;

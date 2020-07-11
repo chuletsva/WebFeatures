@@ -3,7 +3,7 @@ using Domian.Entities.Products;
 
 namespace Application.Features.ProductReviews.CreateProductReview
 {
-    class CreateProductReviewCommandProfile : Profile
+    internal class CreateProductReviewCommandProfile : Profile
     {
         public CreateProductReviewCommandProfile()
         {

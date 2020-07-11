@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.DataAccess.Configurations
 {
-    class CurrencyConfiguration : IEntityTypeConfiguration<Currency>
+    internal class CurrencyConfiguration : IEntityTypeConfiguration<Currency>
     {
         public void Configure(EntityTypeBuilder<Currency> builder)
         {

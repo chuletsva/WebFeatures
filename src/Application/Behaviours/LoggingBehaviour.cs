@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Application.Behaviours
 {
-    class LoggingBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    internal class LoggingBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
         private readonly ILogger<TRequest> _logger;
 

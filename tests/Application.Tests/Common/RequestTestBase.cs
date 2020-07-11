@@ -24,8 +24,9 @@ namespace Application.Tests.Common
     [Collection("Integration")]
     public class RequestTestBase : IAsyncLifetime
     {
-        private static IServiceProvider _serviceProvider;
-        private static Checkpoint _checkpoint;
+        private static readonly IServiceProvider ServiceProvider;
+        private static readonly Checkpoint Checkpoint;
+        
         private static Guid _currentUserId;
 
         static RequestTestBase()
@@ -40,9 +41,9 @@ namespace Application.Tests.Common
 
             EnsureDatabase(serviceProvider);
 
-            _serviceProvider = serviceProvider;
+            ServiceProvider = serviceProvider;
 
-            _checkpoint = new Checkpoint()
+            Checkpoint = new Checkpoint()
             {
                 SchemasToInclude = new[] { "public" },
                 TablesToIgnore = new[] { "__EFMigrationsHistory" },
@@ -101,7 +102,7 @@ namespace Application.Tests.Common
 
         protected static async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
         {
-            using IServiceScope scope = _serviceProvider.CreateScope();
+            using IServiceScope scope = ServiceProvider.CreateScope();
 
             var mediator = scope.ServiceProvider.GetService<IMediator>();
 
@@ -110,7 +111,7 @@ namespace Application.Tests.Common
 
         protected static async Task AddAsync<TEntity>(TEntity entity) where TEntity : class
         {
-            using IServiceScope scope = _serviceProvider.CreateScope();
+            using IServiceScope scope = ServiceProvider.CreateScope();
 
             AppDbContext context = scope.ServiceProvider.GetService<AppDbContext>();
 
@@ -121,7 +122,7 @@ namespace Application.Tests.Common
 
         protected static async Task<TEntity> FindAsync<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class
         {
-            using IServiceScope scope = _serviceProvider.CreateScope();
+            using IServiceScope scope = ServiceProvider.CreateScope();
 
             AppDbContext context = scope.ServiceProvider.GetService<AppDbContext>();
 
@@ -135,7 +136,7 @@ namespace Application.Tests.Common
 
         protected async Task<Guid> LoginAsUserAsync(string email, string password)
         {
-            using IServiceScope scope = _serviceProvider.CreateScope();
+            using IServiceScope scope = ServiceProvider.CreateScope();
 
             AppDbContext context = scope.ServiceProvider.GetService<AppDbContext>();
 
@@ -165,7 +166,7 @@ namespace Application.Tests.Common
 
         private async Task CleanUpContextAsync()
         {
-            using IServiceScope scope = _serviceProvider.CreateScope();
+            using IServiceScope scope = ServiceProvider.CreateScope();
 
             AppDbContext context = scope.ServiceProvider.GetService<AppDbContext>();
 
@@ -173,7 +174,7 @@ namespace Application.Tests.Common
 
             await connection.OpenAsync();
 
-            await _checkpoint.Reset(connection);
+            await Checkpoint.Reset(connection);
         }
 
         private async Task SeedContextAsync()

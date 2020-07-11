@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Files.DownloadFile
 {
-    class DownloadFileQueryHandler : IRequestHandler<DownloadFileQuery, FileDownloadDto>
+    internal class DownloadFileQueryHandler : IRequestHandler<DownloadFileQuery, FileDownloadDto>
     {
         private readonly IDbContext _db;
 
@@ -18,8 +18,8 @@ namespace Application.Features.Files.DownloadFile
 
         public async Task<FileDownloadDto> Handle(DownloadFileQuery request, CancellationToken cancellationToken)
         {
-            File file = await _db.Files.FindAsync(new object[] { request.Id }, cancellationToken)
-                ?? throw new ValidationException("File doesn't exist");
+            File file = await _db.Files.FindAsync(new object[] { request.Id }, cancellationToken) ?? 
+                        throw new ValidationException("File doesn't exist");
 
             return new FileDownloadDto()
             {

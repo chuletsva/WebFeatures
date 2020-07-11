@@ -24,9 +24,6 @@ namespace Infrastructure.Security
             return Convert.ToBase64String(hash);
         }
 
-        public bool Verify(string hash, string expectedPassword)
-        {
-            return hash == ComputeHash(expectedPassword);
-        }
+        public bool Verify(string hash, string expectedPassword) => hash == ComputeHash(expectedPassword);
     }
 }

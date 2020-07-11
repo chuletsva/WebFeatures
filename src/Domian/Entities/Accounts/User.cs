@@ -18,6 +18,6 @@ namespace Domian.Entities.Accounts
         public Guid? PictureId { get; set; }
         public File Picture { get; set; }
 
-        public ICollection<UserRole> Roles { get; private set; }
+        public ICollection<UserRole> Roles { get; }
     }
 }

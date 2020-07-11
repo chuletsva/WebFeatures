@@ -3,7 +3,7 @@ using Domian.Entities.Products;
 
 namespace Application.Features.Products.GetProductComments
 {
-    class GetProductCommentsQueryProfile : Profile
+    internal class GetProductCommentsQueryProfile : Profile
     {
         public GetProductCommentsQueryProfile()
         {

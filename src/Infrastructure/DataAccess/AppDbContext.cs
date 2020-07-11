@@ -6,11 +6,11 @@ using Domian.Entities.Accounts;
 using Domian.Entities.Products;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Infrastructure.DataAccess
 {
@@ -44,15 +44,14 @@ namespace Infrastructure.DataAccess
         {
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
-                if (entityType.ClrType.IsSubclassOf(typeof(Entity)))
-                {
-                    MethodInfo ignoreEvents = typeof(AppDbContext).GetMethod(
-                            nameof(IgnoreEventsImpl),
-                            BindingFlags.NonPublic | BindingFlags.Instance)
-                        .MakeGenericMethod(entityType.ClrType);
+                if (!entityType.ClrType.IsSubclassOf(typeof(Entity))) continue;
+                
+                MethodInfo ignoreEvents = typeof(AppDbContext).GetMethod(
+                        nameof(IgnoreEventsImpl),
+                        BindingFlags.NonPublic | BindingFlags.Instance)
+                   .MakeGenericMethod(entityType.ClrType);
 
-                    ignoreEvents.Invoke(this, new[] { modelBuilder });
-                }
+                ignoreEvents.Invoke(this, new object[] { modelBuilder });
             }
         }
 
@@ -65,15 +64,14 @@ namespace Infrastructure.DataAccess
         {
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
-                if (entityType.ClrType.GetInterfaces().Any(x => x == typeof(ISoftDelete)))
-                {
-                    MethodInfo setFilter = typeof(AppDbContext).GetMethod(
-                            nameof(SetSoftDeleteFilterImpl),
-                            BindingFlags.NonPublic | BindingFlags.Instance)
-                        .MakeGenericMethod(entityType.ClrType);
+                if (entityType.ClrType.GetInterfaces().All(x => x != typeof(ISoftDelete))) continue;
+                
+                MethodInfo setFilter = typeof(AppDbContext).GetMethod(
+                        nameof(SetSoftDeleteFilterImpl),
+                        BindingFlags.NonPublic | BindingFlags.Instance)
+                   .MakeGenericMethod(entityType.ClrType);
 
-                    setFilter.Invoke(this, new[] { modelBuilder });
-                }
+                setFilter.Invoke(this, new object[] { modelBuilder });
             }
         }
 
@@ -95,7 +93,7 @@ namespace Infrastructure.DataAccess
 
         private void SetAuditData()
         {
-            foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
+            foreach (EntityEntry<AuditableEntity> entry in ChangeTracker.Entries<AuditableEntity>())
             {
                 switch (entry.State)
                 {
@@ -120,14 +118,13 @@ namespace Infrastructure.DataAccess
 
         private void SetSoftDelete()
         {
-            foreach (var entry in ChangeTracker.Entries<ISoftDelete>())
+            foreach (EntityEntry<ISoftDelete> entry in ChangeTracker.Entries<ISoftDelete>())
             {
-                if (entry.State == EntityState.Deleted)
-                {
-                    entry.State = EntityState.Modified;
+                if (entry.State != EntityState.Deleted) continue;
+                
+                entry.State = EntityState.Modified;
 
-                    entry.Entity.IsDeleted = true;
-                }
+                entry.Entity.IsDeleted = true;
             }
         }
 

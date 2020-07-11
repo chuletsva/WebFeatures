@@ -11,13 +11,11 @@ using WebApi.Exceptions;
 namespace WebApi.Attributes
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    class ODataAttribute : Attribute, IResultFilter
+    internal class ODataAttribute : Attribute, IResultFilter
     {
         public void OnResultExecuting(ResultExecutingContext context)
         {
-            var objectResult = context.Result as ObjectResult;
-
-            if (objectResult == null)
+            if (!(context.Result is ObjectResult objectResult))
             {
                 throw new InvalidOperationException("Response type should be 'ObjectResult'");
             }
@@ -57,7 +55,7 @@ namespace WebApi.Attributes
 
                 logger.LogError("Error while applying odata", ex);
 
-                throw new ODataExeption($"Invalid odata request '{query}'");
+                throw new ODataException($"Invalid odata request '{query}'");
             }
         }
 

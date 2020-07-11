@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Products.GetProductComments
 {
-    class GetProductCommentsQueryHandler : IRequestHandler<GetProductCommentsQuery, IQueryable<ProductCommentInfoDto>>
+    internal class GetProductCommentsQueryHandler : IRequestHandler<GetProductCommentsQuery, IQueryable<ProductCommentInfoDto>>
     {
         private readonly IDbContext _db;
         private readonly IMapper _mapper;

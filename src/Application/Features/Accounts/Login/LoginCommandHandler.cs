@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Accounts.Login
 {
-    class LoginCommandHandler : IRequestHandler<LoginCommand, UserLoginDto>
+    internal class LoginCommandHandler : IRequestHandler<LoginCommand, UserLoginDto>
     {
         private readonly ILogger<LoginCommand> _logger;
         private readonly IDbContext _db;

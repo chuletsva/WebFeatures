@@ -12,7 +12,7 @@ namespace Infrastructure.Tests.Unit.Logging
         public void ShouldCreateLogger(Mock<ILoggerFactory> loggerFactory)
         {
             // Act
-            new LoggerAdapter<LoggerAdapterTests>(loggerFactory.Object);
+            _ = new LoggerAdapter<LoggerAdapterTests>(loggerFactory.Object);
 
             // Assert
             loggerFactory.Verify(x => x.CreateLogger(typeof(LoggerAdapterTests).FullName), Times.Once);

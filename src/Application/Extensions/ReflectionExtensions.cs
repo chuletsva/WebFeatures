@@ -2,7 +2,7 @@
 
 namespace Application.Extensions
 {
-    static class ReflectionExtensions
+    internal static class ReflectionExtensions
     {
         public static bool IsSubclassOfGeneric(this Type type, Type genericTypeDefinition)
         {

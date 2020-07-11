@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Products.CreateProduct
 {
-    class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Guid>
+    internal class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Guid>
     {
         private readonly IDbContext _db;
         private readonly IMapper _mapper;

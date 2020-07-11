@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.ProductComments.CreateProductComment
 {
-    class CreateProductCommentCommandHandler : IRequestHandler<CreateProductCommentCommand, Guid>
+    internal class CreateProductCommentCommandHandler : IRequestHandler<CreateProductCommentCommand, Guid>
     {
         private readonly IDbContext _db;
         private readonly IMapper _mapper;

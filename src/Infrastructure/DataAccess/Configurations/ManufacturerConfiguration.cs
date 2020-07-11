@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.DataAccess.Configurations
 {
-    class ManufacturerConfiguration : IEntityTypeConfiguration<Manufacturer>
+    internal class ManufacturerConfiguration : IEntityTypeConfiguration<Manufacturer>
     {
         public void Configure(EntityTypeBuilder<Manufacturer> builder)
         {

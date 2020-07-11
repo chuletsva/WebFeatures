@@ -3,7 +3,7 @@ using System;
 
 namespace Application.Features.ProductComments.CreateProductComment
 {
-    class ProductCommentCreated : INotification
+    internal class ProductCommentCreated : INotification
     {
         public Guid Id { get; }
 

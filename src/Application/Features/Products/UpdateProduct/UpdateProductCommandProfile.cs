@@ -3,7 +3,7 @@ using Domian.Entities.Products;
 
 namespace Application.Features.Products.UpdateProduct
 {
-    class UpdateProductCommandProfile : Profile
+    internal class UpdateProductCommandProfile : Profile
     {
         public UpdateProductCommandProfile()
         {

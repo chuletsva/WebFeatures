@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Products.UpdateProduct
 {
-    class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Unit>
+    internal class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Unit>
     {
         private readonly IDbContext _db;
         private readonly IMapper _mapper;

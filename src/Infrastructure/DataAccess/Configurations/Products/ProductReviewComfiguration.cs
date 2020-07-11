@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.DataAccess.Configurations.Products
 {
-    class ProductReviewComfiguration : IEntityTypeConfiguration<ProductReview>
+    internal class ProductReviewComfiguration : IEntityTypeConfiguration<ProductReview>
     {
         public void Configure(EntityTypeBuilder<ProductReview> builder)
         {

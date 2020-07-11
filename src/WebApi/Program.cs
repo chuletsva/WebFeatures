@@ -54,8 +54,7 @@ namespace WebApi
         {
             var configuration = new LoggerConfiguration();
 
-            configuration.WriteTo.Console(
-                restrictedToMinimumLevel: LogEventLevel.Information);
+            configuration.WriteTo.Console(LogEventLevel.Information);
 
             string logsPath = CreateLogFilePath();
 
@@ -65,7 +64,7 @@ namespace WebApi
                 retainedFileCountLimit: 7,
                 restrictedToMinimumLevel: LogEventLevel.Information);
 
-            var logger = configuration.CreateLogger();
+            ILogger logger = configuration.CreateLogger();
 
             logger.Information($"Writing logs to '{logsPath}'");
 

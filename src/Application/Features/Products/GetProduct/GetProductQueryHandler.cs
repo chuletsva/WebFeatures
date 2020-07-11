@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Products.GetProduct
 {
-    class GetProductQueryHandler : IRequestHandler<GetProductQuery, ProductInfoDto>
+    internal class GetProductQueryHandler : IRequestHandler<GetProductQuery, ProductInfoDto>
     {
         private readonly IDbContext _db;
         private readonly IMapper _mapper;
@@ -21,8 +21,8 @@ namespace Application.Features.Products.GetProduct
 
         public async Task<ProductInfoDto> Handle(GetProductQuery request, CancellationToken cancellationToken)
         {
-            Product product = await _db.Products.FindAsync(request.Id, cancellationToken)
-                ?? throw new ValidationException("Product doesn't exist");
+            Product product = await _db.Products.FindAsync(request.Id, cancellationToken) ?? 
+                              throw new ValidationException("Product doesn't exist");
 
             return _mapper.Map<ProductInfoDto>(product);
         }

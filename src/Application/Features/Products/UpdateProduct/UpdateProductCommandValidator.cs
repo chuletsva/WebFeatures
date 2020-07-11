@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Application.Features.Products.UpdateProduct
 {
-    class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
+    internal class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
     {
         public UpdateProductCommandValidator(IDbContext db)
         {
@@ -23,8 +23,7 @@ namespace Application.Features.Products.UpdateProduct
                 {
                     Domian.Entities.File picture = await db.Files.FindAsync(x, t);
 
-                    if (picture == null)
-                        return false;
+                    if (picture == null) return false;
 
                     return Path.GetExtension(picture.Name) == ".jpg";
                 })

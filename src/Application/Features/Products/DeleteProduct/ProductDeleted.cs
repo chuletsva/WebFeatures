@@ -3,7 +3,7 @@ using System;
 
 namespace Application.Features.Products.DeleteProduct
 {
-    class ProductDeleted : INotification
+    internal class ProductDeleted : INotification
     {
         public Guid Id { get; }
 

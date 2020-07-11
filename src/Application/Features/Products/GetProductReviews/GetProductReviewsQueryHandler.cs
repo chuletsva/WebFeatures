@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Products.GetProductReviews
 {
-    class GetProductReviewsQueryHandler : IRequestHandler<GetProductReviewsQuery, IQueryable<ProductReviewInfoDto>>
+    internal class GetProductReviewsQueryHandler : IRequestHandler<GetProductReviewsQuery, IQueryable<ProductReviewInfoDto>>
     {
         private readonly IDbContext _db;
         private readonly IMapper _mapper;

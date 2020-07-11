@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.DataAccess.Configurations.Accounts
 {
-    class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermission>
+    internal class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermission>
     {
         public void Configure(EntityTypeBuilder<RolePermission> builder)
         {

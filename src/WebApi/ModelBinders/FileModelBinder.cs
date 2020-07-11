@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace WebApi.ModelBinders
 {
-    class FileModelBinderProvider : IModelBinderProvider
+    internal class FileModelBinderProvider : IModelBinderProvider
     {
-        private static HashSet<Type> FileTypes = new HashSet<Type>()
+        private static readonly HashSet<Type> FileTypes = new HashSet<Type>()
         {
             typeof(IFile),
             typeof(IFile[])
@@ -28,7 +28,7 @@ namespace WebApi.ModelBinders
         }
     }
 
-    class FileModelBinder : IModelBinder
+    internal class FileModelBinder : IModelBinder
     {
         public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
@@ -48,15 +48,9 @@ namespace WebApi.ModelBinders
 
             IFormCollection form = await request.ReadFormAsync();
 
-            var postedFiles = new List<IFormFile>();
-
-            foreach (IFormFile file in form.Files)
-            {
-                if (file.Length != 0 && string.Equals(file.Name, modelName, StringComparison.OrdinalIgnoreCase))
-                {
-                    postedFiles.Add(file);
-                }
-            }
+            List<IFormFile> postedFiles = form.Files
+               .Where(file => file.Length != 0 && string.Equals(file.Name, modelName, StringComparison.OrdinalIgnoreCase))
+               .ToList();
 
             if (postedFiles.Count == 0)
             {
@@ -81,7 +75,7 @@ namespace WebApi.ModelBinders
         }
     }
 
-    class FileAdapter : IFile
+    internal class FileAdapter : IFile
     {
         private readonly IFormFile _file;
 

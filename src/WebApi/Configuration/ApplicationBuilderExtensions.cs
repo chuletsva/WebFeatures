@@ -9,7 +9,7 @@ using WebApi.Exceptions;
 
 namespace WebApi.Configuration
 {
-    static class ApplicationBuilderExtensions
+    internal static class ApplicationBuilderExtensions
     {
         public static void UseExceptionHandling(this IApplicationBuilder app)
         {
@@ -26,7 +26,7 @@ namespace WebApi.Configuration
                     (int Code, string Body) response = errorFeature.Error switch
                     {
                         ValidationException validation => (400, JsonConvert.SerializeObject(validation.Error)),
-                        ODataExeption odata => (400, odata.Message),
+                        ODataException odata => (400, odata.Message),
                         FailedAuthorizationException authorization => (400, authorization.Message),
                         _ => (500, "Something went wrong")
                     };

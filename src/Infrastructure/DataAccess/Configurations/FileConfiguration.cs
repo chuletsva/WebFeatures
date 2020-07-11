@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.DataAccess.Configurations
 {
-    class FileConfiguration : IEntityTypeConfiguration<File>
+    internal class FileConfiguration : IEntityTypeConfiguration<File>
     {
         public void Configure(EntityTypeBuilder<File> builder)
         {

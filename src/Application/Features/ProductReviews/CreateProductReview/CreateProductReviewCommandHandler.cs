@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.ProductReviews.CreateProductReview
 {
-    class CreateProductReviewCommandHandler : IRequestHandler<CreateProductReviewCommand, Guid>
+    internal class CreateProductReviewCommandHandler : IRequestHandler<CreateProductReviewCommand, Guid>
     {
         private readonly IDbContext _db;
         private readonly IMapper _mapper;

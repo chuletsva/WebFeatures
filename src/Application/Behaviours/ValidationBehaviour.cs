@@ -10,7 +10,7 @@ using ValidationException = Application.Exceptions.ValidationException;
 
 namespace Application.Behaviours
 {
-    class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    internal class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : ICommand<TResponse>
     {
         private readonly IEnumerable<IValidator<TRequest>> _validators;

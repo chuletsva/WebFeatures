@@ -8,7 +8,7 @@ namespace Domian.Common
     {
         public Guid Id { get; set; }
 
-        public ICollection<INotification> Events { get; private set; }
+        public ICollection<INotification> Events { get; }
 
         protected Entity()
         {

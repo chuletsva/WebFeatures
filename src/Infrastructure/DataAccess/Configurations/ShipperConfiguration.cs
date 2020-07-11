@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.DataAccess.Configurations
 {
-    class ShipperConfiguration : IEntityTypeConfiguration<Shipper>
+    internal class ShipperConfiguration : IEntityTypeConfiguration<Shipper>
     {
         public void Configure(EntityTypeBuilder<Shipper> builder)
         {

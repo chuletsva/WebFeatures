@@ -8,7 +8,7 @@ using File = Domian.Entities.File;
 
 namespace Application.Features.Files.UploadFile
 {
-    class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Guid>
+    internal class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Guid>
     {
         private readonly IDbContext _db;
 
@@ -21,7 +21,7 @@ namespace Application.Features.Files.UploadFile
         {
             using var ms = new MemoryStream();
 
-            using var fs = request.File.OpenReadStream();
+            using Stream fs = request.File.OpenReadStream();
 
             await fs.CopyToAsync(ms, cancellationToken);
 

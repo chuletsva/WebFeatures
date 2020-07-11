@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Accounts.Register
 {
-    class RegisterCommandHandler : IRequestHandler<RegisterCommand, UserCreateDto>
+    internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, UserCreateDto>
     {
         private readonly ILogger<RegisterCommand> _logger;
         private readonly IDbContext _db;
@@ -38,10 +38,10 @@ namespace Application.Features.Accounts.Register
                 PasswordHash = hash
             };
 
-            await _db.Users.AddAsync(user);
+            await _db.Users.AddAsync(user, cancellationToken);
 
-            Role role = await _db.Roles.SingleOrDefaultAsync(x => x.Name == AuthorizationConstants.Roles.Users, cancellationToken)
-                ?? throw new InvalidOperationException("Cannot find role for new user");
+            Role role = await _db.Roles.SingleOrDefaultAsync(x => x.Name == AuthorizationConstants.Roles.Users, cancellationToken) ?? 
+                        throw new InvalidOperationException("Cannot find role for new user");
 
             user.Roles.Add(new UserRole() { User = user, Role = role });
 

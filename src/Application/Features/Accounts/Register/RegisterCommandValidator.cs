@@ -2,7 +2,7 @@
 
 namespace Application.Features.Accounts.Register
 {
-    class RegisterCommandValidator : AbstractValidator<RegisterCommand>
+    internal class RegisterCommandValidator : AbstractValidator<RegisterCommand>
     {
         public RegisterCommandValidator()
         {

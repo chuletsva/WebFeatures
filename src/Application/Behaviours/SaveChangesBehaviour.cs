@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Behaviours
 {
-    class SaveChangesBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    internal class SaveChangesBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : ICommand<TResponse>
     {
         private readonly ILogger<TRequest> _logger;
