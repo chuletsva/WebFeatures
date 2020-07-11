@@ -28,7 +28,8 @@ namespace Application.Behaviours
                 throw new FailedAuthorizationException();
             }
 
-            User user = await _db.Users.FindAsync(_currentUser.UserId, cancellationToken) ?? throw new FailedAuthorizationException();
+            User user = await _db.Users.FindAsync(new object[] { _currentUser.UserId }, cancellationToken) ??
+                        throw new FailedAuthorizationException();
 
             // TODO: check roles
 
