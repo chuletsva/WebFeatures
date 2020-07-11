@@ -29,10 +29,10 @@ namespace Application.Tests.Integration
             MapperConfiguration configuration = CreateConfiguration();
 
             // Act
-            Action actual = () => configuration.AssertConfigurationIsValid();
+            Action act = () => configuration.AssertConfigurationIsValid();
 
             // Assert
-            actual.Should().NotThrow();
+            act.Should().NotThrow();
         }
 
         [Theory, MemberData(nameof(Mappings))]
@@ -42,7 +42,7 @@ namespace Application.Tests.Integration
             MapperConfiguration configuration = CreateConfiguration();
 
             // Act
-            Action actual = () =>
+            Action act = () =>
             {
                 object instance = Activator.CreateInstance(sourceType);
 
@@ -52,7 +52,7 @@ namespace Application.Tests.Integration
             };
 
             // Assert
-            actual.Should().NotThrow();
+            act.Should().NotThrow();
         }
 
         public static IEnumerable<object[]> Mappings

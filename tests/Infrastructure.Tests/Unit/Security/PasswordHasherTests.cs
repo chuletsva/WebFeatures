@@ -25,10 +25,10 @@ namespace Infrastructure.Tests.Unit.Security
         public void ComputeHash_Throws_WhenEmptyPassword(string password, PasswordHasher sut)
         {
             // Act
-            Func<string> actual = () => sut.ComputeHash(password);
+            Func<string> act = () => sut.ComputeHash(password);
 
             // Assert
-            actual.Should().Throw<ArgumentException>();
+            act.Should().Throw<ArgumentException>();
         }
 
         [Theory, AutoMoq]

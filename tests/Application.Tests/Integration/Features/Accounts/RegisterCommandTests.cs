@@ -22,13 +22,13 @@ namespace Application.Tests.Integration.Features.Accounts
             };
 
             // Act
-            UserCreateDto dto = await SendAsync(request);
+            UserCreateDto userDto = await SendAsync(request);
 
             User user = await FindAsync<User>(x => x.Email == request.Email);
 
             // Assert
             user.Should().NotBeNull();
-            user.Id.Should().Be(dto.Id);
+            user.Id.Should().Be(userDto.Id);
             user.Name.Should().Be(request.Name);
             user.Email.Should().Be(request.Email);
             user.PasswordHash.Should().NotBeEmpty();

@@ -19,7 +19,7 @@ namespace Application.Tests.Unit.Behaviours
     public class AuthorizationBehaviourTests
     {
         [Fact]
-        public async Task ShouldCallNextDelegate_WhenUserExists()
+        public async Task ShouldReturnNextDelegateResult_WhenUserExists()
         {
             // Arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -40,16 +40,15 @@ namespace Application.Tests.Unit.Behaviours
 
             currentUser.Setup(x => x.IsAuthenticated).Returns(true);
 
-            var sut = fixture.Create<AuthorizationBehaviour<AuthorizedRequest, bool>>();
+            var sut = fixture.Create<AuthorizationBehaviour<AuthorizedRequest, int>>();
+
+            int expected = 1;
 
             // Act
-            bool isNextCalled = await sut.Handle(
-                new AuthorizedRequest(),
-                new CancellationToken(),
-                async () => true);
+            int actual = await sut.Handle(new AuthorizedRequest(), new CancellationToken(), () => Task.FromResult(expected));
 
             // Assert
-            isNextCalled.Should().BeTrue();
+            actual.Should().Be(expected);
         }
 
         [Fact]
@@ -58,16 +57,13 @@ namespace Application.Tests.Unit.Behaviours
             // Arrange
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
 
-            var sut = fixture.Create<AuthorizationBehaviour<AuthorizedRequest, bool>>();
+            var sut = fixture.Create<AuthorizationBehaviour<AuthorizedRequest, int>>();
 
             // Act
-            Func<Task<bool>> actual = () => sut.Handle(
-                new AuthorizedRequest(),
-                new CancellationToken(),
-                async () => true);
+            Func<Task<int>> act = () => sut.Handle(new AuthorizedRequest(), new CancellationToken(), () => Task.FromResult(0));
 
             // Assert
-            actual.Should().Throw<FailedAuthorizationException>().WithMessage("User is not authorized");
+            act.Should().Throw<FailedAuthorizationException>().WithMessage("User is not authorized");
         }
 
         [Fact]
@@ -90,16 +86,13 @@ namespace Application.Tests.Unit.Behaviours
 
             currentUser.Setup(x => x.IsAuthenticated).Returns(true);
 
-            var sut = fixture.Create<AuthorizationBehaviour<AuthorizedRequest, bool>>();
+            var sut = fixture.Create<AuthorizationBehaviour<AuthorizedRequest, int>>();
 
             // Act
-            Func<Task<bool>> actual = () => sut.Handle(
-                new AuthorizedRequest(),
-                new CancellationToken(),
-                async () => true);
+            Func<Task<int>> act = () => sut.Handle(new AuthorizedRequest(), new CancellationToken(), () => Task.FromResult(0));
 
             // Assert
-            actual.Should().Throw<FailedAuthorizationException>().WithMessage("User is not authorized");
+            act.Should().Throw<FailedAuthorizationException>().WithMessage("User is not authorized");
         }
     }
 }

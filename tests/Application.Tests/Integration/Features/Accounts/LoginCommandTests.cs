@@ -31,13 +31,13 @@ namespace Application.Tests.Integration.Features.Accounts
                 Password = register.Password
             };
 
-            var dto = await SendAsync(login);
+            UserLoginDto userDto = await SendAsync(login);
 
-            var user = await FindAsync<User>(x => x.Email == register.Email);
+            User user = await FindAsync<User>(x => x.Email == register.Email);
 
             // Assert
             user.Should().NotBeNull();
-            user.Id.Should().Be(dto.Id);
+            user.Id.Should().Be(userDto.Id);
         }
 
         [Fact]
@@ -51,10 +51,10 @@ namespace Application.Tests.Integration.Features.Accounts
             };
 
             // Act
-            Func<Task<UserLoginDto>> actual = () => SendAsync(login);
+            Func<Task<UserLoginDto>> act = () => SendAsync(login);
 
             // Assert
-            actual.Should()
+            act.Should()
                 .Throw<ValidationException>()
                 .Where(x => x.Error != null)
                 .And.Error.Message.Should().Be("Wrong login or password");
@@ -79,10 +79,10 @@ namespace Application.Tests.Integration.Features.Accounts
                 Password = "1234"
             };
 
-            Func<Task<UserLoginDto>> actual = () => SendAsync(login);
+            Func<Task<UserLoginDto>> act = () => SendAsync(login);
 
             // Assert
-            actual.Should()
+            act.Should()
                 .Throw<ValidationException>()
                 .Where(x => x.Error != null)
                 .And.Error.Message.Should().Be("Wrong login or password");
