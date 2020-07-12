@@ -1,4 +1,11 @@
-﻿using Application.Interfaces.Security;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Application.Constants;
+using Application.Interfaces.Security;
 using Application.Interfaces.Services;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -11,15 +18,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Respawn;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace Application.Tests.Common
+namespace Application.Tests.Common.Base
 {
     [Collection("Integration")]
     public class RequestTestBase : IAsyncLifetime
@@ -67,17 +68,20 @@ namespace Application.Tests.Common
         private static void AddServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddLogging();
-
-            services.AddApplication();
+            services.AddApplication();          
             services.AddInfrastructure(configuration);
 
             var currentUserServiceDescription = services.First(x => x.ServiceType == typeof(ICurrentUser));
 
             services.Remove(currentUserServiceDescription);
 
-            services.AddSingleton(Mock.Of<ICurrentUser>(x =>
-                x.UserId == _currentUserId &&
-                x.IsAuthenticated == true));
+            var currentUserService = new Mock<ICurrentUser>();
+            {
+                currentUserService.SetupGet(x => x.UserId).Returns(() => _currentUserId);
+                currentUserService.SetupGet(x => x.IsAuthenticated).Returns(() => _currentUserId != Guid.Empty);   
+            };
+            
+            services.AddSingleton(currentUserService.Object);
         }
 
         private static IServiceProvider CreateServiceProvider(IServiceCollection services)
@@ -129,12 +133,12 @@ namespace Application.Tests.Common
             return await context.Set<TEntity>().FirstOrDefaultAsync(predicate);
         }
 
-        protected async Task<Guid> LoginAsDefaultUserAsync()
+        protected static async Task<Guid> LoginAsDefaultUserAsync()
         {
-            return await LoginAsUserAsync("user@mail.com", "12345");
+            return await LoginAsync("user@mail.com", "12345");
         }
 
-        protected async Task<Guid> LoginAsUserAsync(string email, string password)
+        protected static async Task<Guid> LoginAsync(string email, string password)
         {
             using IServiceScope scope = ServiceProvider.CreateScope();
 
@@ -144,6 +148,7 @@ namespace Application.Tests.Common
 
             var user = new User()
             {
+                Name = email,
                 Email = email,
                 PasswordHash = hasher.ComputeHash(password)
             };
@@ -164,7 +169,7 @@ namespace Application.Tests.Common
             await SeedContextAsync();
         }
 
-        private async Task CleanUpContextAsync()
+        private static async Task CleanUpContextAsync()
         {
             using IServiceScope scope = ServiceProvider.CreateScope();
 
@@ -177,9 +182,12 @@ namespace Application.Tests.Common
             await Checkpoint.Reset(connection);
         }
 
-        private async Task SeedContextAsync()
+        private static async Task SeedContextAsync()
         {
-            await AddAsync(new Role() { Name = "users" });
+            await AddAsync(new Role()
+            {
+                Name = AuthorizationConstants.Roles.Users
+            });
         }
 
         public async Task DisposeAsync()

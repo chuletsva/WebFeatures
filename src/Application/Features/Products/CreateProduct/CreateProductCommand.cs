@@ -3,7 +3,7 @@ using System;
 
 namespace Application.Features.Products.CreateProduct
 {
-    public class CreateProductCommand : CommandBase<Guid>, IAuthorizedRequest
+    public class CreateProductCommand : CommandBase<Guid>, IAuthorization
     {
         /// <summary>
         /// Наименование

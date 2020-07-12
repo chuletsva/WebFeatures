@@ -1,10 +1,10 @@
 ﻿using Application.Exceptions;
 using Application.Features.Files.DownloadFile;
-using Application.Tests.Common;
 using AutoFixture.Xunit2;
 using Domian.Entities;
 using FluentAssertions;
 using System.Threading.Tasks;
+using Application.Tests.Common.Base;
 using Xunit;
 
 namespace Application.Tests.Integration.Features.Files

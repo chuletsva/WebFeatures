@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.DataAccess;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.ProductReviews.CreateProductReview
 {
@@ -8,7 +9,7 @@ namespace Application.Features.ProductReviews.CreateProductReview
         public CreateProductReviewCommandValidator(IDbContext db)
         {
             RuleFor(x => x.ProductId)
-                .MustAsync(async (x, t) => (await db.Products.FindAsync(x, t)) != null);
+                .MustAsync((id, token) => db.Products.AnyAsync(x => x.Id == id, token));
 
             RuleFor(x => x.Title).NotEmpty();
             RuleFor(x => x.Comment).NotEmpty();

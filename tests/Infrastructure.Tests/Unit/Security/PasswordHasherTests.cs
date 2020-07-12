@@ -1,7 +1,6 @@
 ﻿using AutoFixture.Xunit2;
 using FluentAssertions;
 using Infrastructure.Security;
-using Infrastructure.Tests.Common.Attributes;
 using System;
 using Xunit;
 
@@ -9,7 +8,7 @@ namespace Infrastructure.Tests.Unit.Security
 {
     public class PasswordHasherTests
     {
-        [Theory, AutoMoq]
+        [Theory, AutoData]
         public void ComputeHash_ReturnsNonEmptyHash(string password, PasswordHasher sut)
         {
             // Act
@@ -31,7 +30,7 @@ namespace Infrastructure.Tests.Unit.Security
             act.Should().Throw<ArgumentException>();
         }
 
-        [Theory, AutoMoq]
+        [Theory, AutoData]
         public void Verify_ShouldVerifyComputedHash(string password, PasswordHasher sut)
         {
             // Act
@@ -43,7 +42,7 @@ namespace Infrastructure.Tests.Unit.Security
             isVerified.Should().BeTrue();
         }
 
-        [Theory, AutoMoq]
+        [Theory, AutoData]
         public void Verify_ShouldNotVerify_WhenPassedWrongPassword(
             string password,
             string wrongPassword,

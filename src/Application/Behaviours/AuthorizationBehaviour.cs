@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Application.Behaviours
 {
     internal class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : IAuthorizedRequest
+        where TRequest : IAuthorization
     {
         private readonly IDbContext _db;
         private readonly ICurrentUser _currentUser;
@@ -23,10 +23,7 @@ namespace Application.Behaviours
 
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
-            if (!_currentUser.IsAuthenticated)
-            {
-                throw new FailedAuthorizationException();
-            }
+            if (!_currentUser.IsAuthenticated) throw new FailedAuthorizationException();
 
             User user = await _db.Users.FindAsync(new object[] { _currentUser.UserId }, cancellationToken) ??
                         throw new FailedAuthorizationException();

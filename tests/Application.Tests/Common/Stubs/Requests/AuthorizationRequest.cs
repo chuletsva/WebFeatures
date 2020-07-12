@@ -2,7 +2,7 @@
 
 namespace Application.Tests.Common.Stubs.Requests
 {
-    public class AuthorizedRequest : IAuthorizedRequest
+    public class AuthorizationRequest : IAuthorization
     {
     }
 }

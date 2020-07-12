@@ -17,7 +17,7 @@ namespace Application.Tests.Integration
 {
     public class MappingTests
     {
-        public MapperConfiguration CreateConfiguration()
+        private static MapperConfiguration CreateConfiguration()
         {
             return new MapperConfiguration(x => x.AddMaps(typeof(DI).Assembly));
         }

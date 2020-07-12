@@ -7,7 +7,7 @@ namespace Application.Features.Files.UploadFile
     /// <summary>
     /// Загрузить файл
     /// </summary>
-    public class UploadFileCommand : CommandBase<Guid>
+    public class UploadFileCommand : CommandBase<Guid>, IAuthorization
     {
         /// <summary>
         /// Файл

@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.DataAccess;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.ProductComments.CreateProductComment
 {
@@ -8,12 +9,12 @@ namespace Application.Features.ProductComments.CreateProductComment
         public CreateProductCommentCommandValidator(IDbContext db)
         {
             RuleFor(x => x.ProductId)
-                .MustAsync(async (x, t) => (await db.Products.FindAsync(x, t)) != null);
+                .MustAsync((id, token) => db.Products.AnyAsync(x => x.Id == id, token));
 
             RuleFor(x => x.Body).NotEmpty();
 
             RuleFor(x => x.ParentCommentId)
-                .MustAsync(async (x, t) => (await db.ProductComments.FindAsync(x, t)) != null)
+                .MustAsync((id, token) => db.ProductComments.AnyAsync(x => x.Id == id, token))
                 .When(x => x.ParentCommentId.HasValue);
         }
     }

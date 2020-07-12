@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Application.Exceptions;
 using Application.Features.Accounts.Login;
 using Application.Features.Accounts.Register;
-using Application.Tests.Common;
+using Application.Tests.Common.Base;
 using Domian.Entities.Accounts;
 using FluentAssertions;
 using Xunit;

@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Application.Exceptions;
 using Application.Features.Accounts.Register;
-using Application.Tests.Common;
+using Application.Tests.Common.Base;
 using Domian.Entities.Accounts;
 using FluentAssertions;
 using Xunit;
@@ -40,6 +41,29 @@ namespace Application.Tests.Integration.Features.Accounts
             FluentActions.Awaiting(() => SendAsync(new RegisterCommand()))
                 .Should().Throw<ValidationException>()
                 .And.Error.Should().NotBeNull();
+        }
+        
+        [Fact]
+        public async Task ShouldThrow_WhenEmailAlreadyExists()
+        {
+            // Arrange
+            const string email = "user@mail.com";
+            const string password = "12345";
+
+            await LoginAsync(email, password);
+
+            var request = new RegisterCommand()
+            {
+                Name = email,
+                Email = email,
+                Password = password
+            };
+            
+            // Act
+            Func<Task<UserCreateDto>> act = () => SendAsync(request);
+            
+            // Assert
+            act.Should().Throw<ValidationException>().And.Error.Message.Should().Be("Email already exists");
         }
     }
 }

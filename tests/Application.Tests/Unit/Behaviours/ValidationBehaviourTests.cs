@@ -1,7 +1,6 @@
 ﻿using Application.Behaviours;
 using Application.Tests.Common.Stubs.Requests;
 using AutoFixture;
-using AutoFixture.AutoMoq;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
@@ -11,20 +10,19 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Tests.Common.Base;
 using Xunit;
 using ValidationException = Application.Exceptions.ValidationException;
 
 namespace Application.Tests.Unit.Behaviours
 {
-    public class ValidationBehaviourTests
-    {
+    public class ValidationBehaviourTests : BehaviourTestBase
+    {      
         [Fact]
         public async Task ShouldValidateRequestBeforeCallNextDelegate()
         {
             // Arrange
-            var fixture = new Fixture().Customize(new AutoMoqCustomization());
-
-            var validator = fixture.Freeze<Mock<IValidator<CustomCommand<int>>>>();
+            var validator = Fixture.Freeze<Mock<IValidator<CustomCommand<int>>>>();
 
             var messages = new List<string>();
 
@@ -49,22 +47,20 @@ namespace Application.Tests.Unit.Behaviours
             await sut.Handle(request, token, next);
 
             // Assert
-            messages.Should().Equal(new[] { "validation", "next" });
+            messages.Should().Equal("validation", "next");
         }
 
         [Fact]
         public void ShouldThrow_WhenValidationIsFailed()
         {
             // Arrange
-            var fixture = new Fixture().Customize(new AutoMoqCustomization());
-
-            var validator = fixture.Freeze<Mock<IValidator<CustomCommand<int>>>>();
+            var validator = Fixture.Freeze<Mock<IValidator<CustomCommand<int>>>>();
 
             var request = new CustomCommand<int>();
 
             var token = new CancellationToken();
 
-            var validationFailure = fixture.Create<ValidationFailure>();
+            var validationFailure = Fixture.Create<ValidationFailure>();
 
             var validationResult = new ValidationResult(new[] { validationFailure });
 
@@ -81,7 +77,7 @@ namespace Application.Tests.Unit.Behaviours
             _.And.Error.Should().NotBeNull();
             _.And.Error.Errors.Should().NotBeNull();
             _.And.Error.Errors.Should().HaveCount(1);
-            _.And.Error.Errors[validationFailure.PropertyName].Should().Equal(new[] { validationFailure.ErrorMessage });
+            _.And.Error.Errors[validationFailure.PropertyName].Should().Equal(validationFailure.ErrorMessage);
         }
     }
 }

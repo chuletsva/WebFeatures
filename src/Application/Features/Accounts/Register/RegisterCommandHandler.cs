@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Exceptions;
 
 namespace Application.Features.Accounts.Register
 {
@@ -29,6 +30,11 @@ namespace Application.Features.Accounts.Register
 
         public async Task<UserCreateDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
+            if (await _db.Users.AnyAsync(x => x.Email == request.Email, cancellationToken))
+            {
+                throw new ValidationException("Email already exists");
+            }
+            
             string hash = _passwordHasher.ComputeHash(request.Password);
 
             var user = new User()

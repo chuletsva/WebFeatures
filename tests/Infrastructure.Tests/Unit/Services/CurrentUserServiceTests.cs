@@ -35,7 +35,7 @@ namespace Infrastructure.Tests.Unit.Services
         }
 
         [Theory, AutoMoq]
-        public void ShouldNotAutenticate_WhenUserClaimDoesntExist(Mock<IHttpContextAccessor> contextAccessor)
+        public void ShouldNotAuthenticate_WhenUserClaimDoesntExist(Mock<IHttpContextAccessor> contextAccessor)
         {
             // Act
             var sut = new CurrentUserService(contextAccessor.Object);

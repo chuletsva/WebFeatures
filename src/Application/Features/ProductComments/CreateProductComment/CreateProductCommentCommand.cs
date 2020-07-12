@@ -6,7 +6,7 @@ namespace Application.Features.ProductComments.CreateProductComment
     /// <summary>
     /// Создать комментарий к товару
     /// </summary>
-    public class CreateProductCommentCommand : CommandBase<Guid>, IAuthorizedRequest
+    public class CreateProductCommentCommand : CommandBase<Guid>, IAuthorization
     {
         /// <summary>
         /// Идентификатор товара
