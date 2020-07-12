@@ -25,8 +25,9 @@ namespace Application.Behaviours
         {
             if (!_currentUser.IsAuthenticated) throw new FailedAuthorizationException();
 
-            User user = await _db.Users.FindAsync(new object[] { _currentUser.UserId }, cancellationToken) ??
-                        throw new FailedAuthorizationException();
+            User user = await _db.Users.FindAsync(new object[] { _currentUser.UserId }, cancellationToken);
+
+            if (user == null) throw new FailedAuthorizationException();
 
             // TODO: check roles
 
