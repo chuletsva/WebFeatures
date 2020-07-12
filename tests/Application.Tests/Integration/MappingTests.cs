@@ -35,7 +35,7 @@ namespace Application.Tests.Integration
             act.Should().NotThrow();
         }
 
-        [Theory, MemberData(nameof(Mappings))]
+        [Theory][MemberData(nameof(Mappings))]
         public void ShouldSupportMap(Type sourceType, Type destinationType)
         {
             // Arrange

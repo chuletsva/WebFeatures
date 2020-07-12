@@ -19,10 +19,7 @@ namespace WebApi.ModelBinders
 
         public IModelBinder GetBinder(ModelBinderProviderContext context)
         {
-            if (context == null)
-            {
-                throw new NullReferenceException(nameof(context));
-            }
+            if (context == null) throw new NullReferenceException(nameof(context));
 
             return FileTypes.Contains(context.Metadata.ModelType) ? new FileModelBinder() : null;
         }
@@ -32,17 +29,11 @@ namespace WebApi.ModelBinders
     {
         public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            if (bindingContext == null)
-            {
-                throw new NullReferenceException(nameof(bindingContext));
-            }
+            if (bindingContext == null) throw new NullReferenceException(nameof(bindingContext));
 
             HttpRequest request = bindingContext.HttpContext.Request;
 
-            if (!request.HasFormContentType)
-            {
-                return;
-            }
+            if (!request.HasFormContentType) return;
 
             string modelName = bindingContext.ModelName;
 
@@ -52,10 +43,7 @@ namespace WebApi.ModelBinders
                .Where(file => file.Length != 0 && string.Equals(file.Name, modelName, StringComparison.OrdinalIgnoreCase))
                .ToList();
 
-            if (postedFiles.Count == 0)
-            {
-                return;
-            }
+            if (postedFiles.Count == 0) return;
 
             if (bindingContext.ModelType == typeof(IFile))
             {

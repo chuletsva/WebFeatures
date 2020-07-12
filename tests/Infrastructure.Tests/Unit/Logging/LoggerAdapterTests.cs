@@ -8,7 +8,7 @@ namespace Infrastructure.Tests.Unit.Logging
 {
     public class LoggerAdapterTests
     {
-        [Theory, AutoMoq]
+        [Theory][AutoMoq]
         public void ShouldCreateLogger(Mock<ILoggerFactory> loggerFactory)
         {
             // Act

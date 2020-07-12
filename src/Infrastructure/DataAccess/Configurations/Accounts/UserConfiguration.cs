@@ -9,9 +9,7 @@ namespace Infrastructure.DataAccess.Configurations.Accounts
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.Property(x => x.Name).IsRequired();
-
             builder.Property(x => x.Email).IsRequired();
-
             builder.Property(x => x.PasswordHash).IsRequired();
         }
     }

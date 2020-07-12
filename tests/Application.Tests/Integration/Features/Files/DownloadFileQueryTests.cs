@@ -11,7 +11,7 @@ namespace Application.Tests.Integration.Features.Files
 {
     public class DownloadFileQueryTests : RequestTestBase
     {
-        [Theory, AutoData]
+        [Theory][AutoData]
         public async Task ShouldReturnExistingFile(File file)
         {
             // Act
@@ -26,13 +26,13 @@ namespace Application.Tests.Integration.Features.Files
             fileDto.Content.Should().Equal(file.Content);
         }
 
-        [Theory, AutoData]
+        [Theory][AutoData]
         public void ShouldThrow_WhenFileDoesntExist(DownloadFileQuery query)
         {
             FluentActions.Awaiting(() => SendAsync(query))
-                .Should()
-                .Throw<ValidationException>()
-                .And.Error.Message.Should().Be("File doesn't exist");
+               .Should()
+               .Throw<ValidationException>()
+               .And.Error.Message.Should().Be("File doesn't exist");
         }
     }
 }

@@ -9,7 +9,6 @@ namespace Infrastructure.DataAccess.Configurations.Accounts
         public void Configure(EntityTypeBuilder<RolePermission> builder)
         {
             builder.Property(x => x.Name).IsRequired();
-
             builder.HasIndex(x => x.Name);
         }
     }

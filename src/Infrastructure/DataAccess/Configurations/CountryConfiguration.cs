@@ -9,7 +9,6 @@ namespace Infrastructure.DataAccess.Configurations
         public void Configure(EntityTypeBuilder<Country> builder)
         {
             builder.Property(x => x.Name).IsRequired();
-
             builder.Property(x => x.Continent).IsRequired();
         }
     }

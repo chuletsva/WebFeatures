@@ -48,14 +48,14 @@ namespace Infrastructure.DataAccess
                 
                 MethodInfo ignoreEvents = typeof(AppDbContext).GetMethod(
                         nameof(IgnoreEventsImpl),
-                        BindingFlags.NonPublic | BindingFlags.Instance)
+                        BindingFlags.NonPublic | BindingFlags.Static)
                    .MakeGenericMethod(entityType.ClrType);
 
-                ignoreEvents.Invoke(this, new object[] { modelBuilder });
+                ignoreEvents.Invoke(null, new object[] { modelBuilder });
             }
         }
 
-        private void IgnoreEventsImpl<T>(ModelBuilder modelBuilder) where T : Entity
+        private static void IgnoreEventsImpl<T>(ModelBuilder modelBuilder) where T : Entity
         {
             modelBuilder.Entity<T>().Ignore(x => x.Events);
         }
@@ -68,14 +68,14 @@ namespace Infrastructure.DataAccess
                 
                 MethodInfo setFilter = typeof(AppDbContext).GetMethod(
                         nameof(SetSoftDeleteFilterImpl),
-                        BindingFlags.NonPublic | BindingFlags.Instance)
+                        BindingFlags.NonPublic | BindingFlags.Static)
                    .MakeGenericMethod(entityType.ClrType);
 
-                setFilter.Invoke(this, new object[] { modelBuilder });
+                setFilter.Invoke(null, new object[] { modelBuilder });
             }
         }
 
-        private void SetSoftDeleteFilterImpl<T>(ModelBuilder modelBuilder) where T : class, ISoftDelete
+        private static void SetSoftDeleteFilterImpl<T>(ModelBuilder modelBuilder) where T : class, ISoftDelete
         {
             modelBuilder.Entity<T>().HasQueryFilter(x => !x.IsDeleted);
         }

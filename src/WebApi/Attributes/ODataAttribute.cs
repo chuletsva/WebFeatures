@@ -20,10 +20,7 @@ namespace WebApi.Attributes
                 throw new InvalidOperationException("Response type should be 'ObjectResult'");
             }
 
-            if (objectResult.Value == null)
-            {
-                return;
-            }
+            if (objectResult.Value == null) return;
 
             Type responseType = objectResult.Value.GetType();
 
@@ -36,10 +33,7 @@ namespace WebApi.Attributes
 
             QueryString queryString = context.HttpContext.Request.QueryString;
 
-            if (!queryString.HasValue)
-            {
-                return;
-            }
+            if (!queryString.HasValue) return;
 
             string query = Uri.UnescapeDataString(queryString.Value);
 

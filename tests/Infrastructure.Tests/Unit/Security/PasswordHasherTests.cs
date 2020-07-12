@@ -8,7 +8,7 @@ namespace Infrastructure.Tests.Unit.Security
 {
     public class PasswordHasherTests
     {
-        [Theory, AutoData]
+        [Theory][AutoData]
         public void ComputeHash_ReturnsNonEmptyHash(string password, PasswordHasher sut)
         {
             // Act
@@ -30,7 +30,7 @@ namespace Infrastructure.Tests.Unit.Security
             act.Should().Throw<ArgumentException>();
         }
 
-        [Theory, AutoData]
+        [Theory][AutoData]
         public void Verify_ShouldVerifyComputedHash(string password, PasswordHasher sut)
         {
             // Act
@@ -42,7 +42,7 @@ namespace Infrastructure.Tests.Unit.Security
             isVerified.Should().BeTrue();
         }
 
-        [Theory, AutoData]
+        [Theory][AutoData]
         public void Verify_ShouldNotVerify_WhenPassedWrongPassword(
             string password,
             string wrongPassword,

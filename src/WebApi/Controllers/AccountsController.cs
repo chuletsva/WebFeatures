@@ -59,7 +59,7 @@ namespace WebApi.Controllers
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Login([FromBody, Required] LoginCommand request)
+        public async Task<IActionResult> Login([FromBody][Required] LoginCommand request)
         {
             UserLoginDto user = await Mediator.Send(request);
 

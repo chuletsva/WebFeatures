@@ -9,7 +9,6 @@ namespace Infrastructure.DataAccess.Configurations.Products
         public void Configure(EntityTypeBuilder<ProductReview> builder)
         {
             builder.Property(x => x.Title).IsRequired();
-
             builder.Property(x => x.Comment).IsRequired();
 
             builder.HasOne(x => x.CreatedBy)
