@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces.DataAccess;
 using FluentValidation;
 using System.IO;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Products.UpdateProduct
 {
@@ -9,14 +10,14 @@ namespace Application.Features.Products.UpdateProduct
         public UpdateProductCommandValidator(IDbContext db)
         {
             RuleFor(x => x.Id)
-                .MustAsync(async (x, t) => (await db.Products.FindAsync(x, t)) != null);
+                .MustAsync((id, token) => db.Products.AnyAsync(x => x.Id == id, token));
 
             RuleFor(x => x.Name).NotEmpty();
             RuleFor(x => x.Description).NotEmpty();
             RuleFor(x => x.PriceAmount).Must(x => x >= 0);
 
             RuleFor(x => x.PriceCurrencyId)
-                .MustAsync(async (x, t) => (await db.Currencies.FindAsync(x, t)) != null);
+                .MustAsync((id, token) => db.Currencies.AnyAsync(x => x.Id == id, token));
 
             RuleFor(x => x.PictureId)
                 .MustAsync(async (x, t) =>
@@ -30,14 +31,14 @@ namespace Application.Features.Products.UpdateProduct
                 .When(x => x.PictureId.HasValue);
 
             RuleFor(x => x.ManufacturerId)
-                .MustAsync(async (x, t) => (await db.Manufacturers.FindAsync(x, t)) != null);
+                .MustAsync((id, token) => db.Manufacturers.AnyAsync(x => x.Id == id, token));
 
             RuleFor(x => x.CategoryId)
-                .MustAsync(async (x, t) => (await db.Categories.FindAsync(x, t)) != null)
+                .MustAsync((id, token) => db.Categories.AnyAsync(x => x.Id == id, token))
                 .When(x => x.CategoryId.HasValue);
 
             RuleFor(x => x.BrandId)
-                .MustAsync(async (x, t) => (await db.Brands.FindAsync(x, t)) != null);
+                .MustAsync((id, token) => db.Brands.AnyAsync(x => x.Id == id, token));
         }
     }
 }
