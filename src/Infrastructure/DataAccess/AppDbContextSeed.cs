@@ -14,10 +14,7 @@ namespace Infrastructure.DataAccess
     {
         public static async Task Seed(AppDbContext db, IPasswordHasher hasher)
         {
-            if (await db.Users.AnyAsync())
-            {
-                return;
-            }
+            if (await db.Users.AnyAsync()) return;
 
             await db.Users.AddRangeAsync(
                 new User()
