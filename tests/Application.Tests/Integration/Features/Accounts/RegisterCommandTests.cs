@@ -18,7 +18,7 @@ namespace Application.Tests.Integration.Features.Accounts
             var request = new RegisterCommand()
             {
                 Name = "user",
-                Email = "user@mail.com",
+                Email = "user1@mail.com",
                 Password = "12345"
             };
 
@@ -48,15 +48,14 @@ namespace Application.Tests.Integration.Features.Accounts
         {
             // Arrange
             const string email = "user@mail.com";
-            const string password = "12345";
 
-            await LoginAsync(email, password);
+            await LoginAsync(email);
 
             var request = new RegisterCommand()
             {
-                Name = email,
+                Name = "Name",
                 Email = email,
-                Password = password
+                Password = "12345"
             };
             
             // Act
