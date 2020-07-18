@@ -18,15 +18,15 @@ namespace Application.Features.Products.UpdateProduct
             _mapper = mapper;
         }
 
-        public Task<Unit> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            Product product = _mapper.Map<Product>(request);
+            Product product = await _db.Products.FindAsync(new object[]{request.Id}, cancellationToken);
 
-            _db.Products.Update(product);
+            _mapper.Map(request, product);
 
             product.Events.Add(new ProductUpdated(product.Id));
 
-            return Unit.Task;
+            return Unit.Value;
         }
     }
 }

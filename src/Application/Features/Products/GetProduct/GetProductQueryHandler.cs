@@ -21,7 +21,7 @@ namespace Application.Features.Products.GetProduct
 
         public async Task<ProductInfoDto> Handle(GetProductQuery request, CancellationToken cancellationToken)
         {
-            Product product = await _db.Products.FindAsync(request.Id, cancellationToken) ?? 
+            Product product = await _db.Products.FindAsync(new object[] { request.Id }, cancellationToken) ?? 
                               throw new ValidationException("Product doesn't exist");
 
             return _mapper.Map<ProductInfoDto>(product);

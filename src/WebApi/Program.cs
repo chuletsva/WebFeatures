@@ -9,7 +9,6 @@ using Serilog;
 using Serilog.Events;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using ILogger = Serilog.ILogger;
 

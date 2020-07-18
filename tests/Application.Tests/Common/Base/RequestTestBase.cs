@@ -116,6 +116,17 @@ namespace Application.Tests.Common.Base
             
             return await mediator.Send(request);
         }
+        
+        // Without disposing scope because queryable should be performed after return
+        protected static async Task<TResponse> SendODataAsync<TResponse>(IRequest<TResponse> request)
+            where TResponse : IQueryable
+        {
+            IServiceScope scope = ServiceProvider.CreateScope();
+
+            var mediator = scope.ServiceProvider.GetService<IMediator>();
+            
+            return await mediator.Send(request);
+        }
 
         protected static async Task AddAsync<TEntity>(TEntity entity) where TEntity : class
         {

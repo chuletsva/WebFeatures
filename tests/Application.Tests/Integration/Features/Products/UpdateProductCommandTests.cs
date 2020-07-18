@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Application.Exceptions;
-using Application.Features.Products.CreateProduct;
+using Application.Features.Products.UpdateProduct;
 using Application.Tests.Common.Base;
 using AutoFixture;
 using Domian.Entities.Products;
@@ -10,30 +10,32 @@ using Xunit;
 
 namespace Application.Tests.Integration.Features.Products
 {
-	public class CreateProductCommandTests : RequestTestBase
+	public class UpdateProductCommandTests : RequestTestBase
 	{
 		[Fact]
-		public async Task ShouldCreateProduct()
+		public async Task ShouldUpdateProduct()
 		{
 			// Arrange
 			var request = new Fixture()
-			   .Build<CreateProductCommand>()
+			   .Build<UpdateProductCommand>()
+			   .With(x => x.Id, ProductId)
 			   .With(x => x.BrandId, BrandId)
 			   .With(x => x.CategoryId, CategoryId)
 			   .With(x => x.ManufacturerId, ManufacturerId)
 			   .With(x => x.PriceCurrencyId, CurrencyId)
+			   .Without(x => x.PictureId)
 			   .Create();
 
 			// Act		
 			Guid userId = await LoginAsDefaultUserAsync();
 
-			Guid productId = await SendAsync(request);
+			await SendAsync(request);
 
-			Product product = await FindAsync<Product>(x => x.Id == productId);
+			Product product = await FindAsync<Product>(x => x.Id == request.Id);
 
 			// Assert
 			product.Should().NotBeNull();
-			product.Id.Should().Be(productId);
+			product.Id.Should().Be(request.Id);
 			product.Name.Should().Be(request.Name);
 			product.BrandId.Should().Be(request.BrandId);
 			product.CategoryId.Should().Be(request.CategoryId);
@@ -41,8 +43,8 @@ namespace Application.Tests.Integration.Features.Products
 			product.Price.Should().NotBeNull();
 			product.Price.CurrencyId.Should().Be(request.PriceCurrencyId);
 			product.Price.Amount.Should().Be(request.PriceAmount);
-			product.CreatedById.Should().Be(userId);
-			product.CreatedAt.Date.Should().Be(DateTime.UtcNow.Date);
+			product.UpdatedById.Should().Be(userId);
+			product.UpdatedAt?.Date.Should().Be(DateTime.UtcNow.Date);
 		}
 
 		[Fact]
@@ -51,7 +53,7 @@ namespace Application.Tests.Integration.Features.Products
 			// Act
 			await LoginAsDefaultUserAsync();
 			
-			Func<Task<Guid>> act = () => SendAsync(new CreateProductCommand());
+			Func<Task> act = () => SendAsync(new UpdateProductCommand());
 			
 			// Assert
 			act.Should().Throw<ValidationException>().And.Error.Errors.Should().NotBeEmpty();

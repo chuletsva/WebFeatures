@@ -6,7 +6,6 @@ using Domian.Entities.Products;
 using Domian.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Infrastructure.DataAccess
