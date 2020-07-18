@@ -24,9 +24,4 @@
     </AssemblyAttribute>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DataAccess\Migrations" />
-    <Folder Include="DataAccess\Migrations\" />
-  </ItemGroup>
-
 </Project>

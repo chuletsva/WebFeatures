@@ -54,10 +54,7 @@ namespace Application.Tests.Integration.Features.Accounts
             Func<Task<UserLoginDto>> act = () => SendAsync(login);
 
             // Assert
-            act.Should()
-                .Throw<ValidationException>()
-                .Where(x => x.Error != null)
-                .And.Error.Message.Should().Be("Wrong login or password");
+            act.Should().Throw<ValidationException>().And.Error.Message.Should().Be("Wrong login or password");
         }
 
         [Fact]
@@ -82,10 +79,7 @@ namespace Application.Tests.Integration.Features.Accounts
             Func<Task<UserLoginDto>> act = () => SendAsync(login);
 
             // Assert
-            act.Should()
-                .Throw<ValidationException>()
-                .Where(x => x.Error != null)
-                .And.Error.Message.Should().Be("Wrong login or password");
+            act.Should().Throw<ValidationException>().And.Error.Message.Should().Be("Wrong login or password");
         }
     }
 }

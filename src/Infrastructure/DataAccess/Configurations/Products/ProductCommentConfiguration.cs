@@ -9,16 +9,6 @@ namespace Infrastructure.DataAccess.Configurations.Products
         public void Configure(EntityTypeBuilder<ProductComment> builder)
         {
             builder.Property(x => x.Body).IsRequired();
-
-            builder.HasOne(x => x.CreatedBy)
-                .WithMany()
-                .HasForeignKey(x => x.CreatedById)
-                .IsRequired();
-
-            builder.HasOne(x => x.UpdatedBy)
-                .WithMany()
-                .HasForeignKey(x => x.UpdatedById)
-                .IsRequired(false);
         }
     }
 }
