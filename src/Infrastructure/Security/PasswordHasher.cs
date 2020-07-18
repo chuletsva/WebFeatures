@@ -9,10 +9,7 @@ namespace Infrastructure.Security
     {
         public string ComputeHash(string password)
         {
-            if (string.IsNullOrEmpty(password))
-            {
-                throw new ArgumentException("Cannot be null or empty", nameof(password));
-            }
+            if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
             byte[] hash = KeyDerivation.Pbkdf2(
                 password: password,

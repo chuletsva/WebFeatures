@@ -11,16 +11,6 @@ namespace Infrastructure.DataAccess.Configurations.Products
             builder.Property(x => x.Name).IsRequired();
             builder.Property(x => x.Description).IsRequired();
 
-            builder.HasOne(x => x.CreatedBy)
-                .WithOne()
-                .HasForeignKey<Product>(x => x.CreatedById)
-                .IsRequired();
-
-            builder.HasOne(x => x.UpdatedBy)
-                .WithOne()
-                .HasForeignKey<Product>(x => x.UpdatedById)
-                .IsRequired(false);
-
             builder.OwnsOne(x => x.Price, navigation =>
             {
                 navigation.HasOne(x => x.Currency)

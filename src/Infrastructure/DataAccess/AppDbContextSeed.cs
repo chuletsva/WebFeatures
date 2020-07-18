@@ -6,6 +6,7 @@ using Domian.Entities.Products;
 using Domian.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Infrastructure.DataAccess
@@ -91,7 +92,7 @@ namespace Infrastructure.DataAccess
                     Description = "Пользователи"
                 });
 
-            await db.SaveChangesAsync();
+            await db.SaveChangesAsync(acceptAllChangesOnSuccess: true);
         }
     }
 }

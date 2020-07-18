@@ -77,10 +77,7 @@ namespace WebApi
 
             string logsDir = Path.Combine(projectDir, "Logs");
 
-            if (!Directory.Exists(logsDir))
-            {
-                Directory.CreateDirectory(logsDir);
-            }
+            if (!Directory.Exists(logsDir)) Directory.CreateDirectory(logsDir);
 
             return Path.Combine(logsDir, "log.txt");
         }
@@ -91,12 +88,9 @@ namespace WebApi
 
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            var migrations = await context.Database.GetPendingMigrationsAsync();
+            await context.Database.EnsureDeletedAsync();
 
-            if (migrations.Any())
-            {
-                await context.Database.MigrateAsync();
-            }
+            await context.Database.MigrateAsync();
 
             var hasher = scope.ServiceProvider.GetService<IPasswordHasher>();
 

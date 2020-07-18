@@ -18,7 +18,7 @@ namespace Application.Features.Products.DeleteProduct
 
         public async Task<Unit> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            Product product = await _db.Products.FindAsync(request.Id, cancellationToken) ?? 
+            Product product = await _db.Products.FindAsync(new object[]{ request.Id }, cancellationToken) ?? 
                               throw new ValidationException("Product doesn't exist");
 
             _db.Products.Remove(product);
