@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Application.Exceptions;
 using Application.Features.Products.UpdateProduct;
 using Application.Tests.Common.Base;
+using Application.Tests.Common.Helpers;
 using AutoFixture;
 using Domian.Entities.Products;
 using FluentAssertions;
@@ -10,6 +11,8 @@ using Xunit;
 
 namespace Application.Tests.Integration.Features.Products
 {
+	using static EntityTestData;
+	
 	public class UpdateProductCommandTests : RequestTestBase
 	{
 		[Fact]

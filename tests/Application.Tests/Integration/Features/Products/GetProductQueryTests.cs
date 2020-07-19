@@ -3,11 +3,14 @@ using System.Threading.Tasks;
 using Application.Exceptions;
 using Application.Features.Products.GetProduct;
 using Application.Tests.Common.Base;
+using Application.Tests.Common.Helpers;
 using FluentAssertions;
 using Xunit;
 
 namespace Application.Tests.Integration.Features.Products
 {
+	using static EntityTestData;
+	
 	public class GetProductQueryTests : RequestTestBase
 	{
 		[Fact]

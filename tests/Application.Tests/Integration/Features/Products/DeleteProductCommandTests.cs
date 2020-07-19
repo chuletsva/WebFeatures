@@ -3,12 +3,15 @@ using System.Threading.Tasks;
 using Application.Exceptions;
 using Application.Features.Products.DeleteProduct;
 using Application.Tests.Common.Base;
+using Application.Tests.Common.Helpers;
 using Domian.Entities.Products;
 using FluentAssertions;
 using Xunit;
 
 namespace Application.Tests.Integration.Features.Products
-{
+{	
+	using static EntityTestData;
+	
 	public class DeleteProductCommandTests : RequestTestBase
 	{
 		[Fact]

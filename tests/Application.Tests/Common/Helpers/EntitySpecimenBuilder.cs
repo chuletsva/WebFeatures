@@ -16,7 +16,8 @@ namespace Application.Tests.Common.Helpers
             if (property.Name == nameof(ISoftDelete.IsDeleted)) return false;
 
             if (property.PropertyType.IsSubclassOf(typeof(Entity))
-             || property.PropertyType.GetInterfaces()
+             || property.PropertyType.IsGenericType 
+             && property.PropertyType.GetInterfaces()
                    .Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
              || property.PropertyType.IsGenericType
              && property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
