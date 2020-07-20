@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Features.Products.GetProducts;
@@ -19,7 +20,7 @@ namespace Application.Tests.Integration.Features.Products
 			var request = new GetProductsQuery();
 			
 			// Act
-			IQueryable<ProductListDto> list = await SendODataAsync(request);
+			List<ProductListDto> list = await SendAsync(request);
 			
 			// Assert
 			list.Should().Contain(x => x.Id == ProductId);
