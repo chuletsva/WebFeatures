@@ -34,82 +34,12 @@ namespace Infrastructure.DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-
-            IgnoreEvents(modelBuilder);
-
-            SetupSoftDelete(modelBuilder);
-
-            SetupAudit(modelBuilder);
-        }
-
-        private void IgnoreEvents(ModelBuilder modelBuilder)
-        {
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                if (!entityType.ClrType.IsSubclassOf(typeof(Entity))) continue;
-                
-                MethodInfo ignoreEvents = typeof(AppDbContext).GetMethod(
-                        nameof(IgnoreEventsImpl),
-                        BindingFlags.NonPublic | BindingFlags.Static)
-                   .MakeGenericMethod(entityType.ClrType);
-
-                ignoreEvents.Invoke(null, new object[] { modelBuilder });
-            }
-        }
-
-        private static void IgnoreEventsImpl<T>(ModelBuilder modelBuilder) where T : Entity
-        {
-            modelBuilder.Entity<T>().Ignore(x => x.Events);
-        }
-
-        private void SetupSoftDelete(ModelBuilder modelBuilder)
-        {
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                if (entityType.ClrType.GetInterfaces().All(x => x != typeof(ISoftDelete))) continue;
-                
-                MethodInfo setupSoftDelete = typeof(AppDbContext).GetMethod(
-                        nameof(SetupSoftDeleteImpl),
-                        BindingFlags.NonPublic | BindingFlags.Static)
-                   .MakeGenericMethod(entityType.ClrType);
-
-                setupSoftDelete.Invoke(null, new object[] { modelBuilder });
-            }
-        }
-
-        private static void SetupSoftDeleteImpl<T>(ModelBuilder modelBuilder) where T : class, ISoftDelete
-        {
-            modelBuilder.Entity<T>().HasQueryFilter(x => !x.IsDeleted);
-        }
-
-        private void SetupAudit(ModelBuilder modelBuilder)
-        {
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                if (!entityType.ClrType.IsSubclassOf(typeof(AuditableEntity))) continue;
-                
-                MethodInfo setupAudit = typeof(AppDbContext).GetMethod(
-                        nameof(SetupAuditImpl),
-                        BindingFlags.NonPublic | BindingFlags.Static)
-                   .MakeGenericMethod(entityType.ClrType);
-
-                setupAudit.Invoke(null, new object[] { modelBuilder });
-            }
-        }
-
-        private static void SetupAuditImpl<T>(ModelBuilder modelBuilder) where T : AuditableEntity
-        {
-            modelBuilder.Entity<T>()
-               .HasOne(x => x.CreatedBy)
-               .WithMany()
-               .HasForeignKey(x => x.CreatedById)
-               .IsRequired();
-
-            modelBuilder.Entity<T>()
-               .HasOne(x => x.UpdatedBy)
-               .WithMany()
-               .HasForeignKey(x => x.UpdatedById)
-               .IsRequired(false);
+            
+            modelBuilder.IgnoreEvents();
+            
+            modelBuilder.ConfigureSoftDelete();
+            
+            modelBuilder.ConfigureAudit();
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -187,5 +117,78 @@ namespace Infrastructure.DataAccess
         public DbSet<City> Cities { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Currency> Currencies { get; set; }
+    }
+
+    internal static class ModelBuilderExtensions
+    {
+        public static void IgnoreEvents(this ModelBuilder modelBuilder)
+        {
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (!entityType.ClrType.IsAssignableFrom(typeof(Entity))) continue;
+                
+                MethodInfo method = typeof(ModelBuilderExtensions).GetMethod(
+                        nameof(IgnoreEvents),
+                        BindingFlags.NonPublic | BindingFlags.Static)
+                   .MakeGenericMethod(entityType.ClrType);
+
+                method.Invoke(null, new object[] { modelBuilder });
+            }
+        }
+
+        private static void IgnoreEvents<T>(ModelBuilder modelBuilder) where T : Entity
+        {
+            modelBuilder.Entity<T>().Ignore(x => x.Events);
+        }
+
+        public static void ConfigureSoftDelete(this ModelBuilder modelBuilder)
+        {
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (!typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType)) continue;
+                
+                MethodInfo method = typeof(ModelBuilderExtensions).GetMethod(
+                        nameof(ConfigureSoftDelete),
+                        BindingFlags.NonPublic | BindingFlags.Static)
+                   .MakeGenericMethod(entityType.ClrType);
+
+                method.Invoke(null, new object[] { modelBuilder });
+            }
+        }
+
+        private static void ConfigureSoftDelete<T>(ModelBuilder modelBuilder) where T : class, ISoftDelete
+        {
+            modelBuilder.Entity<T>().HasQueryFilter(x => !x.IsDeleted);
+        }
+
+        public static void ConfigureAudit(this ModelBuilder modelBuilder)
+        {
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (!entityType.ClrType.IsSubclassOf(typeof(AuditableEntity))) continue;
+                
+                MethodInfo method = typeof(ModelBuilderExtensions).GetMethod(
+                        nameof(ConfigureAudit),
+                        BindingFlags.NonPublic | BindingFlags.Static)
+                   .MakeGenericMethod(entityType.ClrType);
+
+                method.Invoke(null, new object[] { modelBuilder });
+            }
+        }
+
+        private static void ConfigureAudit<T>(ModelBuilder modelBuilder) where T : AuditableEntity
+        {
+            modelBuilder.Entity<T>()
+               .HasOne(x => x.CreatedBy)
+               .WithMany()
+               .HasForeignKey(x => x.CreatedById)
+               .IsRequired();
+
+            modelBuilder.Entity<T>()
+               .HasOne(x => x.UpdatedBy)
+               .WithMany()
+               .HasForeignKey(x => x.UpdatedById)
+               .IsRequired(false);
+        }
     }
 }
