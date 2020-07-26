@@ -9,4 +9,4 @@
 * Serilog
 * Swashbuckle
 * LinqToQuerystring
-* xUnit, Moq, Autofixture
+* xUnit, Moq, Autofixture, FluentAssertions, Respawn
