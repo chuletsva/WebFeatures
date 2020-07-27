@@ -1,10 +1,10 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Application.Interfaces.Services;
 using Domian.Entities.Accounts;
 using FluentAssertions;
 using Infrastructure.DataAccess;
-using Infrastructure.Tests.Common.Attributes;
 using Infrastructure.Tests.Common.Stubs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -29,93 +29,107 @@ namespace Infrastructure.Tests.Unit.DataAccess
 				.UseInMemoryDatabase(Guid.NewGuid().ToString())
 				.Options;
 		}
+
+		private static User GetDefaultUser()
+		{
+			return new User()
+			{
+				Id = new Guid("6dfe1db5-282d-426d-aa49-8af67b04019f"),
+				Name = "User"
+			};
+		}
 		
 		[Fact]
-		public async Task ShouldSetAuditData_WhenCreateEntity()
+		public async Task SaveChanges_ShouldSetAuditData_WhenCreateEntity()
 		{
 			// Arrange
 			var now = DateTime.UtcNow;
 
 			_datetime.Setup(x => x.Now).Returns(now);
 
-			var user = new User()
-			{
-				Id = new Guid("6dfe1db5-282d-426d-aa49-8af67b04019f"),
-				Name = "User"
-			};
+			User user = GetDefaultUser();
 
 			_currentUser.Setup(x => x.UserId).Returns(user.Id);
 
-			var auditable = new CustomAuditableEntity();
-
+			var entity = new CustomAuditableEntity();
 			var sut = new CustomAppDbContext(_options, _currentUser.Object, _datetime.Object, _mediator.Object);
 
 			// Act
-			await sut.AddRangeAsync(user, auditable);
+			await sut.AddRangeAsync(user, entity);
+			await sut.SaveChangesAsync();
 
 			// Assert
-			auditable.CreatedAt.Should().Be(now);
-			auditable.CreatedById.Should().Be(user.Id);
-			auditable.UpdatedAt.Should().BeNull();
-			auditable.UpdatedById.Should().BeNull();
+			entity.CreatedAt.Should().Be(now);
+			entity.CreatedById.Should().Be(user.Id);
 		}
 
 		[Fact]
-		public async Task ShouldSetAuditData_WhenUpdateEntity()
+		public async Task SaveChanges_ShouldSetAuditData_WhenUpdateEntity()
         {
 			// Arrange
 			var now = DateTime.UtcNow;
 
 			_datetime.Setup(x => x.Now).Returns(now);
 
-			var user = new User()
-			{
-				Id = new Guid("6dfe1db5-282d-426d-aa49-8af67b04019f"),
-				Name = "User"
-			};
+			User user = GetDefaultUser();
 
 			_currentUser.Setup(x => x.UserId).Returns(user.Id);
 
-			var auditable = new CustomAuditableEntity();
+			var entity = new CustomAuditableEntity();
 
 			var sut = new CustomAppDbContext(_options, _currentUser.Object, _datetime.Object, _mediator.Object);
 
 			// Act
-			await sut.AddRangeAsync(user, auditable);
+			await sut.AddRangeAsync(user, entity);		
 			await sut.SaveChangesAsync();
 
-			sut.Update(auditable);
+			sut.Update(entity);
 
 			await sut.SaveChangesAsync();
 
 			// Assert
-			auditable.CreatedAt.Should().Be(now);
-			auditable.CreatedById.Should().Be(user.Id);
-			auditable.UpdatedAt.Should().Be(now);
-			auditable.UpdatedById.Should().Be(user.Id);
+			entity.UpdatedAt.Should().Be(now);
+			entity.UpdatedById.Should().Be(user.Id);
 		}
 
 		[Fact]
-		public async Task ShouldSupportSoftDelete()
+		public async Task SaveChanges_ShouldSupportSoftDelete()
         {
 			// Arrange
+			var entity = new CustomSoftDeleteEntity();	
 			var sut = new CustomAppDbContext(_options, _currentUser.Object, _datetime.Object, _mediator.Object);
-
-			var softdel = new CustomSoftDeleteEntity();
-
+			
 			// Act
-			await sut.AddAsync(softdel);
-
+			await sut.AddAsync(entity);
 			await sut.SaveChangesAsync();
 
-			sut.Remove(softdel);
+			sut.Remove(entity);
 
 			await sut.SaveChangesAsync();
 
 			// Assert
-			softdel.IsDeleted.Should().BeTrue();
+			entity.IsDeleted.Should().BeTrue();
 		}
-		
+
+		[Fact]
+		public async Task SaveChanges_ShouldRaiseEvent()
+		{
+			// Arrange
+			INotification eve = new CustomEvent();
+			
+			User user = GetDefaultUser();
+			
+			user.Events.Add(eve);
+			
+			var sut = new CustomAppDbContext(_options, _currentUser.Object, _datetime.Object, _mediator.Object);
+
+			// Act
+			await sut.AddAsync(user);
+			await sut.SaveChangesAsync();
+
+			// Assert
+			_mediator.Verify(x => x.Publish(eve, It.IsAny<CancellationToken>()), Times.Once);
+		}
 		
 		[Fact]
 		public void ShouldNotThrow_WhenConfiguredWithDefaultConnectionString()
