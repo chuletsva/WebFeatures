@@ -10,7 +10,7 @@ using WebApi.Exceptions;
 
 namespace WebApi.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     internal class ODataAttribute : Attribute, IResultFilter
     {
         public void OnResultExecuting(ResultExecutingContext context)
