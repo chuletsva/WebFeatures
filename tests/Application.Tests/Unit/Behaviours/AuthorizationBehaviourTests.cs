@@ -41,12 +41,12 @@ namespace Application.Tests.Unit.Behaviours
                 currentUser.Setup(x => x.IsAuthenticated).Returns(true);
             }
 
-            var sut = Fixture.Create<AuthorizationBehaviour<AuthorizationRequest, int>>();
+            var sut = Fixture.Create<AuthorizationBehaviour<RequireAuthorizationRequest, int>>();
 
             int expected = Fixture.Create<int>();
 
             // Act
-            int actual = await sut.Handle(new AuthorizationRequest(), new CancellationToken(), () => Task.FromResult(expected));
+            int actual = await sut.Handle(new RequireAuthorizationRequest(), new CancellationToken(), () => Task.FromResult(expected));
 
             // Assert
             actual.Should().Be(expected);
@@ -56,10 +56,10 @@ namespace Application.Tests.Unit.Behaviours
         public void ShouldThrow_WhenUserIsNotAuthenticated()
         {
             // Arrange
-            var sut = Fixture.Create<AuthorizationBehaviour<AuthorizationRequest, int>>();
+            var sut = Fixture.Create<AuthorizationBehaviour<RequireAuthorizationRequest, int>>();
 
             // Act
-            Func<Task<int>> act = () => sut.Handle(new AuthorizationRequest(), new CancellationToken(), () => Task.FromResult(0));
+            Func<Task<int>> act = () => sut.Handle(new RequireAuthorizationRequest(), new CancellationToken(), () => Task.FromResult(0));
 
             // Assert
             act.Should().Throw<FailedAuthorizationException>().WithMessage("User is not authorized");
@@ -86,10 +86,10 @@ namespace Application.Tests.Unit.Behaviours
                 currentUser.Setup(x => x.IsAuthenticated).Returns(true);
             }
 
-            var sut = Fixture.Create<AuthorizationBehaviour<AuthorizationRequest, int>>();
+            var sut = Fixture.Create<AuthorizationBehaviour<RequireAuthorizationRequest, int>>();
 
             // Act
-            Func<Task<int>> act = () => sut.Handle(new AuthorizationRequest(), new CancellationToken(), () => Task.FromResult(0));
+            Func<Task<int>> act = () => sut.Handle(new RequireAuthorizationRequest(), new CancellationToken(), () => Task.FromResult(0));
 
             // Assert
             act.Should().Throw<FailedAuthorizationException>().WithMessage("User is not authorized");

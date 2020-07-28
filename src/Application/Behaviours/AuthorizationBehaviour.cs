@@ -1,16 +1,16 @@
 ﻿using Application.Exceptions;
-using Application.Infrastructure.Requests;
 using Application.Interfaces.DataAccess;
 using Application.Interfaces.Services;
 using Domian.Entities.Accounts;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Models.Requests;
 
 namespace Application.Behaviours
 {
     internal class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : IAuthorization
+        where TRequest : IRequireAuthorization
     {
         private readonly IDbContext _db;
         private readonly ICurrentUser _currentUser;

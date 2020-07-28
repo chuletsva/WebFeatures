@@ -1,5 +1,4 @@
 ﻿using Application.Features.Files.DownloadFile;
-using Application.Infrastructure.Results;
 using Application.Interfaces.Files;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 using Application.Features.Files.UploadFile;
+using Application.Models.Results;
 using WebApi.Controllers.Base;
 
 namespace WebApi.Controllers

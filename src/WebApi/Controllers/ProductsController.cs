@@ -5,7 +5,6 @@ using Application.Features.Products.GetProductComments;
 using Application.Features.Products.GetProductReviews;
 using Application.Features.Products.GetProducts;
 using Application.Features.Products.UpdateProduct;
-using Application.Infrastructure.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +12,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Models.Results;
 using WebApi.Attributes;
 using WebApi.Controllers.Base;
 

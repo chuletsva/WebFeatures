@@ -1,12 +1,12 @@
-﻿using Application.Infrastructure.Requests;
-using System;
+﻿using System;
+using Application.Models.Requests;
 
 namespace Application.Features.ProductComments.CreateProductComment
 {
     /// <summary>
     /// Создать комментарий к товару
     /// </summary>
-    public class CreateProductCommentCommand : CommandBase<Guid>, IAuthorization
+    public class CreateProductCommentCommand : CommandBase<Guid>, IRequireAuthorization
     {
         /// <summary>
         /// Идентификатор товара

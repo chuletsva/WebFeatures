@@ -1,11 +1,11 @@
 ﻿using Application.Features.ProductReviews.CreateProductReview;
-using Application.Infrastructure.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Application.Models.Results;
 using WebApi.Controllers.Base;
 
 namespace WebApi.Controllers

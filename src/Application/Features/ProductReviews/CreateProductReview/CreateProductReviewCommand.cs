@@ -1,13 +1,13 @@
-﻿using Application.Infrastructure.Requests;
-using Domian.Enums;
+﻿using Domian.Enums;
 using System;
+using Application.Models.Requests;
 
 namespace Application.Features.ProductReviews.CreateProductReview
 {
     /// <summary>
     /// Создать обзор на товар
     /// </summary>
-    public class CreateProductReviewCommand : CommandBase<Guid>, IAuthorization
+    public class CreateProductReviewCommand : CommandBase<Guid>, IRequireAuthorization
     {
         /// <summary>
         /// Идентификатор товара

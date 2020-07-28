@@ -1,7 +1,7 @@
-﻿using FluentValidation.Results;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using FluentValidation.Results;
 
-namespace Application.Infrastructure.Results
+namespace Application.Models.Results
 {
     public class ValidationError
     {

@@ -1,6 +1,5 @@
 ﻿using Application.Features.Accounts.Login;
 using Application.Features.Accounts.Register;
-using Application.Infrastructure.Results;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +14,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Models.Results;
 using WebApi.Controllers.Base;
 using WebApi.Settings;
 

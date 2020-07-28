@@ -1,6 +1,6 @@
-﻿using Application.Infrastructure.Requests;
-using System;
+﻿using System;
 using System.Linq;
+using Application.Models.Requests;
 
 namespace Application.Features.Products.GetProductComments
 {

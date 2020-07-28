@@ -1,6 +1,6 @@
 ﻿using Domian.Common;
 
-namespace Infrastructure.Tests.Unit.DataAccess
+namespace Infrastructure.Tests.Common.Stubs
 {
     public class CustomAuditableEntity : AuditableEntity
 	{

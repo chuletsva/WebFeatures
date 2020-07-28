@@ -18,7 +18,7 @@ namespace Application.Tests.Unit.Behaviours
     public class SaveChangesBehaviourTests : BehaviourTestBase
     {      
         [Fact]
-        public async Task ShouldSaveChangesAfterNextDelegateCall()
+        public async Task ShouldCallSaveChangesAfterNextDelegate()
         {
             // Arrange
             var messages = new List<string>();
@@ -46,7 +46,7 @@ namespace Application.Tests.Unit.Behaviours
         }
 
         [Fact]
-        public async Task ShouldHandleError_WhenSaveChangesThrows()
+        public async Task ShouldLogError_WhenSaveChangesThrows()
         {
             // Arrange
             var context = Fixture.Freeze<Mock<IDbContext>>();

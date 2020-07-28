@@ -1,13 +1,13 @@
-﻿using Application.Infrastructure.Requests;
-using MediatR;
+﻿using MediatR;
 using System;
+using Application.Models.Requests;
 
 namespace Application.Features.Products.UpdateProduct
 {
     /// <summary>
     /// Редактировать товар
     /// </summary>
-    public class UpdateProductCommand : CommandBase<Unit>, IAuthorization
+    public class UpdateProductCommand : CommandBase<Unit>, IRequireAuthorization
     {
         /// <summary>
         /// Идентификатор

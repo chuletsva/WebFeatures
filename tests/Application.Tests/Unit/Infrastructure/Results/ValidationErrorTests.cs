@@ -1,8 +1,8 @@
-﻿using Application.Infrastructure.Results;
-using AutoFixture;
+﻿using AutoFixture;
 using FluentAssertions;
 using FluentValidation.Results;
 using System.Linq;
+using Application.Models.Results;
 using Xunit;
 
 namespace Application.Tests.Unit.Infrastructure.Results

@@ -1,5 +1,5 @@
-﻿using Application.Infrastructure.Requests;
-using System.Linq;
+﻿using System.Linq;
+using Application.Models.Requests;
 
 namespace Application.Features.Products.GetProducts
 {

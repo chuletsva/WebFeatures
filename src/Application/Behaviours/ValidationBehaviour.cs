@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Infrastructure.Requests;
+using Application.Models.Requests;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
@@ -11,7 +11,7 @@ using ValidationException = Application.Exceptions.ValidationException;
 namespace Application.Behaviours
 {
 	internal class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-		where TRequest : ICommand<TResponse>
+		where TRequest : IRequireValidation
 	{
 		private readonly IEnumerable<IValidator<TRequest>> _validators;
 

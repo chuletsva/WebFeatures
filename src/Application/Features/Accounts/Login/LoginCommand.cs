@@ -1,4 +1,4 @@
-﻿using Application.Infrastructure.Requests;
+﻿using Application.Models.Requests;
 
 namespace Application.Features.Accounts.Login
 {

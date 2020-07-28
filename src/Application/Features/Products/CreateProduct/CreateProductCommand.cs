@@ -1,9 +1,9 @@
-﻿using Application.Infrastructure.Requests;
-using System;
+﻿using System;
+using Application.Models.Requests;
 
 namespace Application.Features.Products.CreateProduct
 {
-    public class CreateProductCommand : CommandBase<Guid>, IAuthorization
+    public class CreateProductCommand : CommandBase<Guid>, IRequireAuthorization
     {
         /// <summary>
         /// Наименование

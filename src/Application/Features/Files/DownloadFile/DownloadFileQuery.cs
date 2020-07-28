@@ -1,5 +1,5 @@
-﻿using Application.Infrastructure.Requests;
-using System;
+﻿using System;
+using Application.Models.Requests;
 
 namespace Application.Features.Files.DownloadFile
 {

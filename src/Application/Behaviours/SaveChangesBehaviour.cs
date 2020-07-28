@@ -1,10 +1,10 @@
-﻿using Application.Infrastructure.Requests;
-using Application.Interfaces.DataAccess;
+﻿using Application.Interfaces.DataAccess;
 using Application.Interfaces.Logging;
 using MediatR;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Models.Requests;
 
 namespace Application.Behaviours
 {
