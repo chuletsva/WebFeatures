@@ -52,19 +52,13 @@ namespace Application
 
         private static void AddValidators(IServiceCollection services)
         {
-            var validators = typeof(DI).Assembly.GetTypes()
-                .Where(x => x.GetInterfaces().Any(y => y.IsGenericType && y.GetGenericTypeDefinition() == typeof(IValidator<>)))
-                .Select(x => new
-                {
-                    Service = x.GetInterfaces().First(y => y.IsGenericType && y.GetGenericTypeDefinition() == typeof(IValidator<>)),
-                    Implementation = x
-                })
-                .ToArray();
-
-            foreach (var validator in validators)
+            services.Scan(scan =>
             {
-                services.AddScoped(validator.Service, validator.Implementation);
-            }
+                scan.FromAssembliesOf(typeof(DI))
+                   .AddClasses(x => x.AssignableTo(typeof(IValidator<>)))
+                   .AsImplementedInterfaces()
+                   .WithScopedLifetime();
+            });
         }
     }
 }
