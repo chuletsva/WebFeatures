@@ -16,5 +16,10 @@ namespace Application.Features.Accounts.Login
         /// Роли пользователя
         /// </summary>
         public string[] Roles { get; set; }
+
+        public static implicit operator (Guid Id, string[] Roles)(UserLoginDto dto)
+        {
+            return (dto.Id, dto.Roles);
+        }
     }
 }
