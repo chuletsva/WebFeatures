@@ -25,13 +25,11 @@ namespace WebApi.Controllers
     /// </summary>
     public class AccountsController : BaseController
     {
-        private readonly IDateTime _dateTime;
-        private readonly JwtSettings _jwtSettings;
+        private readonly ITokenProvider _tokenProvider;
 
-        public AccountsController(IDateTime dateTime, IOptions<JwtSettings> jwtSettings)
+        public AccountsController(ITokenProvider tokenProvider)
         {
-            _dateTime = dateTime;
-            _jwtSettings = jwtSettings.Value;
+            _tokenProvider = tokenProvider;
         }
 
         /// <summary>
@@ -46,9 +44,11 @@ namespace WebApi.Controllers
         {
             UserCreateDto user = await Mediator.Send(request);
 
-            string token = CreateToken((user.Id, user.Roles));
+            ClaimsIdentity identity = GetUserIdentity(user);
 
-            return Ok(token);
+            string token = _tokenProvider.CreateToken(identity);
+
+            return Ok(new { user.Id, token });
         }
 
         /// <summary>
@@ -59,16 +59,18 @@ namespace WebApi.Controllers
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Login([FromBody][Required] LoginCommand request)
+        public async Task<IActionResult> Login([FromBody, Required] LoginCommand request)
         {
             UserLoginDto user = await Mediator.Send(request);
 
-            string token = CreateToken((user.Id, user.Roles));
+            ClaimsIdentity identity = GetUserIdentity(user);
 
-            return Ok(token);
+            string token = _tokenProvider.CreateToken(identity);
+
+            return Ok(new { user.Id, token });
         }
 
-        private string CreateToken((Guid Id, string[] Roles) user)
+        private ClaimsIdentity GetUserIdentity((Guid Id, string[] Roles) user)
         {
             var claims = new List<Claim>()
             {
@@ -77,15 +79,38 @@ namespace WebApi.Controllers
 
             claims.AddRange(user.Roles.Select(x => new Claim(ClaimTypes.Role, x)));
 
+            return new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
+        }
+    }
+
+    public interface ITokenProvider
+    {
+        string CreateToken(ClaimsIdentity indentity);
+    }
+
+    public class TokenProvider
+    {
+        private readonly JwtSettings _settings;
+        private readonly IDateTime _dateTime;
+
+        public TokenProvider(IOptions<JwtSettings> settings, IDateTime dateTime)
+        {
+            _settings = settings.Value;
+            _dateTime = dateTime;
+        }
+
+        public string CreateToken(ClaimsIdentity indentity)
+        {
+            byte[] key = Encoding.UTF8.GetBytes(_settings.Key);
+
             var descriptor = new SecurityTokenDescriptor()
             {
-                Subject = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme),
-                Issuer = _jwtSettings.Issuer,
-                Audience = _jwtSettings.Audience,
-                Expires = _dateTime.Now.AddMinutes(_jwtSettings.Lifetime),
+                Subject = indentity,
+                Issuer = _settings.Issuer,
+                Audience = _settings.Audience,
+                Expires = _dateTime.Now.AddMinutes(_settings.Lifetime),
                 SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(_jwtSettings.Key)),
+                    new SymmetricSecurityKey(key), 
                     SecurityAlgorithms.HmacSha256Signature)
             };
 
