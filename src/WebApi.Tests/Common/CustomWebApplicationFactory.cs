@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Logging;
+﻿using Application.Interfaces.DataAccess;
+using Application.Interfaces.Logging;
 using Application.Interfaces.Security;
 using Domian.Entities.Accounts;
 using Infrastructure.DataAccess;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -63,14 +65,12 @@ namespace WebApi.Tests.Common
 
     public static class EntityData
     {
-        public static readonly Guid DefaultUserId = new Guid("7a23912f-e713-4a8f-81f6-17306964dc9a");
-
         public static void Seed(DbContext context, IPasswordHasher hasher)
         {
             context.Add(new User()
             {
-                Id = DefaultUserId,
-                Name = "user@mail.com",
+                Id = new Guid("7a23912f-e713-4a8f-81f6-17306964dc9a"),
+                Name = "User",
                 Email = "user@mail.com",
                 PasswordHash = hasher.ComputeHash("12345")
             });
@@ -82,18 +82,55 @@ namespace WebApi.Tests.Common
     public class CustomAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         public const string SchemaName = "Test";
+        public const string AuthorizationHeaderName = "Authorization";
+
+        private readonly IDbContext _db;
 
         public CustomAuthHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options, 
             ILoggerFactory logger, 
             UrlEncoder encoder, 
-            ISystemClock clock) : base(options, logger, encoder, clock)
+            ISystemClock clock, 
+            IDbContext db) : base(options, logger, encoder, clock)
         {
+            _db = db;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            var claims = new[] { new Claim(ClaimTypes.NameIdentifier, EntityData.DefaultUserId.ToString()) };
+            if (!Request.Headers.TryGetValue(AuthorizationHeaderName, out var headerString))
+            {
+                return AuthenticateResult.NoResult();
+            }
+
+            if (!AuthenticationHeaderValue.TryParse(headerString, out AuthenticationHeaderValue header))
+            {
+                return AuthenticateResult.NoResult();
+            }
+
+            if (!SchemaName.Equals(header.Scheme, StringComparison.OrdinalIgnoreCase))
+            {
+                return AuthenticateResult.NoResult();
+            }
+
+            if (!Guid.TryParse(header.Parameter, out Guid userId))
+            {
+                return AuthenticateResult.Fail("Wrong id format");
+            }
+
+            User user = await _db.Users.FindAsync(userId);
+
+            if (user == null)
+            {
+                return AuthenticateResult.Fail("User doesn't exist");
+            }
+
+            var claims = new[] 
+            { 
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) 
+            };
             var identity = new ClaimsIdentity(claims, SchemaName);
             var principal = new ClaimsPrincipal(identity);
             var ticket = new AuthenticationTicket(principal, SchemaName);
