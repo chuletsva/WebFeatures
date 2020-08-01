@@ -1,12 +1,12 @@
-﻿using System.Net.Http;
+﻿using Newtonsoft.Json;
+using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace WebApi.Tests.Common
 {
-    public static class HttpClientUtilities
+    public static class HttpUtilities
     {
         public static Task<HttpResponseMessage> PostAsync(this HttpClient client, string requestUri, object body)
         {
@@ -25,7 +25,7 @@ namespace WebApi.Tests.Common
             return JsonConvert.DeserializeObject<TResponse>(content);
         }
 
-        public static async Task<TResponse> ReadContentAsAnonymous<TResponse>(this HttpResponseMessage response, TResponse anonymous)
+        public static async Task<TResponse> ReadContent<TResponse>(this HttpResponseMessage response, TResponse anonymous)
         {
             string content = await response.Content.ReadAsStringAsync();
 

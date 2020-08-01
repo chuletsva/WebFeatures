@@ -88,7 +88,7 @@ namespace WebApi
 
         public void Configure(IApplicationBuilder app)
         {
-            app.StartRecurringJobs();
+            app.RunRecurringJobs();
 
             app.UseExceptionHandling();
 

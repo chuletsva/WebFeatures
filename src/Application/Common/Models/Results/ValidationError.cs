@@ -5,8 +5,10 @@ namespace Application.Common.Models.Results
 {
     public class ValidationError
     {
-        public string Message { get; }
-        public Dictionary<string, List<string>> Errors { get; } = new Dictionary<string, List<string>>();
+        public string Message { get; set; }
+        public Dictionary<string, List<string>> Errors { get; set; } = new Dictionary<string, List<string>>();
+
+        private ValidationError() { } // for serialization
 
         public ValidationError(string message)
         {

@@ -4,18 +4,18 @@ using Application.Common.Interfaces.BackgroundJobs;
 using Application.Common.Models.BackgroundJobs;
 using MediatR;
 
-namespace Application.Features.System.StartRecurringJobs
+namespace Application.Features.System.RunRecurringJobs
 {
-    internal class StartRecurringJobsCommandHandler : IRequestHandler<StartRecurringJobsCommand, Unit>
+    internal class RunRecurringJobsCommandHandler : IRequestHandler<RunRecurringJobsCommand, Unit>
     {
         private readonly IBackgroundJobManager _jobManager;
 
-        public StartRecurringJobsCommandHandler(IBackgroundJobManager jobManager)
+        public RunRecurringJobsCommandHandler(IBackgroundJobManager jobManager)
         {
             _jobManager = jobManager;
         }
 
-        public Task<Unit> Handle(StartRecurringJobsCommand request, CancellationToken cancellationToken)
+        public Task<Unit> Handle(RunRecurringJobsCommand request, CancellationToken cancellationToken)
         {
             _jobManager.RunRecurrently(new SampleBackgroundJobArgument(), CronExpressions.Daily);
 

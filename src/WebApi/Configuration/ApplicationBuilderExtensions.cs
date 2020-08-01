@@ -1,14 +1,16 @@
-﻿using Application.Features.System.StartRecurringJobs;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using System;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Logging;
 using WebApi.Exceptions;
+using System.Text.Json;
+using Application.Features.System.RunRecurringJobs;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace WebApi.Configuration
 {
@@ -27,10 +29,10 @@ namespace WebApi.Configuration
                     switch (errorFeature.Error)
                     {
                         case ValidationException validation:
-                            var settings = context.RequestServices.GetService<JsonSerializerSettings>();
+                            var options = context.RequestServices.GetService<IOptions<JsonOptions>>();
 
                             response.code = StatusCodes.Status400BadRequest;
-                            response.body = JsonConvert.SerializeObject(validation.Error, settings);
+                            response.body = JsonSerializer.Serialize(validation.Error, options.Value.JsonSerializerOptions);
                             break;
 
                         case FailedAuthorizationException authorization:
@@ -59,11 +61,11 @@ namespace WebApi.Configuration
             });
         }
 
-        public static void StartRecurringJobs(this IApplicationBuilder app)
+        public static void RunRecurringJobs(this IApplicationBuilder app)
         {
             var mediator = app.ApplicationServices.GetService<IMediator>();
 
-            mediator.Send(new StartRecurringJobsCommand()).Wait();
+            mediator.Send(new RunRecurringJobsCommand()).Wait();
         }
     }
 }
