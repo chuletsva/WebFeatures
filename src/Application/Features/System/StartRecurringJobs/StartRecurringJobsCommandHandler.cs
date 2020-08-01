@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Application.Interfaces.BackgroundJobs;
-using Application.Models.BackgroundJobs;
+using Application.Common.Interfaces.BackgroundJobs;
+using Application.Common.Models.BackgroundJobs;
 using MediatR;
 
 namespace Application.Features.System.StartRecurringJobs

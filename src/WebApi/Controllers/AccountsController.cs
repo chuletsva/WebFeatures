@@ -3,13 +3,13 @@ using Application.Features.Accounts.Register;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Application.Models.Results;
+using Application.Common.Models.Dto;
+using Application.Common.Models.Results;
 using WebApi.Authentication;
 using WebApi.Controllers.Base;
 
@@ -37,13 +37,9 @@ namespace WebApi.Controllers
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([Required] RegisterCommand request)
         {
-            UserCreateDto user = await Mediator.Send(request);
+            UserInfoDto user = await Mediator.Send(request);
 
-            ClaimsIdentity identity = GetUserIdentity(user);
-
-            string token = _tokenProvider.CreateToken(identity);
-
-            return Ok(new { id = user.Id, access_token = token });
+            return Ok(LoginUser(user));
         }
 
         /// <summary>
@@ -54,18 +50,14 @@ namespace WebApi.Controllers
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Login([FromBody, Required] LoginCommand request)
+        public async Task<IActionResult> Login([Required] LoginCommand request)
         {
-            UserLoginDto user = await Mediator.Send(request);
+            UserInfoDto user = await Mediator.Send(request);
 
-            ClaimsIdentity identity = GetUserIdentity(user);
-
-            string token = _tokenProvider.CreateToken(identity);
-
-            return Ok(new { id = user.Id, access_token = token });
+            return Ok(LoginUser(user));
         }
 
-        private ClaimsIdentity GetUserIdentity((Guid Id, string[] Roles) user)
+        private object LoginUser(UserInfoDto user)
         {
             var claims = new List<Claim>()
             {
@@ -74,7 +66,11 @@ namespace WebApi.Controllers
 
             claims.AddRange(user.Roles.Select(x => new Claim(ClaimTypes.Role, x)));
 
-            return new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
+            var identity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
+
+            string token = _tokenProvider.CreateToken(identity);
+
+            return new { id = user.Id, access_token = token };
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Application.Behaviours;
-using Application.Tests.Common.Stubs.Requests;
+﻿using Application.Tests.Common.Stubs.Requests;
 using AutoFixture;
 using FluentAssertions;
 using FluentValidation;
@@ -10,9 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.Behaviours;
 using Application.Tests.Common.Base;
 using Xunit;
-using ValidationException = Application.Exceptions.ValidationException;
+using ValidationException = Application.Common.Exceptions.ValidationException;
 
 namespace Application.Tests.Unit.Behaviours
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Application.Exceptions;
+using Application.Common.Exceptions;
+using Application.Common.Models.Dto;
 using Application.Features.Accounts.Login;
 using Application.Features.Accounts.Register;
 using Application.Tests.Common.Base;
@@ -31,7 +32,7 @@ namespace Application.Tests.Integration.Features.Accounts
                 Password = register.Password
             };
 
-            UserLoginDto userDto = await SendAsync(login);
+            UserInfoDto userDto = await SendAsync(login);
 
             User user = await FindAsync<User>(x => x.Email == register.Email);
 
@@ -51,7 +52,7 @@ namespace Application.Tests.Integration.Features.Accounts
             };
 
             // Act
-            Func<Task<UserLoginDto>> act = () => SendAsync(login);
+            Func<Task<UserInfoDto>> act = () => SendAsync(login);
 
             // Assert
             act.Should().Throw<ValidationException>().And.Error.Message.Should().Be("Wrong login or password");
@@ -76,7 +77,7 @@ namespace Application.Tests.Integration.Features.Accounts
                 Password = "1234"
             };
 
-            Func<Task<UserLoginDto>> act = () => SendAsync(login);
+            Func<Task<UserInfoDto>> act = () => SendAsync(login);
 
             // Assert
             act.Should().Throw<ValidationException>().And.Error.Message.Should().Be("Wrong login or password");

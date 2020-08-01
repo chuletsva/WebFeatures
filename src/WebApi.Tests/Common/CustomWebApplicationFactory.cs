@@ -1,5 +1,4 @@
-﻿using Application.Interfaces.Security;
-using Domian.Entities.Accounts;
+﻿using Domian.Entities.Accounts;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
@@ -13,6 +12,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Application.Common.Interfaces.Security;
 using WebApi.Authentication;
 
 namespace WebApi.Tests.Common

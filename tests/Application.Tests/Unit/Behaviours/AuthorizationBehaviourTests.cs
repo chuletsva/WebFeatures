@@ -1,7 +1,4 @@
-﻿using Application.Behaviours;
-using Application.Exceptions;
-using Application.Interfaces.DataAccess;
-using Application.Tests.Common.Stubs.Requests;
+﻿using Application.Tests.Common.Stubs.Requests;
 using AutoFixture;
 using Domian.Entities.Accounts;
 using FluentAssertions;
@@ -10,7 +7,10 @@ using Moq;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Interfaces.CommonServices;
+using Application.Common.Behaviours;
+using Application.Common.Exceptions;
+using Application.Common.Interfaces.CommonServices;
+using Application.Common.Interfaces.DataAccess;
 using Application.Tests.Common.Base;
 using Xunit;
 

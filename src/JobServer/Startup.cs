@@ -3,7 +3,6 @@ using System.Security.Claims;
 using Application;
 using Hangfire;
 using Infrastructure;
-using JobServer.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;

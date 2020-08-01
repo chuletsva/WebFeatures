@@ -1,5 +1,4 @@
-﻿using Application.Interfaces.DataAccess;
-using Domian.Common;
+﻿using Domian.Common;
 using Domian.Entities;
 using Domian.Entities.Accounts;
 using Domian.Entities.Products;
@@ -9,7 +8,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Interfaces.CommonServices;
+using Application.Common.Interfaces.CommonServices;
+using Application.Common.Interfaces.DataAccess;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Infrastructure.DataAccess

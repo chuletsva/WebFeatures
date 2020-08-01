@@ -1,12 +1,12 @@
-﻿using Application.Behaviours;
-using Application.Interfaces.BackgroundJobs;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Reflection;
+using Application.Common.Behaviours;
+using Application.Common.Interfaces.BackgroundJobs;
 
 namespace Application
 {

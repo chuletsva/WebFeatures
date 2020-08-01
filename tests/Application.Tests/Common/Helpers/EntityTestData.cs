@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Application.Constants;
+using Application.Common.Constants;
 using AutoFixture;
 using Domian.Entities;
 using Domian.Entities.Accounts;

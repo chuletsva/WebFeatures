@@ -1,7 +1,4 @@
-﻿using Application.Behaviours;
-using Application.Interfaces.DataAccess;
-using Application.Interfaces.Logging;
-using Application.Tests.Common.Stubs.Requests;
+﻿using Application.Tests.Common.Stubs.Requests;
 using AutoFixture;
 using FluentAssertions;
 using MediatR;
@@ -10,6 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.Behaviours;
+using Application.Common.Interfaces.DataAccess;
+using Application.Common.Interfaces.Logging;
 using Application.Tests.Common.Base;
 using Xunit;
 

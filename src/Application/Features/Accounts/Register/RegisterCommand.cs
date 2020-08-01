@@ -1,11 +1,12 @@
-﻿using Application.Models.Requests;
+﻿using Application.Common.Models.Dto;
+using Application.Common.Models.Requests;
 
 namespace Application.Features.Accounts.Register
 {
     /// <summary>
     /// Зарегистрировать новго пользователя
     /// </summary>
-    public class RegisterCommand : CommandBase<UserCreateDto>
+    public class RegisterCommand : CommandBase<UserInfoDto>
     {
         /// <summary>
         /// Логин

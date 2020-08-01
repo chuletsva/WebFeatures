@@ -1,6 +1,4 @@
-﻿using Application.Exceptions;
-using Application.Features.System.StartRecurringJobs;
-using Application.Interfaces.Logging;
+﻿using Application.Features.System.StartRecurringJobs;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -8,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
+using Application.Common.Exceptions;
+using Application.Common.Interfaces.Logging;
 using WebApi.Exceptions;
 
 namespace WebApi.Configuration

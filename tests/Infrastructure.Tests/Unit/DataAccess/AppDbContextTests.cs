@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Interfaces.CommonServices;
+using Application.Common.Interfaces.CommonServices;
 using Domian.Entities.Accounts;
 using FluentAssertions;
 using Infrastructure.DataAccess;

@@ -1,7 +1,7 @@
-﻿using Application.Interfaces.Security;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System;
 using System.Text;
+using Application.Common.Interfaces.Security;
 
 namespace Infrastructure.Security
 {

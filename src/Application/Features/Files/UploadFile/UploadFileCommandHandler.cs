@@ -1,9 +1,9 @@
-﻿using Application.Interfaces.DataAccess;
-using MediatR;
+﻿using MediatR;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.Interfaces.DataAccess;
 using File = Domian.Entities.File;
 
 namespace Application.Features.Files.UploadFile

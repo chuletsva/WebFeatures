@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Application.Interfaces.BackgroundJobs;
+using Application.Common.Interfaces.BackgroundJobs;
 using Hangfire;
 using Hangfire.States;
 using Microsoft.Extensions.DependencyInjection;

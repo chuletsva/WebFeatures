@@ -1,11 +1,11 @@
-﻿using Application.Interfaces.Files;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Common.Interfaces.Files;
 
 namespace WebApi.ModelBinders
 {

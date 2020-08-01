@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Claims;
-using Application.Interfaces.CommonServices;
+using Application.Common.Interfaces.CommonServices;
 using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.CommonServices

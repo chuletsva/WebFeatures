@@ -1,12 +1,12 @@
-﻿using Application.Behaviours;
-using Application.Interfaces.Logging;
-using AutoFixture;
+﻿using AutoFixture;
 using FluentAssertions;
 using MediatR;
 using Moq;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.Behaviours;
+using Application.Common.Interfaces.Logging;
 using Application.Tests.Common.Base;
 using Xunit;
 

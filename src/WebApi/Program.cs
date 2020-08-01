@@ -1,9 +1,7 @@
-using Application.Interfaces.Security;
 using Autofac.Extensions.DependencyInjection;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -12,6 +10,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Common.Interfaces.Security;
 using ILogger = Serilog.ILogger;
 
 namespace WebApi

@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.DataAccess;
+﻿using Application.Common.Interfaces.DataAccess;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 

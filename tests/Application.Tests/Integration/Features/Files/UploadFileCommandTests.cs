@@ -1,8 +1,8 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Application.Common.Interfaces.Files;
 using Application.Features.Files.UploadFile;
-using Application.Interfaces.Files;
 using Application.Tests.Common.Base;
 using AutoFixture;
 using AutoFixture.AutoMoq;

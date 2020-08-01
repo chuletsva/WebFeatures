@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Application.Interfaces.CommonServices;
+using Application.Common.Interfaces.CommonServices;
 using Application.Tests.Common.Helpers;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;

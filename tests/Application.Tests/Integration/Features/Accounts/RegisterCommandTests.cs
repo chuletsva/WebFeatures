@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Application.Exceptions;
+using Application.Common.Exceptions;
+using Application.Common.Models.Dto;
 using Application.Features.Accounts.Register;
 using Application.Tests.Common.Base;
 using Domian.Entities.Accounts;
@@ -23,7 +24,7 @@ namespace Application.Tests.Integration.Features.Accounts
             };
 
             // Act
-            UserCreateDto userDto = await SendAsync(request);
+            UserInfoDto userDto = await SendAsync(request);
 
             User user = await FindAsync<User>(x => x.Email == request.Email);
 
@@ -57,7 +58,7 @@ namespace Application.Tests.Integration.Features.Accounts
             await LoginAsync(request.Email);
 
             // Act
-            Func<Task<UserCreateDto>> act = () => SendAsync(request);
+            Func<Task<UserInfoDto>> act = () => SendAsync(request);
 
             // Assert
             act.Should().Throw<ValidationException>().And.Error.Message.Should().Be("Email already exists");

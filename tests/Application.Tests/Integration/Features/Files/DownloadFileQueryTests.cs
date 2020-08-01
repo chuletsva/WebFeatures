@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Application.Exceptions;
+using Application.Common.Exceptions;
 using Application.Features.Files.DownloadFile;
 using Application.Tests.Common.Base;
 using AutoFixture.Xunit2;
