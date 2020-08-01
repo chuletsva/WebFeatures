@@ -34,7 +34,7 @@ namespace Application.Features.Accounts.Register
             {
                 throw new ValidationException("Email already exists");
             }
-            
+
             string hash = _passwordHasher.ComputeHash(request.Password);
 
             var user = new User()
@@ -46,10 +46,10 @@ namespace Application.Features.Accounts.Register
 
             await _db.Users.AddAsync(user, cancellationToken);
 
-            Role role = await _db.Roles.SingleOrDefaultAsync(x => x.Name == AuthorizationConstants.Roles.Users, cancellationToken) ?? 
+            Role role = await _db.Roles.SingleOrDefaultAsync(x => x.Name == AuthorizationConstants.Roles.Users, cancellationToken) ??
                         throw new InvalidOperationException("Cannot find role for new user");
 
-            user.Roles.Add(new UserRole() { User = user, Role = role });
+            user.UserRoles.Add(new UserRole() { User = user, Role = role });
 
             _logger.LogInformation("{@User} registered", user);
 

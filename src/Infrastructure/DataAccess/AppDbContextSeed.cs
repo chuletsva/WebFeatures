@@ -12,11 +12,18 @@ namespace Infrastructure.DataAccess
 {
     public static class AppDbContextSeed
     {
-        public static async Task Seed(AppDbContext db, IPasswordHasher hasher)
+        public static async Task Seed(AppDbContext context, IPasswordHasher hasher)
         {
-            if (await db.Users.AnyAsync()) return;
+            if (await context.Users.AnyAsync()) return;
 
-            await db.Users.AddRangeAsync(
+            await SeedData(context, hasher);
+
+            await CreateHangfireUser(context);
+        }
+
+        private static async Task SeedData(AppDbContext context, IPasswordHasher hasher)
+        {
+            await context.Users.AddRangeAsync(
                 new User()
                 {
                     Id = new Guid("f9fb9878-6236-44d0-9941-21417ec8d5f6"),
@@ -25,14 +32,14 @@ namespace Infrastructure.DataAccess
                     PasswordHash = hasher.ComputeHash("12345")
                 });
 
-            await db.Brands.AddRangeAsync(
+            await context.Brands.AddRangeAsync(
                 new Brand()
                 {
                     Id = new Guid("873d861e-14e1-4757-91f4-cae6beba4010"),
                     Name = "name"
                 });
 
-            await db.Products.AddRangeAsync(
+            await context.Products.AddRangeAsync(
                 new Product()
                 {
                     Name = "product",
@@ -48,7 +55,7 @@ namespace Infrastructure.DataAccess
                     }
                 });
 
-            await db.Manufacturers.AddRangeAsync(
+            await context.Manufacturers.AddRangeAsync(
                 new Manufacturer()
                 {
                     Id = new Guid("0ea02742-3566-416f-94e5-bc9d878769f3"),
@@ -61,7 +68,7 @@ namespace Infrastructure.DataAccess
                     }
                 });
 
-            await db.Cities.AddRangeAsync(
+            await context.Cities.AddRangeAsync(
                 new City()
                 {
                     Id = new Guid("685e8905-bad5-4767-ac2c-2bae7ead13be"),
@@ -69,7 +76,7 @@ namespace Infrastructure.DataAccess
                     Name = "city"
                 });
 
-            await db.Countries.AddRangeAsync(
+            await context.Countries.AddRangeAsync(
                 new Country()
                 {
                     Id = new Guid("46bd74a1-e141-45e2-aaec-ba3616d95819"),
@@ -77,21 +84,45 @@ namespace Infrastructure.DataAccess
                     Name = "country"
                 });
 
-            await db.Currencies.AddRangeAsync(
+            await context.Currencies.AddRangeAsync(
                 new Currency()
                 {
                     Id = new Guid("d39e9efe-07af-40d7-bb5e-9904f4bc0fc2"),
                     Code = "RUB"
                 });
 
-            await db.Roles.AddRangeAsync(
+            await context.Roles.AddRangeAsync(
                 new Role()
                 {
                     Name = AuthorizationConstants.Roles.Users,
                     Description = "Пользователи"
                 });
 
-            await db.SaveChangesAsync(acceptAllChangesOnSuccess: true);
+            await context.SaveChangesAsync(acceptAllChangesOnSuccess: true);
+        }
+
+        private static async Task CreateHangfireUser(AppDbContext context)
+        {
+            string db = context.Database.GetDbConnection().Database;
+
+            string sql =
+                $@"DO
+                $$
+                BEGIN
+                    IF NOT EXISTS ( 
+                        SELECT FROM pg_catalog.pg_roles
+                        WHERE rolname = 'hangfire') 
+                    THEN
+                        CREATE ROLE hangfire WITH 
+                        LOGIN 
+                        PASSWORD 'hangfire';
+                    END IF;
+
+                    GRANT ALL PRIVILEGES ON DATABASE {db} TO hangfire;
+                END
+                $$;";
+
+            await context.Database.ExecuteSqlRawAsync(sql);
         }
     }
 }

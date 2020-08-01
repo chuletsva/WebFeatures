@@ -1,21 +1,19 @@
-﻿using Application.Interfaces.DataAccess;
-using Application.Interfaces.Logging;
-using Application.Interfaces.Security;
+﻿using Application.Interfaces.Security;
 using Domian.Entities.Accounts;
 using Infrastructure.DataAccess;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using WebApi.Authentication;
 
 namespace WebApi.Tests.Common
 {
@@ -24,15 +22,14 @@ namespace WebApi.Tests.Common
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureServices(services => 
+            builder.ConfigureServices(services =>
             {
-                SetupInMemoryDbContext(services);
+                SetupDbContext(services);
                 SeedTestData(services);
-                SetupMockAuthorization(services);
             });
         }
 
-        private static void SetupInMemoryDbContext(IServiceCollection services)
+        private static void SetupDbContext(IServiceCollection services)
         {
             var optionsDescriptor = services.Single(x => x.ServiceType == typeof(DbContextOptions<AppDbContext>));
 
@@ -53,89 +50,51 @@ namespace WebApi.Tests.Common
 
             var hasher = scope.ServiceProvider.GetService<IPasswordHasher>();
 
-            EntityData.Seed(context, hasher);
+            EntityTestData.Seed(context, hasher);
         }
 
-        private static void SetupMockAuthorization(IServiceCollection services)
+        public HttpClient GetDefaultClient()
         {
-            services.AddAuthentication(CustomAuthHandler.SchemaName)
-                .AddScheme<AuthenticationSchemeOptions, CustomAuthHandler>(CustomAuthHandler.SchemaName, options => { });
-        }
-    }
-
-    public static class EntityData
-    {
-        public static void Seed(DbContext context, IPasswordHasher hasher)
-        {
-            context.Add(new User()
-            {
-                Id = new Guid("7a23912f-e713-4a8f-81f6-17306964dc9a"),
-                Name = "User",
-                Email = "user@mail.com",
-                PasswordHash = hasher.ComputeHash("12345")
-            });
-
-            context.SaveChanges();
-        }
-    }
-
-    public class CustomAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
-    {
-        public const string SchemaName = "Test";
-        public const string AuthorizationHeaderName = "Authorization";
-
-        private readonly IDbContext _db;
-
-        public CustomAuthHandler(
-            IOptionsMonitor<AuthenticationSchemeOptions> options, 
-            ILoggerFactory logger, 
-            UrlEncoder encoder, 
-            ISystemClock clock, 
-            IDbContext db) : base(options, logger, encoder, clock)
-        {
-            _db = db;
+            return CreateClient();
         }
 
-        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        public async Task<HttpClient> GetAuthenticatedClient()
         {
-            if (!Request.Headers.TryGetValue(AuthorizationHeaderName, out var headerString))
-            {
-                return AuthenticateResult.NoResult();
-            }
+            return await GetAuthenticatedClient("default@user");
+        }
 
-            if (!AuthenticationHeaderValue.TryParse(headerString, out AuthenticationHeaderValue header))
-            {
-                return AuthenticateResult.NoResult();
-            }
+        public async Task<HttpClient> GetAuthenticatedClient(string email)
+        {
+            HttpClient client = CreateDefaultClient();
 
-            if (!SchemaName.Equals(header.Scheme, StringComparison.OrdinalIgnoreCase))
-            {
-                return AuthenticateResult.NoResult();
-            }
+            string token = await GetAccessToken(email);
 
-            if (!Guid.TryParse(header.Parameter, out Guid userId))
-            {
-                return AuthenticateResult.Fail("Wrong id format");
-            }
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
 
-            User user = await _db.Users.FindAsync(userId);
+            return client;
+        }
 
-            if (user == null)
-            {
-                return AuthenticateResult.Fail("User doesn't exist");
-            }
+        private async Task<string> GetAccessToken(string email)
+        {
+            using IServiceScope scope = Services.CreateScope();
 
-            var claims = new[] 
-            { 
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) 
-            };
-            var identity = new ClaimsIdentity(claims, SchemaName);
-            var principal = new ClaimsPrincipal(identity);
-            var ticket = new AuthenticationTicket(principal, SchemaName);
+            var context = scope.ServiceProvider.GetService<AppDbContext>();
 
-            return AuthenticateResult.Success(ticket);
+            User user = await context.Users
+                .Include(x => x.UserRoles).ThenInclude(x => x.Role)
+                .SingleOrDefaultAsync(x => x.Email == email) ??
+                throw new Exception("User doesn't exist");
+
+            var claims = new List<Claim>() { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) };
+
+            claims.AddRange(user.UserRoles.Select(x => new Claim(ClaimTypes.Role, x.Role.Name)));
+
+            var identity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
+
+            var tokenProvider = scope.ServiceProvider.GetService<ITokenProvider>();
+
+            return tokenProvider.CreateToken(identity);
         }
     }
 }

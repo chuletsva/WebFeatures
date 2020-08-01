@@ -1,7 +1,7 @@
-﻿using Application.Interfaces.Services;
-using System;
+﻿using System;
+using Application.Interfaces.CommonServices;
 
-namespace Infrastructure.Services
+namespace Infrastructure.CommonServices
 {
     internal class DateTimeService : IDateTime
     {

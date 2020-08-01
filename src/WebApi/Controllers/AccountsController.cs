@@ -1,22 +1,17 @@
 ﻿using Application.Features.Accounts.Login;
 using Application.Features.Accounts.Register;
-using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using Application.Models.Results;
+using WebApi.Authentication;
 using WebApi.Controllers.Base;
-using WebApi.Settings;
 
 namespace WebApi.Controllers
 {
@@ -48,7 +43,7 @@ namespace WebApi.Controllers
 
             string token = _tokenProvider.CreateToken(identity);
 
-            return Ok(new { user.Id, token });
+            return Ok(new { id = user.Id, access_token = token });
         }
 
         /// <summary>
@@ -67,7 +62,7 @@ namespace WebApi.Controllers
 
             string token = _tokenProvider.CreateToken(identity);
 
-            return Ok(new { user.Id, token });
+            return Ok(new { id = user.Id, access_token = token });
         }
 
         private ClaimsIdentity GetUserIdentity((Guid Id, string[] Roles) user)
@@ -80,45 +75,6 @@ namespace WebApi.Controllers
             claims.AddRange(user.Roles.Select(x => new Claim(ClaimTypes.Role, x)));
 
             return new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
-        }
-    }
-
-    public interface ITokenProvider
-    {
-        string CreateToken(ClaimsIdentity indentity);
-    }
-
-    public class TokenProvider
-    {
-        private readonly JwtSettings _settings;
-        private readonly IDateTime _dateTime;
-
-        public TokenProvider(IOptions<JwtSettings> settings, IDateTime dateTime)
-        {
-            _settings = settings.Value;
-            _dateTime = dateTime;
-        }
-
-        public string CreateToken(ClaimsIdentity indentity)
-        {
-            byte[] key = Encoding.UTF8.GetBytes(_settings.Key);
-
-            var descriptor = new SecurityTokenDescriptor()
-            {
-                Subject = indentity,
-                Issuer = _settings.Issuer,
-                Audience = _settings.Audience,
-                Expires = _dateTime.Now.AddMinutes(_settings.Lifetime),
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key), 
-                    SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var handler = new JwtSecurityTokenHandler();
-
-            SecurityToken token = handler.CreateToken(descriptor);
-
-            return handler.WriteToken(token);
         }
     }
 }

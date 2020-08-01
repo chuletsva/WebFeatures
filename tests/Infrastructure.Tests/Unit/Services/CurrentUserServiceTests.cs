@@ -1,17 +1,17 @@
 ﻿using FluentAssertions;
-using Infrastructure.Services;
 using Infrastructure.Tests.Common.Attributes;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System;
 using System.Security.Claims;
+using Infrastructure.CommonServices;
 using Xunit;
 
 namespace Infrastructure.Tests.Unit.Services
 {
     public class CurrentUserServiceTests
     {
-        [Theory][AutoMoq]
+        [Theory, AutoMoq]
         public void ShouldSetUser_WhenUserClaimExists(
             Guid userId,
             Mock<HttpContext> context,
@@ -34,7 +34,7 @@ namespace Infrastructure.Tests.Unit.Services
             sut.IsAuthenticated.Should().BeTrue();
         }
 
-        [Theory][AutoMoq]
+        [Theory, AutoMoq]
         public void ShouldNotAuthenticate_WhenUserClaimDoesntExist(Mock<IHttpContextAccessor> contextAccessor)
         {
             // Act

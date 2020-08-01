@@ -10,6 +10,8 @@ namespace Domian.Entities.Products
         public Product()
         {
             Reviews = new HashSet<ProductReview>();
+            Pictures = new HashSet<ProductPicture>();
+            Comments = new HashSet<ProductComment>();
         }
 
         public bool IsDeleted { get; set; }
@@ -31,5 +33,7 @@ namespace Domian.Entities.Products
         public Brand Brand { get; set; }
 
         public ICollection<ProductReview> Reviews { get; private set; }
+        public ICollection<ProductPicture> Pictures { get; private set; }
+        public ICollection<ProductComment> Comments { get; private set; }
     }
 }

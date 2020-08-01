@@ -1,25 +1,28 @@
 ﻿using Application.Behaviours;
+using Application.Interfaces.BackgroundJobs;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Application
 {
     public static class DI
     {
-        public static void AddApplication(this IServiceCollection services)
+        public static void RegisterApplication(this IServiceCollection services)
         {
-            AddPipeline(services);
-            AddMapperProfiles(services);
-            AddValidators(services);
+            RegisterPipeline(services);
+            RegisterMapperProfiles(services);
+            RegisterValidators(services);
+            RegisterBackgroundJobs(services);
         }
 
-        private static void AddPipeline(IServiceCollection services)
+        private static void RegisterPipeline(IServiceCollection services)
         {
-            services.AddMediatR(typeof(DI).Assembly);
+            services.AddMediatR(Assembly.GetExecutingAssembly());
 
             // Common
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
@@ -30,11 +33,11 @@ namespace Application
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(SaveChangesBehaviour<,>));
         }
 
-        private static void AddMapperProfiles(IServiceCollection services)
+        private static void RegisterMapperProfiles(IServiceCollection services)
         {
             var configuration = new MapperConfiguration(config =>
             {
-                Type[] profileTypes = typeof(DI).Assembly
+                Type[] profileTypes = Assembly.GetExecutingAssembly()
                     .GetTypes()
                     .Where(x => x.IsSubclassOf(typeof(Profile)))
                     .ToArray();
@@ -50,14 +53,25 @@ namespace Application
             services.AddSingleton(configuration.CreateMapper());
         }
 
-        private static void AddValidators(IServiceCollection services)
+        private static void RegisterValidators(IServiceCollection services)
         {
             services.Scan(scan =>
             {
                 scan.FromAssembliesOf(typeof(DI))
-                   .AddClasses(x => x.AssignableTo(typeof(IValidator<>)))
+                   .AddClasses(x => x.AssignableTo(typeof(IValidator<>)), publicOnly: false)
                    .AsImplementedInterfaces()
                    .WithScopedLifetime();
+            });
+        }
+
+        private static void RegisterBackgroundJobs(IServiceCollection services)
+        {
+            services.Scan(scan =>
+            {
+                scan.FromAssembliesOf(typeof(DI))
+                    .AddClasses(x => x.AssignableTo(typeof(IBackgroundJob<>)), publicOnly: false)
+                    .AsImplementedInterfaces()
+                    .WithScopedLifetime();
             });
         }
     }

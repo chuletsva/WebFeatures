@@ -30,7 +30,7 @@ namespace Application.Features.Accounts.Login
 		public async Task<UserLoginDto> Handle(LoginCommand request, CancellationToken cancellationToken)
 		{
 			User user = await _db.Users
-			   .Include(x => x.Roles)
+			   .Include(x => x.UserRoles)
 			   .ThenInclude(x => x.Role)
 			   .SingleOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
 
@@ -42,7 +42,7 @@ namespace Application.Features.Accounts.Login
 			return new UserLoginDto
 			{
 				Id = user.Id,
-				Roles = user.Roles.Select(x => x.Role.Name).ToArray()
+				Roles = user.UserRoles.Select(x => x.Role.Name).ToArray()
 			};
 		}
 	}

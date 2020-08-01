@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20200718183003_Initial")]
+    [Migration("20200801115536_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -99,12 +99,17 @@ namespace Infrastructure.DataAccess.Migrations
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("RoleId1")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("UserId1")
                         .HasColumnType("uuid");
 
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("RoleId1");
 
                     b.HasIndex("UserId1");
 
@@ -345,9 +350,14 @@ namespace Infrastructure.DataAccess.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ProductId1")
+                        .HasColumnType("uuid");
+
                     b.HasKey("FileId", "ProductId");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductId1");
 
                     b.ToTable("ProductPictures");
                 });
@@ -419,7 +429,7 @@ namespace Infrastructure.DataAccess.Migrations
             modelBuilder.Entity("Domian.Entities.Accounts.RolePermission", b =>
                 {
                     b.HasOne("Domian.Entities.Accounts.Role", "Role")
-                        .WithMany()
+                        .WithMany("Permissions")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -440,6 +450,10 @@ namespace Infrastructure.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domian.Entities.Accounts.Role", null)
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId1");
+
                     b.HasOne("Domian.Entities.Accounts.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -447,7 +461,7 @@ namespace Infrastructure.DataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("Domian.Entities.Accounts.User", null)
-                        .WithMany("Roles")
+                        .WithMany("UserRoles")
                         .HasForeignKey("UserId1");
                 });
 
@@ -568,7 +582,7 @@ namespace Infrastructure.DataAccess.Migrations
                         .HasForeignKey("ParentCommentId");
 
                     b.HasOne("Domian.Entities.Products.Product", "Product")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -591,6 +605,10 @@ namespace Infrastructure.DataAccess.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Domian.Entities.Products.Product", null)
+                        .WithMany("Pictures")
+                        .HasForeignKey("ProductId1");
                 });
 
             modelBuilder.Entity("Domian.Entities.Products.ProductReview", b =>

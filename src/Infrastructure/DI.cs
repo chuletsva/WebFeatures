@@ -1,29 +1,44 @@
 ﻿using Application.Interfaces.DataAccess;
 using Application.Interfaces.Logging;
 using Application.Interfaces.Security;
-using Application.Interfaces.Services;
 using Infrastructure.DataAccess;
 using Infrastructure.Logging;
 using Infrastructure.Security;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Application.Interfaces.BackgroundJobs;
+using Application.Interfaces.CommonServices;
+using Hangfire;
+using Hangfire.PostgreSql;
+using Infrastructure.BackgroundJobs;
+using Infrastructure.CommonServices;
 
 namespace Infrastructure
 {
     public static class DI
     {
-        public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static void RegisterBackgroundJobs(this IServiceCollection services, IConfiguration configuration)
         {
-            AddCommonServices(services);
-            AddDataAccess(services, configuration);
-            AddSecurity(services);
-            AddLogging(services);
+            services.AddSingleton<IBackgroundJobManager, BackgroundJobManager>();
+
+            var connectionString = configuration.GetConnectionString("Hangfire");
+
+            services.AddHangfire(conf =>
+            {
+                conf.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                   .UseSimpleAssemblyNameTypeSerializer()
+                   .UseRecommendedSerializerSettings()
+                   .UsePostgreSqlStorage(connectionString, new PostgreSqlStorageOptions()
+                   {
+                       QueuePollInterval = TimeSpan.FromMilliseconds(1),
+                       PrepareSchemaIfNecessary = true
+                   });
+            });
         }
 
-        private static void AddCommonServices(IServiceCollection services)
+        public static void RegisterCommonServices(this IServiceCollection services)
         {
             services.AddHttpContextAccessor();
             services.AddScoped<ICurrentUser, CurrentUserService>();
@@ -31,16 +46,9 @@ namespace Infrastructure
             services.AddSingleton<IDateTime, DateTimeService>();
         }
 
-        private static void AddDataAccess(IServiceCollection services, IConfiguration configuration)
+        public static void RegisterDataAccess(this IServiceCollection services, IConfiguration configuration)
         {
-            string env = configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT");
-
-            string connectionString = env switch
-            {
-                "Development" => configuration.GetConnectionString("Default"),
-                "Testing" => configuration.GetConnectionString("Testing"),
-                _ => throw new IndexOutOfRangeException()
-            };
+            var connectionString = configuration.GetConnectionString("Application");
 
             services.AddDbContext<AppDbContext>(builder =>
             {
@@ -52,14 +60,15 @@ namespace Infrastructure
             services.AddScoped<IDbContext>(provider => provider.GetService<AppDbContext>());
         }
 
-        private static void AddSecurity(IServiceCollection services)
+        public static void RegisterLogging(this IServiceCollection services)
         {
-            services.AddSingleton<IPasswordHasher, PasswordHasher>();
+            services.AddLogging();
+            services.AddSingleton(typeof(ILogger<>), typeof(LoggerAdapter<>));
         }
 
-        private static void AddLogging(IServiceCollection services)
+        public static void RegisterSecurity(this IServiceCollection services)
         {
-            services.AddSingleton(typeof(ILogger<>), typeof(LoggerAdapter<>));
+            services.AddSingleton<IPasswordHasher, PasswordHasher>();
         }
     }
 }

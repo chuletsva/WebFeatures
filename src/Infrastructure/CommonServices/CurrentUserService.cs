@@ -1,10 +1,10 @@
-﻿using Application.Interfaces.Services;
-using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Linq;
 using System.Security.Claims;
+using Application.Interfaces.CommonServices;
+using Microsoft.AspNetCore.Http;
 
-namespace Infrastructure.Services
+namespace Infrastructure.CommonServices
 {
     public class CurrentUserService : ICurrentUser
     {

@@ -194,6 +194,7 @@ namespace Infrastructure.DataAccess.Migrations
                 {
                     UserId = table.Column<Guid>(nullable: false),
                     RoleId = table.Column<Guid>(nullable: false),
+                    RoleId1 = table.Column<Guid>(nullable: true),
                     UserId1 = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
@@ -205,6 +206,12 @@ namespace Infrastructure.DataAccess.Migrations
                         principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Roles_RoleId1",
+                        column: x => x.RoleId1,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_UserRoles_Users_UserId",
                         column: x => x.UserId,
@@ -332,7 +339,8 @@ namespace Infrastructure.DataAccess.Migrations
                 columns: table => new
                 {
                     ProductId = table.Column<Guid>(nullable: false),
-                    FileId = table.Column<Guid>(nullable: false)
+                    FileId = table.Column<Guid>(nullable: false),
+                    ProductId1 = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -349,6 +357,12 @@ namespace Infrastructure.DataAccess.Migrations
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProductPictures_Products_ProductId1",
+                        column: x => x.ProductId1,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -424,6 +438,11 @@ namespace Infrastructure.DataAccess.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductPictures_ProductId1",
+                table: "ProductPictures",
+                column: "ProductId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductReviews_CreatedById",
                 table: "ProductReviews",
                 column: "CreatedById");
@@ -497,6 +516,11 @@ namespace Infrastructure.DataAccess.Migrations
                 name: "IX_UserRoles_RoleId",
                 table: "UserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_RoleId1",
+                table: "UserRoles",
+                column: "RoleId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_UserId1",

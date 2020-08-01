@@ -1,7 +1,6 @@
 ﻿using Application.Behaviours;
 using Application.Exceptions;
 using Application.Interfaces.DataAccess;
-using Application.Interfaces.Services;
 using Application.Tests.Common.Stubs.Requests;
 using AutoFixture;
 using Domian.Entities.Accounts;
@@ -11,6 +10,7 @@ using Moq;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Interfaces.CommonServices;
 using Application.Tests.Common.Base;
 using Xunit;
 

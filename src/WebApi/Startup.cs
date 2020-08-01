@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json;
+using WebApi.Authentication;
 using WebApi.Configuration;
 using WebApi.ModelBinders;
 using WebApi.Settings;
@@ -25,13 +25,19 @@ namespace WebApi
         }
 
         private IConfiguration Configuration { get; }
-
         private IWebHostEnvironment Environment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApplication();
-            services.AddInfrastructure(Configuration);
+            services.RegisterApplication();
+
+            services.RegisterBackgroundJobs(Configuration);
+            services.RegisterCommonServices();
+            services.RegisterDataAccess(Configuration);
+            services.RegisterLogging();
+            services.RegisterSecurity();
+
+            services.AddSingleton<ITokenProvider, TokenProvider>();
 
             services.AddControllers(options =>
             {
@@ -39,7 +45,7 @@ namespace WebApi
             })
             .AddJsonOptions(options =>
             {
-                options.JsonSerializerOptions.WriteIndented = Environment.IsDevelopment();
+                options.JsonSerializerOptions.WriteIndented = true;
                 options.JsonSerializerOptions.IgnoreNullValues = true;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
@@ -82,6 +88,8 @@ namespace WebApi
 
         public void Configure(IApplicationBuilder app)
         {
+            app.StartRecurringJobs();
+
             app.UseExceptionHandling();
 
             app.UseHttpsRedirection();

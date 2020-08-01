@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces.DataAccess;
-using Application.Interfaces.Services;
 using Domian.Common;
 using Domian.Entities;
 using Domian.Entities.Accounts;
@@ -10,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Interfaces.CommonServices;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Infrastructure.DataAccess
@@ -34,11 +34,11 @@ namespace Infrastructure.DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-            
+
             modelBuilder.IgnoreEvents();
-            
+
             modelBuilder.ConfigureSoftDelete();
-            
+
             modelBuilder.ConfigureAudit();
         }
 
@@ -60,20 +60,14 @@ namespace Infrastructure.DataAccess
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        {
-                            entry.Entity.CreatedAt = _dateTime.Now;
-                            entry.Entity.CreatedById = _currentUser.UserId;
-
-                            break;
-                        }
+                        entry.Entity.CreatedAt = _dateTime.Now;
+                        entry.Entity.CreatedById = _currentUser.UserId;
+                        break;
 
                     case EntityState.Modified:
-                        {
-                            entry.Entity.UpdatedAt = _dateTime.Now;
-                            entry.Entity.UpdatedById = _currentUser.UserId;
-
-                            break;
-                        }
+                        entry.Entity.UpdatedAt = _dateTime.Now;
+                        entry.Entity.UpdatedById = _currentUser.UserId;
+                        break;
                 }
             }
         }
@@ -83,7 +77,7 @@ namespace Infrastructure.DataAccess
             foreach (EntityEntry<ISoftDelete> entry in ChangeTracker.Entries<ISoftDelete>())
             {
                 if (entry.State != EntityState.Deleted) continue;
-                
+
                 entry.State = EntityState.Modified;
 
                 entry.Entity.IsDeleted = true;
@@ -126,7 +120,7 @@ namespace Infrastructure.DataAccess
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 if (!entityType.ClrType.IsAssignableFrom(typeof(Entity))) continue;
-                
+
                 MethodInfo method = typeof(ModelBuilderExtensions).GetMethod(
                         nameof(IgnoreEvents),
                         BindingFlags.NonPublic | BindingFlags.Static)
@@ -146,7 +140,7 @@ namespace Infrastructure.DataAccess
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 if (!typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType)) continue;
-                
+
                 MethodInfo method = typeof(ModelBuilderExtensions).GetMethod(
                         nameof(ConfigureSoftDelete),
                         BindingFlags.NonPublic | BindingFlags.Static)
@@ -166,7 +160,7 @@ namespace Infrastructure.DataAccess
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 if (!entityType.ClrType.IsSubclassOf(typeof(AuditableEntity))) continue;
-                
+
                 MethodInfo method = typeof(ModelBuilderExtensions).GetMethod(
                         nameof(ConfigureAudit),
                         BindingFlags.NonPublic | BindingFlags.Static)

@@ -1,10 +1,10 @@
 ﻿using Application.Exceptions;
 using Application.Interfaces.DataAccess;
-using Application.Interfaces.Services;
 using Domian.Entities.Accounts;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Interfaces.CommonServices;
 using Application.Models.Requests;
 
 namespace Application.Behaviours

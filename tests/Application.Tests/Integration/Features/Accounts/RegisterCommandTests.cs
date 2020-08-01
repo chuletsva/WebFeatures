@@ -18,7 +18,7 @@ namespace Application.Tests.Integration.Features.Accounts
             var request = new RegisterCommand()
             {
                 Name = "user",
-                Email = "user1@mail.com",
+                Email = "user@email",
                 Password = "12345"
             };
 
@@ -42,25 +42,23 @@ namespace Application.Tests.Integration.Features.Accounts
                 .Should().Throw<ValidationException>()
                 .And.Error.Should().NotBeNull();
         }
-        
+
         [Fact]
         public async Task ShouldThrow_WhenEmailAlreadyExists()
         {
             // Arrange
-            const string email = "user@mail.com";
-
-            await LoginAsync(email);
-
             var request = new RegisterCommand()
             {
                 Name = "Name",
-                Email = email,
+                Email = "default@user",
                 Password = "12345"
             };
-            
+
+            await LoginAsync(request.Email);
+
             // Act
             Func<Task<UserCreateDto>> act = () => SendAsync(request);
-            
+
             // Assert
             act.Should().Throw<ValidationException>().And.Error.Message.Should().Be("Email already exists");
         }

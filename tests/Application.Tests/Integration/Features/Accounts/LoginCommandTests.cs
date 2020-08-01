@@ -19,7 +19,7 @@ namespace Application.Tests.Integration.Features.Accounts
             var register = new RegisterCommand
             {
                 Name = "User",
-                Email = "user@email.com",
+                Email = "user@email",
                 Password = "12345"
             };
 
@@ -46,7 +46,7 @@ namespace Application.Tests.Integration.Features.Accounts
             // Arrange
             var login = new LoginCommand
             {
-                Email = "wrong@mail.com",
+                Email = "wrong@email",
                 Password = "12345"
             };
 
@@ -64,7 +64,7 @@ namespace Application.Tests.Integration.Features.Accounts
             var register = new RegisterCommand
             {
                 Name = "User",
-                Email = "user@email.com",
+                Email = "user@email",
                 Password = "12345"
             };
 
@@ -72,7 +72,7 @@ namespace Application.Tests.Integration.Features.Accounts
 
             var login = new LoginCommand
             {
-                Email = "user@email.com",
+                Email = "user@email",
                 Password = "1234"
             };
 
