@@ -39,11 +39,11 @@ namespace Infrastructure.BackgroundJobs
             }
         }
 
-        public void RunRecurrently<TJobArgument>(TJobArgument argument, string cronExpression)
+        public void RunRecurrently<TJobArgument>(string id, TJobArgument argument, string cronExpression)
         {
             foreach (var job in GetJobs<TJobArgument>())
             {
-                _recurringJobManager.AddOrUpdate(job.Id, () => job.Execute(argument), cronExpression);
+                _recurringJobManager.AddOrUpdate(id, () => job.Execute(argument), cronExpression);
             }
         }
 

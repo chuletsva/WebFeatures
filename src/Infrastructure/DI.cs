@@ -19,7 +19,10 @@ namespace Infrastructure
 {
     public static class DI
     {
-        public static void RegisterBackgroundJobs(this IServiceCollection services, IConfiguration configuration)
+        public static void RegisterBackgroundJobs(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            bool prepareSchema = false)
         {
             services.AddSingleton<IBackgroundJobManager, BackgroundJobManager>();
 
@@ -33,7 +36,7 @@ namespace Infrastructure
                    .UsePostgreSqlStorage(connectionString, new PostgreSqlStorageOptions()
                    {
                        QueuePollInterval = TimeSpan.FromMilliseconds(1),
-                       PrepareSchemaIfNecessary = true
+                       PrepareSchemaIfNecessary = prepareSchema
                    });
             });
         }

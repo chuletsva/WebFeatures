@@ -2,10 +2,10 @@ namespace Application.Common.Interfaces.BackgroundJobs
 {
     public interface IBackgroundJob
     {
-        string Id { get; }
     }
 
     public interface IBackgroundJob<in TJobArgument> : IBackgroundJob
+        where TJobArgument : notnull
     {
         void Execute(TJobArgument argument);
     }

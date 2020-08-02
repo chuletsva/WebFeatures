@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +7,6 @@ using Application.Common.Exceptions;
 using Application.Common.Interfaces.Logging;
 using WebApi.Exceptions;
 using System.Text.Json;
-using Application.Features.System.RunRecurringJobs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -59,13 +57,6 @@ namespace WebApi.Configuration
                     }
                 });
             });
-        }
-
-        public static void RunRecurringJobs(this IApplicationBuilder app)
-        {
-            var mediator = app.ApplicationServices.GetService<IMediator>();
-
-            mediator.Send(new RunRecurringJobsCommand()).Wait();
         }
     }
 }

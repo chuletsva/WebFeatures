@@ -4,7 +4,7 @@
       "commandName": "Project",
       "launchBrowser": true,
       "applicationUrl": "https://localhost:6001",
-      "launchUrl": "auth",
+      "launchUrl": "jobs",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

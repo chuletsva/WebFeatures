@@ -1,10 +1,7 @@
 using System;
-using System.Security.Claims;
 using Application;
 using Hangfire;
 using Infrastructure;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -33,8 +30,6 @@ namespace JobServer
             services.RegisterDataAccess(Configuration);
             services.RegisterLogging();
             services.RegisterSecurity();
-
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -43,24 +38,6 @@ namespace JobServer
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.Map("/auth", authApp =>
-            {
-                authApp.Run(async context =>
-                {
-                    var identity = new ClaimsIdentity(
-                        new[] { new Claim(ClaimTypes.Name, "guest") },
-                        CookieAuthenticationDefaults.AuthenticationScheme);
-
-                    await context.SignInAsync(
-                        CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(identity));
-
-                    context.Response.Redirect("/jobs");
-                });
-            });
-
-            app.UseAuthentication();
 
             app.UseHangfireServer(new BackgroundJobServerOptions()
             {
@@ -71,7 +48,6 @@ namespace JobServer
 
             app.UseHangfireDashboard("/jobs", new DashboardOptions()
             {
-                //Authorization = new[] { new AuthorizationFilter() },
                 IsReadOnlyFunc = ctx => true,
                 AppPath = null
             });

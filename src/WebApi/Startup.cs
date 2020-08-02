@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Json;
 using WebApi.Authentication;
 using WebApi.Configuration;
+using WebApi.HostedServices;
 using WebApi.ModelBinders;
 using WebApi.Settings;
 
@@ -38,6 +39,8 @@ namespace WebApi
             services.RegisterSecurity();
 
             services.AddSingleton<ITokenProvider, TokenProvider>();
+
+            services.AddHostedService<RecurringJobsService>();
 
             services.AddControllers(options =>
             {
@@ -88,8 +91,6 @@ namespace WebApi
 
         public void Configure(IApplicationBuilder app)
         {
-            app.RunRecurringJobs();
-
             app.UseExceptionHandling();
 
             app.UseHttpsRedirection();
