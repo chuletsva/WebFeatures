@@ -1,19 +1,13 @@
 using Application;
 using Infrastructure;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 using System.Text.Json;
-using WebApi.Authentication;
 using WebApi.Configuration;
-using WebApi.HostedServices;
 using WebApi.ModelBinders;
-using WebApi.Settings;
 
 namespace WebApi
 {
@@ -38,10 +32,6 @@ namespace WebApi
             services.RegisterLogging();
             services.RegisterSecurity();
 
-            services.AddSingleton<ITokenProvider, TokenProvider>();
-
-            services.AddHostedService<RecurringJobsService>();
-
             services.AddControllers(options =>
             {
                 options.ModelBinderProviders.Insert(0, new FileModelBinderProvider());
@@ -64,29 +54,8 @@ namespace WebApi
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "WebFeatures", Version = "v1" });
             });
 
-            var jwtSettingsSection = Configuration.GetSection("JwtSettings");
-
-            services.Configure<JwtSettings>(jwtSettingsSection);
-
-            var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = jwtSettings.Issuer,
-
-                        ValidateAudience = true,
-                        ValidAudience = jwtSettings.Audience,
-
-                        ValidateLifetime = true,
-
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
-                    };
-                });
+            services.RegisterRecurringJobs();
+            services.RegisterJwtAuthentication(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)

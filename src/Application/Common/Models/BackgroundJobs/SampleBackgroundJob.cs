@@ -2,7 +2,7 @@
 
 namespace Application.Common.Models.BackgroundJobs
 {
-    internal class SampleBackgroundJob : IBackgroundJob<SampleBackgroundJobArgument>
+    public class SampleBackgroundJob : IBackgroundJob<SampleBackgroundJobArgument>
     {
         public void Execute(SampleBackgroundJobArgument argument)
         {
@@ -10,7 +10,7 @@ namespace Application.Common.Models.BackgroundJobs
         }
     }
 
-    internal class SampleBackgroundJobArgument
+    public class SampleBackgroundJobArgument
     {
     }
 }

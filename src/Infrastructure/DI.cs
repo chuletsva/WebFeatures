@@ -24,7 +24,7 @@ namespace Infrastructure
             IConfiguration configuration,
             bool prepareSchema = false)
         {
-            services.AddSingleton<IBackgroundJobManager, BackgroundJobManager>();
+            services.AddScoped<IBackgroundJobManager, BackgroundJobManager>();
 
             var connectionString = configuration.GetConnectionString("Hangfire");
 
