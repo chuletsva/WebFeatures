@@ -2,13 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WebApi.Scheduling.Jobs
+namespace WebApi.Scheduling.Tasks
 {
-    internal class UIRecurringJob : IRecurringJob
+    internal class SampleScheduledTask : IScheduledTask
     {
-        private readonly ILogger<UIRecurringJob> _logger;
+        private readonly ILogger<SampleScheduledTask> _logger;
 
-        public UIRecurringJob(ILogger<UIRecurringJob> logger)
+        public SampleScheduledTask(ILogger<SampleScheduledTask> logger)
         {
             _logger = logger;
         }

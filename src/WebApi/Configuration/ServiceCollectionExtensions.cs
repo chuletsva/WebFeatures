@@ -5,17 +5,17 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebApi.Authentication;
 using WebApi.Scheduling;
-using WebApi.Scheduling.Jobs;
+using WebApi.Scheduling.Tasks;
 using WebApi.Settings;
 
 namespace WebApi.Configuration
 {
     public static class ServiceCollectionExtensions
     {
-        public static void RegisterRecurringJobs(this IServiceCollection services)
+        public static void RegisterScheduledTasks(this IServiceCollection services)
         {
-            services.AddHostedService<RecurringJobsService>();
-            services.AddScoped<UIRecurringJob>();
+            services.AddHostedService<ScheduledTasksService>();
+            services.AddScoped<SampleScheduledTask>();
         }
 
         public static void RegisterJwtAuthentication(this IServiceCollection services, IConfiguration configuration)

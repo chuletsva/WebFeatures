@@ -54,7 +54,7 @@ namespace WebApi
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "WebFeatures", Version = "v1" });
             });
 
-            services.RegisterRecurringJobs();
+            services.RegisterScheduledTasks();
             services.RegisterJwtAuthentication(Configuration);
         }
 

@@ -8,43 +8,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using WebApi.Scheduling.Jobs;
+using WebApi.Scheduling.Tasks;
 
 namespace WebApi.Scheduling
 {
-    internal class RecurringJobsService : BackgroundService
+    internal class ScheduledTasksService : BackgroundService
     {
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly List<RecurringJobSchedule> _jobSchedules;
+        private readonly List<TaskSchedule> _schedules;
 
-        public RecurringJobsService(IServiceScopeFactory scopeFactory, IDateTime datetime)
+        public ScheduledTasksService(IServiceScopeFactory scopeFactory, IDateTime datetime)
         {
             _scopeFactory = scopeFactory;
 
-            _jobSchedules = new List<RecurringJobSchedule>()
+            _schedules = new List<TaskSchedule>()
             {
-                new RecurringJobSchedule(typeof(UIRecurringJob), "* * * * *")
+                new TaskSchedule(typeof(SampleScheduledTask), "* * * * *")
             };
 
-            _jobSchedules.ForEach(x => x.ScheduleNextRunTime(datetime.Now));
+            _schedules.ForEach(x => x.ScheduleNextRunTime(datetime.Now));
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await RunApplicationRecurringTasks(stoppingToken);
-            await RunUIRecurringTasks(stoppingToken);
+            await RunApplicationScheduledTasks(stoppingToken);
+            await RunScheduledTasks(stoppingToken);
         }
 
-        private async Task RunApplicationRecurringTasks(CancellationToken stoppingToken)
+        private async Task RunApplicationScheduledTasks(CancellationToken stoppingToken)
         {
-            using var scope = _scopeFactory.CreateScope();
+            using IServiceScope scope = _scopeFactory.CreateScope();
 
             var mediator = scope.ServiceProvider.GetService<IMediator>();
 
             await mediator.Send(new RunRecurringJobsCommand(), stoppingToken);
         }
 
-        private async Task RunUIRecurringTasks(CancellationToken stoppingToken)
+        private async Task RunScheduledTasks(CancellationToken stoppingToken)
         {
             var delay = TimeSpan.FromSeconds(1);
 
@@ -52,21 +52,21 @@ namespace WebApi.Scheduling
             {
                 using (var scope = _scopeFactory.CreateScope())
                 {
-                    var now = scope.ServiceProvider.GetService<IDateTime>().Now;
+                    DateTime now = scope.ServiceProvider.GetService<IDateTime>().Now;
 
-                    var jobsToRun = new List<IRecurringJob>();
+                    var tasksToRun = new List<IScheduledTask>();
 
-                    foreach (RecurringJobSchedule schedule in _jobSchedules)
+                    foreach (TaskSchedule schedule in _schedules)
                     {
-                        if (DateTimesAreEqual(schedule.NextRunTime, now))
+                        if (DateTimesAreEqual(schedule.RunTime, now))
                         {
                             schedule.ScheduleNextRunTime(baseTime: now);
 
-                            jobsToRun.Add((IRecurringJob)scope.ServiceProvider.GetService(schedule.JobType));
+                            tasksToRun.Add((IScheduledTask)scope.ServiceProvider.GetService(schedule.TaskType));
                         }
                     }
 
-                    await Task.WhenAll(jobsToRun.Select(x => x.ExecuteAsync(stoppingToken)));
+                    await Task.WhenAll(tasksToRun.Select(x => x.ExecuteAsync(stoppingToken)));
                 }
 
                 await Task.Delay(delay);

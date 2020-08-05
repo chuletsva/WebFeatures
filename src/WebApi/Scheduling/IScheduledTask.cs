@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace WebApi.Scheduling
 {
-    internal interface IRecurringJob
+    internal interface IScheduledTask
     {
         Task ExecuteAsync(CancellationToken cancellationToken);
     }
