@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Application.Common.Interfaces.CommonServices;
+using Application.Common.Interfaces.Security;
 using Application.Tests.Common.Helpers;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -166,11 +167,13 @@ namespace Application.Tests.Common.Base
         {
             using IServiceScope scope = ServiceProvider.CreateScope();
 
-            AppDbContext context = scope.ServiceProvider.GetService<AppDbContext>();
+            var context = scope.ServiceProvider.GetService<AppDbContext>();
 
             await CleanUpContextAsync(context);
 
-            await EntityTestData.SeedContextAsync(context);
+            var hasher = scope.ServiceProvider.GetService<IPasswordHasher>();
+
+            await EntityTestData.SeedContextAsync(context, hasher);
 
             // Temporary login for applying autocomplete logic before saving changes in context
             _currentUserId = EntityTestData.UserId;

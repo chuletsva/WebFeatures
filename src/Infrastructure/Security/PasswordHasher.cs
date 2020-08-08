@@ -5,7 +5,7 @@ using Application.Common.Interfaces.Security;
 
 namespace Infrastructure.Security
 {
-    public class PasswordHasher : IPasswordHasher
+    internal class PasswordHasher : IPasswordHasher
     {
         public string ComputeHash(string password)
         {

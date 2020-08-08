@@ -8,11 +8,14 @@ namespace Infrastructure.Tests.Unit.Security
 {
     public class PasswordHasherTests
     {
-        [Theory, AutoData]
-        public void ComputeHash_ReturnsNonEmptyHash(string password, PasswordHasher sut)
+        [Fact]
+        public void ComputeHash_ShouldComputeHash()
         {
+            // Arrange
+            var sut = new PasswordHasher();
+
             // Act
-            string hash = sut.ComputeHash(password);
+            string hash = sut.ComputeHash("12345");
 
             // Assert
             hash.Should().NotBeNullOrEmpty();
@@ -21,8 +24,11 @@ namespace Infrastructure.Tests.Unit.Security
         [Theory]
         [InlineAutoData(null)]
         [InlineAutoData("")]
-        public void ComputeHash_Throws_WhenEmptyPassword(string password, PasswordHasher sut)
+        public void ComputeHash_ShouldThrowWhenInvalidPassword(string password)
         {
+            // Arrange
+            var sut = new PasswordHasher();
+
             // Act
             Func<string> act = () => sut.ComputeHash(password);
 
@@ -30,31 +36,36 @@ namespace Infrastructure.Tests.Unit.Security
             act.Should().Throw<ArgumentException>();
         }
 
-        [Theory, AutoData]
-        public void Verify_ShouldVerifyComputedHash(string password, PasswordHasher sut)
+        [Fact]
+        public void Verify_ShouldVerifyComputedHash()
         {
+            // Arrange
+            string password = "12345";
+
+            var sut = new PasswordHasher();
+
             // Act
             string hash = sut.ComputeHash(password);
 
-            bool isVerified = sut.Verify(hash, password);
+            bool verified = sut.Verify(hash, password);
 
             // Assert
-            isVerified.Should().BeTrue();
+            verified.Should().BeTrue();
         }
 
-        [Theory, AutoData]
-        public void Verify_ShouldNotVerify_WhenPassedWrongPassword(
-            string password,
-            string wrongPassword,
-            PasswordHasher sut)
+        [Fact]
+        public void Verify_ShouldNotVerifyInvalidPassword()
         {
-            // Act
-            string hash = sut.ComputeHash(password);
+            // Arrange
+            var sut = new PasswordHasher();
 
-            bool isVerified = sut.Verify(hash, wrongPassword);
+            // Act
+            string hash = sut.ComputeHash("12345");
+
+            bool verified = sut.Verify(hash, "54321");
 
             // Assert
-            isVerified.Should().BeFalse();
+            verified.Should().BeFalse();
         }
     }
 }

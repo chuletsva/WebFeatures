@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Application.Common.Exceptions;
 using Application.Common.Models.Dto;
 using Application.Features.Accounts.Login;
-using Application.Features.Accounts.Register;
 using Application.Tests.Common.Base;
 using Domian.Entities.Accounts;
 using FluentAssertions;
@@ -16,25 +15,12 @@ namespace Application.Tests.Integration.Features.Accounts
         [Fact]
         public async Task ShouldLoginUser_WhenUserExists()
         {
-            // Arrange & act
-            var register = new RegisterCommand
-            {
-                Name = "User",
-                Email = "user@email",
-                Password = "12345"
-            };
+            // Arrange
+            var request = new LoginCommand { Email = "default@user", Password = "12345" };
 
-            await SendAsync(register);
+            UserInfoDto userDto = await SendAsync(request);
 
-            var login = new LoginCommand
-            {
-                Email = register.Email,
-                Password = register.Password
-            };
-
-            UserInfoDto userDto = await SendAsync(login);
-
-            User user = await FindAsync<User>(x => x.Email == register.Email);
+            User user = await FindAsync<User>(x => x.Email == request.Email);
 
             // Assert
             user.Should().NotBeNull();
@@ -45,39 +31,23 @@ namespace Application.Tests.Integration.Features.Accounts
         public void ShouldThrow_WhenEmailDoesntExist()
         {
             // Arrange
-            var login = new LoginCommand
-            {
-                Email = "wrong@email",
-                Password = "12345"
-            };
+            var request = new LoginCommand { Email = "wrong@email", Password = "12345" };
 
             // Act
-            Func<Task<UserInfoDto>> act = () => SendAsync(login);
+            Func<Task<UserInfoDto>> act = () => SendAsync(request);
 
             // Assert
             act.Should().Throw<ValidationException>().And.Error.Message.Should().Be("Wrong login or password");
         }
 
         [Fact]
-        public async Task ShouldThrow_WhenWrongPassword()
+        public void ShouldThrow_WhenWrongPassword()
         {
-            // Arrange & act
-            var register = new RegisterCommand
-            {
-                Name = "User",
-                Email = "user@email",
-                Password = "12345"
-            };
+            // Arrange
+            var request = new LoginCommand { Email = "default@user", Password = "1234" };
 
-            await SendAsync(register);
-
-            var login = new LoginCommand
-            {
-                Email = "user@email",
-                Password = "1234"
-            };
-
-            Func<Task<UserInfoDto>> act = () => SendAsync(login);
+            // Act
+            Func<Task<UserInfoDto>> act = () => SendAsync(request);
 
             // Assert
             act.Should().Throw<ValidationException>().And.Error.Message.Should().Be("Wrong login or password");

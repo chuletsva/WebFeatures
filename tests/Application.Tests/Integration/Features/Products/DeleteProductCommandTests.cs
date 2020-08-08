@@ -9,38 +9,38 @@ using FluentAssertions;
 using Xunit;
 
 namespace Application.Tests.Integration.Features.Products
-{	
-	using static EntityTestData;
-	
-	public class DeleteProductCommandTests : RequestTestBase
-	{
-		[Fact]
-		public async Task ShouldDeleteProduct()
-		{
-			// Arrange & act
-			Product productBeforeDelete = await FindAsync<Product>(x => x.Id == ProductId);
+{
+    using static EntityTestData;
 
-			await LoginAsDefaultUserAsync();
-			
-			await SendAsync(new DeleteProductCommand() {Id = ProductId});
+    public class DeleteProductCommandTests : RequestTestBase
+    {
+        [Fact]
+        public async Task ShouldDeleteProduct()
+        {
+            // Arrange & act
+            Product productBeforeDelete = await FindAsync<Product>(x => x.Id == ProductId);
 
-			Product productAfterDelete = await FindAsync<Product>(x => x.Id == ProductId);
-			
-			// Assert
-			productBeforeDelete.Should().NotBeNull();
-			productAfterDelete.Should().BeNull();
-		}
+            await LoginAsDefaultUserAsync();
 
-		[Fact]
-		public async Task ShouldThrow_WhenProductDoesntExist()
-		{
-			// Act
-			await LoginAsDefaultUserAsync();
-			
-			Func<Task> act = () => SendAsync(new DeleteProductCommand());
+            await SendAsync(new DeleteProductCommand() { Id = ProductId });
 
-			// Assert
-			act.Should().Throw<ValidationException>().And.Error.Message.Should().Be("Product doesn't exist");
-		}
-	}
+            Product productAfterDelete = await FindAsync<Product>(x => x.Id == ProductId);
+
+            // Assert
+            productBeforeDelete.Should().NotBeNull();
+            productAfterDelete.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task ShouldThrow_WhenProductDoesntExist()
+        {
+            // Act
+            await LoginAsDefaultUserAsync();
+
+            Func<Task> act = () => SendAsync(new DeleteProductCommand());
+
+            // Assert
+            act.Should().Throw<ValidationException>().And.Error.Message.Should().Be("Product doesn't exist");
+        }
+    }
 }

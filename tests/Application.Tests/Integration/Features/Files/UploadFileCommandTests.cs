@@ -3,9 +3,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Application.Common.Interfaces.Files;
 using Application.Features.Files.UploadFile;
+using Application.Tests.Common.Attributes;
 using Application.Tests.Common.Base;
-using AutoFixture;
-using AutoFixture.AutoMoq;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -13,41 +12,33 @@ using File = Domian.Entities.File;
 
 namespace Application.Tests.Integration.Features.Files
 {
-	public class UploadFileCommandTests : RequestTestBase
-	{
-		[Fact]
-		public async Task ShouldCreateFile()
-		{
-			// Arrange
-			var fixture = new Fixture().Customize(new AutoMoqCustomization());
-		
-			var fileMock = new Mock<IFile>();
-			
-			string name = fixture.Create<string>();
-			string contentType = fixture.Create<string>();
-			byte[] content = fixture.Create<byte[]>();
-			
-			fileMock.SetupGet(x => x.Name).Returns(name);
-			fileMock.SetupGet(x => x.ContentType).Returns(contentType);
-			fileMock.Setup(x => x.OpenReadStream()).Returns(() => new MemoryStream(content));
-			
-			fixture.Inject(fileMock.Object);
-			
-			var request = fixture.Create<UploadFileCommand>();
-			
-			// Act
-			await LoginAsDefaultUserAsync();
+    public class UploadFileCommandTests : RequestTestBase
+    {
+        [Theory, AutoMoq]
+        public async Task ShouldCreateFile(string name, string contentType, byte[] content)
+        {
+            // Arrange	
+            var fileMock = new Mock<IFile>();
 
-			Guid fileId = await SendAsync(request);
+            fileMock.SetupGet(x => x.Name).Returns(name);
+            fileMock.SetupGet(x => x.ContentType).Returns(contentType);
+            fileMock.Setup(x => x.OpenReadStream()).Returns(() => new MemoryStream(content));
 
-			File file = await FindAsync<File>(x => x.Id == fileId);
+            var request = new UploadFileCommand() { File = fileMock.Object };
 
-			// Assert
-			file.Should().NotBeNull();
-			file.Id.Should().Be(fileId);
-			file.Name.Should().Be(name);
-			file.ContentType.Should().Be(contentType);
-			file.Content.Should().Equal(content);
-		}
-	}
+            // Act
+            await LoginAsDefaultUserAsync();
+
+            Guid fileId = await SendAsync(request);
+
+            File file = await FindAsync<File>(x => x.Id == fileId);
+
+            // Assert
+            file.Should().NotBeNull();
+            file.Id.Should().Be(fileId);
+            file.Name.Should().Be(name);
+            file.ContentType.Should().Be(contentType);
+            file.Content.Should().Equal(content);
+        }
+    }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Application.Common.Constants;
+using Application.Common.Interfaces.Security;
 using AutoFixture;
 using Domian.Entities;
 using Domian.Entities.Accounts;
@@ -21,7 +22,7 @@ namespace Application.Tests.Common.Helpers
         public static readonly Guid ProductId = new Guid("d5a4a565-765b-4aa7-8bd4-edb4e2100933");
         public static readonly Guid UserId = new Guid("50d5a465-254e-4779-bf5a-169ed2ece8b4");
 
-        public static async Task SeedContextAsync(DbContext context)
+        public static async Task SeedContextAsync(DbContext context, IPasswordHasher hasher)
         {
             var fixture = new Fixture();
             {
@@ -38,6 +39,7 @@ namespace Application.Tests.Common.Helpers
             User user = fixture.Build<User>()
                .With(x => x.Id, UserId)
                .With(x => x.Email, "default@user")
+               .With(x => x.PasswordHash, hasher.ComputeHash("12345"))
                .Create();
             {
                 await context.AddAsync(user);
