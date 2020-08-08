@@ -1,5 +1,5 @@
 ﻿using Application.Common.Models.Results;
-using Application.Features.Accounts.Register;
+using Application.Features.Accounts.Login;
 using FluentAssertions;
 using System;
 using System.Net;
@@ -10,23 +10,18 @@ using Xunit;
 
 namespace WebApi.Tests.Integration.Controllers.Accounts
 {
-    public class Register : ControllerTestBase
+    public class Login : ControllerTestBase
     {
         [Fact]
-        public async Task ShouldCreateNewUser_ReturnsToken()
+        public async Task ShouldReturnAccessToken_WhenUserIsRegistered()
         {
             // Arrange
-            var client = Factory.GetDefaultClient();
+            HttpClient client = Factory.GetDefaultClient();
 
-            var request = new RegisterCommand()
-            {
-                Email = "user@email",
-                Name = "user",
-                Password = "12345"
-            };
+            var request = new LoginCommand() { Email = "default@user", Password = "12345" };
 
             // Act
-            HttpResponseMessage response = await client.PostAsync("/api/accounts/register", request);
+            HttpResponseMessage response = await client.PostAsync("api/accounts/login", request);
 
             var content = await response.ReadContent(new
             {
@@ -38,30 +33,28 @@ namespace WebApi.Tests.Integration.Controllers.Accounts
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             content.id.Should().NotBeEmpty();
             content.access_token.Should().NotBeEmpty();
+
         }
 
-        [Fact]
-        public async Task ShouldReturnError_WhenEmailAlreadyExists()
+        [Theory]
+        [InlineData("default@user", "wrong_password")]
+        [InlineData("wrong_email", "12345")]
+        public async Task ShouldReturnError_WhenInvalidCredentials(string email, string password)
         {
             // Arrange
             var client = Factory.GetDefaultClient();
 
-            var request = new RegisterCommand()
-            {
-                Email = "default@user",
-                Name = "user",
-                Password = "12345"
-            };
+            var request = new LoginCommand() { Email = email, Password = password };
 
             // Act
-            HttpResponseMessage response = await client.PostAsync("/api/accounts/register", request);
+            HttpResponseMessage response = await client.PostAsync("api/accounts/login", request);
 
             ValidationError error = await response.ReadContent<ValidationError>();
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             error.Should().NotBeNull();
-            error.Message.Should().Be("Email already exists");
+            error.Message.Should().Be("Wrong login or password");
         }
     }
 }
