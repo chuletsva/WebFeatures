@@ -23,7 +23,7 @@ namespace WebApi.Scheduling
 
             _schedules = new List<TaskSchedule>()
             {
-                new TaskSchedule(typeof(SampleScheduledTask), "* * * * *")
+                new TaskSchedule(typeof(Tick), "* * * * *") // every minute
             };
 
             _schedules.ForEach(x => x.ScheduleNextRunTime(datetime.Now));

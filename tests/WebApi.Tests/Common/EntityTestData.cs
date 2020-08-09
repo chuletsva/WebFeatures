@@ -2,13 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using Application.Common.Constants;
-using Application.Common.Interfaces.Security;
 
 namespace WebApi.Tests.Common
 {
     public static class EntityTestData
     {
-        public static void Seed(DbContext context, IPasswordHasher hasher)
+        public static void Seed(DbContext context)
         {
             var role = new Role()
             {
@@ -22,7 +21,7 @@ namespace WebApi.Tests.Common
                 Id = new Guid("7a23912f-e713-4a8f-81f6-17306964dc9a"),
                 Name = "user",
                 Email = "default@user",
-                PasswordHash = hasher.ComputeHash("12345")
+                PasswordHash = "12345"
             };
             {
                 user.UserRoles.Add(new UserRole() { Role = role });

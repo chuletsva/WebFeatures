@@ -14,6 +14,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Application.Common.Interfaces.Security;
 using WebApi.Authentication;
+using Moq;
 
 namespace WebApi.Tests.Common
 {
@@ -24,9 +25,28 @@ namespace WebApi.Tests.Common
         {
             builder.ConfigureServices(services =>
             {
+                SetupPasswordHasher(services);
                 SetupDbContext(services);
                 SeedTestData(services);
             });
+        }
+
+        private static void SetupPasswordHasher(IServiceCollection services)
+        {
+            var hasherDescriptor = services.Single(x => x.ServiceType == typeof(IPasswordHasher));
+
+            services.Remove(hasherDescriptor);
+
+            var hasher = new Mock<IPasswordHasher>();
+            {
+                hasher.Setup(x => x.ComputeHash(It.IsAny<string>()))
+                    .Returns<string>(x => x);
+
+                hasher.Setup(x => x.Verify(It.IsAny<string>(), It.IsAny<string>()))
+                    .Returns((string hash, string expected) => hash == expected);
+            }
+
+            services.AddSingleton(hasher.Object);
         }
 
         private static void SetupDbContext(IServiceCollection services)
@@ -48,9 +68,7 @@ namespace WebApi.Tests.Common
 
             var context = scope.ServiceProvider.GetService<AppDbContext>();
 
-            var hasher = scope.ServiceProvider.GetService<IPasswordHasher>();
-
-            EntityTestData.Seed(context, hasher);
+            EntityTestData.Seed(context);
         }
 
         public HttpClient GetDefaultClient()

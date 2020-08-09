@@ -4,18 +4,18 @@ using System.Threading.Tasks;
 
 namespace WebApi.Scheduling.Tasks
 {
-    internal class SampleScheduledTask : IScheduledTask
+    internal class Tick : IScheduledTask
     {
-        private readonly ILogger<SampleScheduledTask> _logger;
+        private readonly ILogger<Tick> _logger;
 
-        public SampleScheduledTask(ILogger<SampleScheduledTask> logger)
+        public Tick(ILogger<Tick> logger)
         {
             _logger = logger;
         }
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Sample UI task finished");
+            _logger.LogInformation("Tick");
         }
     }
 }

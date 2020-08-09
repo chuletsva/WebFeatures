@@ -15,7 +15,7 @@ namespace WebApi.Configuration
         public static void RegisterScheduledTasks(this IServiceCollection services)
         {
             services.AddHostedService<ScheduledTasksService>();
-            services.AddScoped<SampleScheduledTask>();
+            services.AddScoped<Tick>();
         }
 
         public static void RegisterJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
