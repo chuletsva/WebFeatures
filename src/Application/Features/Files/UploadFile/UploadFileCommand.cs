@@ -1,6 +1,6 @@
 ﻿using System;
-using Application.Interfaces.Files;
-using Application.Models.Requests;
+using Application.Common.Interfaces.Files;
+using Application.Common.Models.Requests;
 
 namespace Application.Features.Files.UploadFile
 {

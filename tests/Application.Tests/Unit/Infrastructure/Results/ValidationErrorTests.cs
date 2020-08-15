@@ -2,7 +2,7 @@
 using FluentAssertions;
 using FluentValidation.Results;
 using System.Linq;
-using Application.Models.Results;
+using Application.Common.Models.Results;
 using Xunit;
 
 namespace Application.Tests.Unit.Infrastructure.Results

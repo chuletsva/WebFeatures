@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Application.Exceptions;
+using Application.Common.Exceptions;
 using Application.Features.Products.UpdateProduct;
 using Application.Tests.Common.Base;
 using Application.Tests.Common.Helpers;

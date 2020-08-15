@@ -1,10 +1,10 @@
 ﻿using System;
-using Application.Interfaces.DataAccess;
 using FluentValidation;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.Interfaces.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Products.UpdateProduct

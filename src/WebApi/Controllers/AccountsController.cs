@@ -1,22 +1,17 @@
 ﻿using Application.Features.Accounts.Login;
 using Application.Features.Accounts.Register;
-using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
-using Application.Models.Results;
+using Application.Common.Models.Dto;
+using Application.Common.Models.Results;
+using WebApi.Authentication;
 using WebApi.Controllers.Base;
-using WebApi.Settings;
 
 namespace WebApi.Controllers
 {
@@ -25,13 +20,11 @@ namespace WebApi.Controllers
     /// </summary>
     public class AccountsController : BaseController
     {
-        private readonly IDateTime _dateTime;
-        private readonly JwtSettings _jwtSettings;
+        private readonly ITokenProvider _tokenProvider;
 
-        public AccountsController(IDateTime dateTime, IOptions<JwtSettings> jwtSettings)
+        public AccountsController(ITokenProvider tokenProvider)
         {
-            _dateTime = dateTime;
-            _jwtSettings = jwtSettings.Value;
+            _tokenProvider = tokenProvider;
         }
 
         /// <summary>
@@ -44,11 +37,9 @@ namespace WebApi.Controllers
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([Required] RegisterCommand request)
         {
-            UserCreateDto user = await Mediator.Send(request);
+            UserInfoDto user = await Mediator.Send(request);
 
-            string token = CreateToken((user.Id, user.Roles));
-
-            return Ok(token);
+            return Ok(LoginUser(user));
         }
 
         /// <summary>
@@ -59,16 +50,14 @@ namespace WebApi.Controllers
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Login([FromBody][Required] LoginCommand request)
+        public async Task<IActionResult> Login([Required] LoginCommand request)
         {
-            UserLoginDto user = await Mediator.Send(request);
+            UserInfoDto user = await Mediator.Send(request);
 
-            string token = CreateToken((user.Id, user.Roles));
-
-            return Ok(token);
+            return Ok(LoginUser(user));
         }
 
-        private string CreateToken((Guid Id, string[] Roles) user)
+        private object LoginUser(UserInfoDto user)
         {
             var claims = new List<Claim>()
             {
@@ -77,23 +66,11 @@ namespace WebApi.Controllers
 
             claims.AddRange(user.Roles.Select(x => new Claim(ClaimTypes.Role, x)));
 
-            var descriptor = new SecurityTokenDescriptor()
-            {
-                Subject = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme),
-                Issuer = _jwtSettings.Issuer,
-                Audience = _jwtSettings.Audience,
-                Expires = _dateTime.Now.AddMinutes(_jwtSettings.Lifetime),
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(_jwtSettings.Key)),
-                    SecurityAlgorithms.HmacSha256Signature)
-            };
+            var identity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
 
-            var handler = new JwtSecurityTokenHandler();
+            string token = _tokenProvider.CreateToken(identity);
 
-            SecurityToken token = handler.CreateToken(descriptor);
-
-            return handler.WriteToken(token);
+            return new { id = user.Id, access_token = token };
         }
     }
 }

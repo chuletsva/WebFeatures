@@ -1,18 +1,15 @@
 using Application;
 using Infrastructure;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 using System.Text.Json;
 using WebApi.Configuration;
 using WebApi.ModelBinders;
-using WebApi.Settings;
 
 namespace WebApi
 {
@@ -25,13 +22,17 @@ namespace WebApi
         }
 
         private IConfiguration Configuration { get; }
-
         private IWebHostEnvironment Environment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApplication();
-            services.AddInfrastructure(Configuration);
+            services.RegisterApplication();
+
+            services.RegisterBackgroundJobs(Configuration);
+            services.RegisterCommonServices();
+            services.RegisterDataAccess(Configuration);
+            services.RegisterLogging();
+            services.RegisterSecurity();
 
             services.AddControllers(options =>
             {
@@ -39,7 +40,7 @@ namespace WebApi
             })
             .AddJsonOptions(options =>
             {
-                options.JsonSerializerOptions.WriteIndented = Environment.IsDevelopment();
+                options.JsonSerializerOptions.WriteIndented = true;
                 options.JsonSerializerOptions.IgnoreNullValues = true;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
@@ -55,29 +56,13 @@ namespace WebApi
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "WebFeatures", Version = "v1" });
             });
 
-            var jwtSettingsSection = Configuration.GetSection("JwtSettings");
+            services.RegisterScheduledTasks();
+            services.RegisterJwtAuthentication(Configuration);
 
-            services.Configure<JwtSettings>(jwtSettingsSection);
-
-            var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = jwtSettings.Issuer,
-
-                        ValidateAudience = true,
-                        ValidAudience = jwtSettings.Audience,
-
-                        ValidateLifetime = true,
-
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
-                    };
-                });
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/build";
+            });
         }
 
         public void Configure(IApplicationBuilder app)
@@ -85,6 +70,8 @@ namespace WebApi
             app.UseExceptionHandling();
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.UseRouting();
 

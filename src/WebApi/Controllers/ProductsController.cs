@@ -12,7 +12,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Application.Models.Results;
+using Application.Common.Models.Results;
 using WebApi.Attributes;
 using WebApi.Controllers.Base;
 

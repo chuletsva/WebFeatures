@@ -1,11 +1,14 @@
-﻿using Application.Exceptions;
-using Application.Interfaces.Logging;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
+using System;
+using Application.Common.Exceptions;
+using Application.Common.Interfaces.Logging;
 using WebApi.Exceptions;
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace WebApi.Configuration
 {
@@ -19,21 +22,39 @@ namespace WebApi.Configuration
                 {
                     var errorFeature = context.Features.Get<IExceptionHandlerPathFeature>();
 
-                    var logger = context.RequestServices.GetService<ILogger<Startup>>();
+                    (int code, string body) response = (StatusCodes.Status500InternalServerError, null);
 
-                    logger.LogError("Request error", errorFeature.Error);
-
-                    (int Code, string Body) response = errorFeature.Error switch
+                    switch (errorFeature.Error)
                     {
-                        ValidationException validation => (400, JsonConvert.SerializeObject(validation.Error)),
-                        ODataException odata => (400, odata.Message),
-                        FailedAuthorizationException authorization => (400, authorization.Message),
-                        _ => (500, "Something went wrong")
-                    };
+                        case ValidationException validation:
+                            var options = context.RequestServices.GetService<IOptions<JsonOptions>>();
 
-                    context.Response.StatusCode = response.Code;
+                            response.code = StatusCodes.Status400BadRequest;
+                            response.body = JsonSerializer.Serialize(validation.Error, options.Value.JsonSerializerOptions);
+                            break;
 
-                    await context.Response.WriteAsync(response.Body);
+                        case FailedAuthorizationException authorization:
+                            response.code = StatusCodes.Status400BadRequest;
+                            response.body = authorization.Message;
+                            break;
+
+                        case ODataException odata:
+                            response.code = StatusCodes.Status400BadRequest;
+                            response.body = odata.Message;
+                            break;
+
+                        case Exception ex:
+                            var logger = context.RequestServices.GetService<ILogger<Startup>>();
+                            logger.LogError("Unhandled error", errorFeature.Error);
+                            break;
+                    }
+
+                    context.Response.StatusCode = response.code;
+
+                    if (response.body != null)
+                    {
+                        await context.Response.WriteAsync(response.body);
+                    }
                 });
             });
         }

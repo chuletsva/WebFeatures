@@ -1,6 +1,6 @@
 ﻿using Domian.Enums;
 using System;
-using Application.Models.Requests;
+using Application.Common.Models.Requests;
 
 namespace Application.Features.ProductReviews.CreateProductReview
 {

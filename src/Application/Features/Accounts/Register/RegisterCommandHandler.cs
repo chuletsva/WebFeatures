@@ -1,18 +1,19 @@
-﻿using Application.Constants;
-using Application.Interfaces.DataAccess;
-using Application.Interfaces.Logging;
-using Application.Interfaces.Security;
-using Domian.Entities.Accounts;
+﻿using Domian.Entities.Accounts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Exceptions;
+using Application.Common.Constants;
+using Application.Common.Exceptions;
+using Application.Common.Interfaces.DataAccess;
+using Application.Common.Interfaces.Logging;
+using Application.Common.Interfaces.Security;
+using Application.Common.Models.Dto;
 
 namespace Application.Features.Accounts.Register
 {
-    internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, UserCreateDto>
+    internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, UserInfoDto>
     {
         private readonly ILogger<RegisterCommand> _logger;
         private readonly IDbContext _db;
@@ -28,13 +29,13 @@ namespace Application.Features.Accounts.Register
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<UserCreateDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<UserInfoDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
             if (await _db.Users.AnyAsync(x => x.Email == request.Email, cancellationToken))
             {
                 throw new ValidationException("Email already exists");
             }
-            
+
             string hash = _passwordHasher.ComputeHash(request.Password);
 
             var user = new User()
@@ -46,14 +47,14 @@ namespace Application.Features.Accounts.Register
 
             await _db.Users.AddAsync(user, cancellationToken);
 
-            Role role = await _db.Roles.SingleOrDefaultAsync(x => x.Name == AuthorizationConstants.Roles.Users, cancellationToken) ?? 
+            Role role = await _db.Roles.SingleOrDefaultAsync(x => x.Name == AuthorizationConstants.Roles.Users, cancellationToken) ??
                         throw new InvalidOperationException("Cannot find role for new user");
 
-            user.Roles.Add(new UserRole() { User = user, Role = role });
+            user.UserRoles.Add(new UserRole() { User = user, Role = role });
 
             _logger.LogInformation("{@User} registered", user);
 
-            return new UserCreateDto()
+            return new UserInfoDto()
             {
                 Id = user.Id,
                 Roles = new[] { role.Name }

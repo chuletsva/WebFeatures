@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Application.Models.Results;
+using Application.Common.Models.Results;
 using WebApi.Controllers.Base;
 
 namespace WebApi.Controllers

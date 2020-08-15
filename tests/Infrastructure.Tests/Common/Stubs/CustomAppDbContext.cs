@@ -1,6 +1,5 @@
-﻿using Application.Interfaces.Services;
+﻿using Application.Common.Interfaces.CommonServices;
 using Infrastructure.DataAccess;
-using Infrastructure.Tests.Unit.DataAccess;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

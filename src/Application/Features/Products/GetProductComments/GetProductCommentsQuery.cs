@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Application.Models.Requests;
+using Application.Common.Models.Requests;
 
 namespace Application.Features.Products.GetProductComments
 {

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Application.Interfaces.Services;
+using Application.Common.Interfaces.CommonServices;
+using Application.Common.Interfaces.Security;
 using Application.Tests.Common.Helpers;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -21,12 +23,12 @@ using Xunit;
 
 namespace Application.Tests.Common.Base
 {
-    [Collection("Integration")]
+    [Collection("Requests")]
     public class RequestTestBase : IAsyncLifetime
     {
         private static readonly IServiceProvider ServiceProvider;
         private static readonly Checkpoint Checkpoint;
-        
+
         private static Guid _currentUserId;
 
         static RequestTestBase()
@@ -53,12 +55,9 @@ namespace Application.Tests.Common.Base
 
         private static IConfiguration CreateConfiguration()
         {
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
-                {
-                    { "ASPNETCORE_ENVIRONMENT", "Testing" },
-                    { "ConnectionStrings:Testing", "server=localhost;port=5432;database=webfeatures_test_db;username=postgres;password=postgres;"}
-                })
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
                 .Build();
 
             return configuration;
@@ -66,9 +65,13 @@ namespace Application.Tests.Common.Base
 
         private static void AddServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddLogging();
-            services.AddApplication();          
-            services.AddInfrastructure(configuration);
+            services.RegisterApplication();
+
+            services.RegisterBackgroundJobs(configuration);
+            services.RegisterCommonServices();
+            services.RegisterDataAccess(configuration);
+            services.RegisterLogging();
+            services.RegisterSecurity();
 
             var currentUserServiceDescription = services.First(x => x.ServiceType == typeof(ICurrentUser));
 
@@ -77,9 +80,9 @@ namespace Application.Tests.Common.Base
             var currentUserService = new Mock<ICurrentUser>();
             {
                 currentUserService.SetupGet(x => x.UserId).Returns(() => _currentUserId);
-                currentUserService.SetupGet(x => x.IsAuthenticated).Returns(() => _currentUserId != default);   
+                currentUserService.SetupGet(x => x.IsAuthenticated).Returns(() => _currentUserId != default);
             };
-            
+
             services.AddSingleton(currentUserService.Object);
         }
 
@@ -108,16 +111,16 @@ namespace Application.Tests.Common.Base
             using IServiceScope scope = ServiceProvider.CreateScope();
 
             var mediator = scope.ServiceProvider.GetService<IMediator>();
-            
+
             return await mediator.Send(request);
         }
-       
+
         protected static async Task<List<TElement>> SendAsync<TElement>(IRequest<IQueryable<TElement>> request)
         {
             using IServiceScope scope = ServiceProvider.CreateScope();
 
             var mediator = scope.ServiceProvider.GetService<IMediator>();
-            
+
             return (await mediator.Send(request)).ToList();
         }
 
@@ -143,7 +146,7 @@ namespace Application.Tests.Common.Base
 
         protected static async Task<Guid> LoginAsDefaultUserAsync()
         {
-            return await LoginAsync("user@mail.com");
+            return await LoginAsync("default@user");
         }
 
         protected static async Task<Guid> LoginAsync(string email)
@@ -153,8 +156,8 @@ namespace Application.Tests.Common.Base
             AppDbContext context = scope.ServiceProvider.GetService<AppDbContext>();
 
             User user = await context.Users.SingleOrDefaultAsync(x => x.Email == email) ??
-                throw new InvalidOperationException("User doesn't exist");
-            
+                throw new Exception("User doesn't exist");
+
             _currentUserId = user.Id;
 
             return _currentUserId;
@@ -164,15 +167,17 @@ namespace Application.Tests.Common.Base
         {
             using IServiceScope scope = ServiceProvider.CreateScope();
 
-            AppDbContext context = scope.ServiceProvider.GetService<AppDbContext>();
-            
+            var context = scope.ServiceProvider.GetService<AppDbContext>();
+
             await CleanUpContextAsync(context);
 
-            await EntityTestData.SeedContextAsync(context);
+            var hasher = scope.ServiceProvider.GetService<IPasswordHasher>();
+
+            await EntityTestData.SeedContextAsync(context, hasher);
 
             // Temporary login for applying autocomplete logic before saving changes in context
             _currentUserId = EntityTestData.UserId;
-            
+
             await context.SaveChangesAsync();
 
             _currentUserId = default;

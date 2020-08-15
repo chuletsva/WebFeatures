@@ -1,4 +1,3 @@
-using Application.Interfaces.Security;
 using Autofac.Extensions.DependencyInjection;
 using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Hosting;
@@ -9,7 +8,9 @@ using Serilog;
 using Serilog.Events;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Application.Common.Interfaces.Security;
 using ILogger = Serilog.ILogger;
 
 namespace WebApi
@@ -87,9 +88,12 @@ namespace WebApi
 
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            await context.Database.EnsureDeletedAsync();
+            //await context.Database.EnsureDeletedAsync();
 
-            await context.Database.MigrateAsync();
+            if ((await context.Database.GetPendingMigrationsAsync()).Any())
+            {
+                await context.Database.MigrateAsync();
+            }
 
             var hasher = scope.ServiceProvider.GetService<IPasswordHasher>();
 

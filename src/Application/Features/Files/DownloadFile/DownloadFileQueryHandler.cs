@@ -1,9 +1,9 @@
-﻿using Application.Exceptions;
-using Application.Interfaces.DataAccess;
-using Domian.Entities;
+﻿using Domian.Entities;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.Exceptions;
+using Application.Common.Interfaces.DataAccess;
 
 namespace Application.Features.Files.DownloadFile
 {

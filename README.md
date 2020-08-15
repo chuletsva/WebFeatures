@@ -2,6 +2,7 @@
 * .NET Core 3.1
 * ASP.NET Core 3.1
 * Entity Framework Core
+* Hangfire
 * Mediatr
 * Autofac
 * AutoMapper
@@ -9,4 +10,4 @@
 * Serilog
 * Swashbuckle
 * LinqToQuerystring
-* xUnit, Moq, Autofixture, FluentAssertions, Respawn
+* xUnit, Moq, Autofixture, FluentAssertions, Respawn, WebApplicationFactory

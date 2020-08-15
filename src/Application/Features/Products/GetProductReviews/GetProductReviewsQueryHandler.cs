@@ -1,10 +1,10 @@
-﻿using Application.Interfaces.DataAccess;
-using AutoMapper;
+﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.Interfaces.DataAccess;
 
 namespace Application.Features.Products.GetProductReviews
 {

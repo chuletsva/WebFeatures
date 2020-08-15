@@ -1,11 +1,12 @@
-﻿using Application.Models.Requests;
+﻿using Application.Common.Models.Dto;
+using Application.Common.Models.Requests;
 
 namespace Application.Features.Accounts.Login
 {
     /// <summary>
     /// Войти в систему
     /// </summary>
-    public class LoginCommand : CommandBase<UserLoginDto>
+    public class LoginCommand : CommandBase<UserInfoDto>
     {
         /// <summary>
         /// E-mail пользователя

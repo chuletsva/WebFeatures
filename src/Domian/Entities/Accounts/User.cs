@@ -8,7 +8,7 @@ namespace Domian.Entities.Accounts
     {
         public User()
         {
-            Roles = new HashSet<UserRole>();
+            UserRoles = new HashSet<UserRole>();
         }
 
         public string Name { get; set; }
@@ -18,6 +18,6 @@ namespace Domian.Entities.Accounts
         public Guid? PictureId { get; set; }
         public File Picture { get; set; }
 
-        public ICollection<UserRole> Roles { get; }
+        public ICollection<UserRole> UserRoles { get; private set; }
     }
 }
