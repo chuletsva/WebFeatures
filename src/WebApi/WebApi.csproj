@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="clientapp\.editorconfig" />
+    <None Remove="clientapp\.gitignore" />
+    <None Remove="clientapp\README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="LinqToQuerystring" Version="0.7.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6" />
