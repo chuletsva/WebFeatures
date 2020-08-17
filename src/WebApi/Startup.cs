@@ -2,12 +2,14 @@ using Application;
 using Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SpaServices;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.Text.Json;
+using VueCliMiddleware;
 using WebApi.Configuration;
 using WebApi.ModelBinders;
 
@@ -59,10 +61,7 @@ namespace WebApi
             services.RegisterScheduledTasks();
             services.RegisterJwtAuthentication(Configuration);
 
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/build";
-            });
+            services.AddSpaStaticFiles(opt => opt.RootPath = "ClientApp/dist");
         }
 
         public void Configure(IApplicationBuilder app)
@@ -82,22 +81,13 @@ namespace WebApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapToVueCliProxy(new SpaOptions { SourcePath = "ClientApp" }, npmScript: "serve", port: 8080);
             });
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-            });
-
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "clientapp";
-
-                if (Environment.IsDevelopment())
-                {
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                }
             });
         }
     }

@@ -17,10 +17,10 @@ namespace Application.Features.System.RunRecurringJobs
 
         public Task<Unit> Handle(RunRecurringJobsCommand request, CancellationToken cancellationToken)
         {
-            _jobManager.RunRecurrently(
-                "cc08b0ac-6888-4470-bdd9-d119c63d912a",
-                new SampleBackgroundJobArgument(),
-                CronExpressions.Daily);
+            //_jobManager.RunRecurrently(
+            //    "cc08b0ac-6888-4470-bdd9-d119c63d912a",
+            //    new SampleBackgroundJobArgument(),
+            //    CronExpressions.Daily);
 
             return Unit.Task;
         }
