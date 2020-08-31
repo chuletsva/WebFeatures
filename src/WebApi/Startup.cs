@@ -82,6 +82,13 @@ namespace WebApi
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
             });
+
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
+
+                spa.UseProxyToSpaDevelopmentServer("http://localhost:8080/");
+            });
         }
     }
 }

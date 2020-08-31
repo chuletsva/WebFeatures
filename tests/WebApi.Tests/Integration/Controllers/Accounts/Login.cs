@@ -38,7 +38,7 @@ namespace WebApi.Tests.Integration.Controllers.Accounts
 
         [Theory]
         [InlineData("default@user", "wrong_password")]
-        [InlineData("wrong_email", "12345")]
+        [InlineData("wrong@email", "12345")]
         public async Task ShouldReturnError_WhenInvalidCredentials(string email, string password)
         {
             // Arrange
