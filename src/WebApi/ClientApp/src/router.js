@@ -1,10 +1,15 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import Catalog from "./components/Catalog.vue";
 
 Vue.use(VueRouter);
 
 export default new VueRouter({
-    mode: "history",
-    routes: [],
-    base: process.env.BASE_URL
+  mode: "history",
+  routes: [
+    {
+      path: "/",
+      component: Catalog
+    }
+  ]
 });
