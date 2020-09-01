@@ -56,6 +56,17 @@ namespace WebApi
 
             services.RegisterScheduledTasks();
             services.RegisterJwtAuthentication(Configuration);
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("http://localhost:8080")
+                        .AllowCredentials()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
         }
 
         public void Configure(IApplicationBuilder app)
@@ -67,6 +78,8 @@ namespace WebApi
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthentication();
 
@@ -83,12 +96,12 @@ namespace WebApi
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
             });
 
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
+            //app.UseSpa(spa =>
+            //{
+            //    spa.Options.SourcePath = "ClientApp";
 
-                spa.UseProxyToSpaDevelopmentServer("http://localhost:8080/");
-            });
+            //    spa.UseProxyToSpaDevelopmentServer("http://localhost:8080/");
+            //});
         }
     }
 }

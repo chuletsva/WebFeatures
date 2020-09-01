@@ -1,12 +1,17 @@
 import axios from "axios";
 
-export default {
-  baseUrl: process.env.BASE_URL,
+class HttpClient {
+  baseUrl = "https://localhost:5001/api"; // process.env.BASE_URL
 
-  get: function(path) {
+  get(path) {
     return axios.get(this.baseUrl + path);
-  },
-  post: function(path) {
+  }
+
+  post(path) {
     return axios.post(this.baseUrl + path);
   }
 };
+
+const client = new HttpClient();
+
+export default client;
