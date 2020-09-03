@@ -2,7 +2,12 @@
   <div class="catalog">
     <div class="catalog-item" v-for="product in products" :key="product.id">
       <form>
-        <img class="catalog-item-image" src="../assets/missing.png" />
+        <img
+          class="catalog-item-image"
+          v-bind:src="'https://localhost:5001/api/files/' + product.pictureId"
+          width="400px"
+          height="auto"
+        />
         <input type="submit" value="[ADD TO BASKET]" />
         <span>{{ product.name }}</span>
         <span>{{ product.price }}</span>
@@ -27,14 +32,10 @@ export default {
 </script>
 
 <style scoped>
-.catalog-item {
-  vertical-align: top;
-  display: inline-block;
-  text-align: center;
-  width: 300px;
-}
-.catalog-item-image {
-  width: 100%;
-  height: auto;
+.catalog {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
 }
 </style>

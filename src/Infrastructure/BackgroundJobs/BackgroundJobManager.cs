@@ -39,17 +39,17 @@ namespace Infrastructure.BackgroundJobs
             }
         }
 
-        public void RunRecurrently<TJobArgument>(string id, TJobArgument argument, string cronExpression)
-        {
-            foreach (var job in GetJobs<TJobArgument>())
-            {
-                _recurringJobManager.AddOrUpdate(id, () => job.Execute(argument), cronExpression);
-            }
-        }
-
         private IEnumerable<IBackgroundJob<TJobArgument>> GetJobs<TJobArgument>()
         {
             return _services.GetServices<IBackgroundJob<TJobArgument>>();
+        }
+
+        public void RunRecurrently<TJobArgument>(string id, TJobArgument argument, string cronExpression)
+        {
+            var job = _services.GetService<IBackgroundJob<TJobArgument>>() ??
+                throw new ArgumentException("Job with provided argument is missing");
+
+            _recurringJobManager.AddOrUpdate(id, () => job.Execute(argument), cronExpression);
         }
     }
 }

@@ -237,7 +237,7 @@ namespace Infrastructure.DataAccess.Migrations
                     UpdatedById = table.Column<Guid>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: false),
-                    Description = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
                     Price_Amount = table.Column<decimal>(nullable: true),
                     Price_CurrencyId = table.Column<Guid>(nullable: true),
                     PictureId = table.Column<Guid>(nullable: true),

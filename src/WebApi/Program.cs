@@ -88,7 +88,7 @@ namespace WebApi
 
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            //await context.Database.EnsureDeletedAsync();
+            await context.Database.EnsureDeletedAsync();
 
             if ((await context.Database.GetPendingMigrationsAsync()).Any())
             {

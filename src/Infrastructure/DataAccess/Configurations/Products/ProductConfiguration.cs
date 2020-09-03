@@ -9,7 +9,6 @@ namespace Infrastructure.DataAccess.Configurations.Products
         public void Configure(EntityTypeBuilder<Product> builder)
         {
             builder.Property(x => x.Name).IsRequired();
-            builder.Property(x => x.Description).IsRequired();
 
             builder.OwnsOne(x => x.Price, navigation =>
             {
