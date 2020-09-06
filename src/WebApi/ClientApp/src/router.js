@@ -9,6 +9,7 @@ export default new VueRouter({
   routes: [
     {
       path: "/",
+      name: "catalog",
       component: Catalog
     }
   ]
