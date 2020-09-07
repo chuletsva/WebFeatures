@@ -1,4 +1,4 @@
-import client from "./httpClient";
+import client from "../utils/httpClient";
 
 class ProductService {
   get(id) {
@@ -13,4 +13,6 @@ class ProductService {
   }
 }
 
-export default new ProductService();
+const service = new ProductService();
+
+export default service;

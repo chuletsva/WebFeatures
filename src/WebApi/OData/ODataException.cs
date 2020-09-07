@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebApi.Exceptions
+namespace WebApi.OData
 {
     internal class ODataException : Exception
     {

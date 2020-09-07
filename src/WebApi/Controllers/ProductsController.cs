@@ -13,8 +13,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Common.Models.Results;
-using WebApi.Attributes;
 using WebApi.Controllers.Base;
+using WebApi.OData;
+using WebApi.Pagination;
 
 namespace WebApi.Controllers
 {
@@ -43,12 +44,13 @@ namespace WebApi.Controllers
         /// </summary>
         /// <returns>Список товаров</returns>
         /// <response code="200" cref="IQueryable{ProductInfoDto}">Успех</response>
-        [OData]
         [HttpGet]
         [ProducesResponseType(typeof(IQueryable<ProductListDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(PaginationRequest request)
         {
-            return Ok(await Mediator.Send(new GetProductsQuery()));
+            IQueryable<ProductListDto> products = await Mediator.Send(new GetProductsQuery());
+
+            return Ok(products.ApplyPagination(request));
         }
 
         /// <summary>

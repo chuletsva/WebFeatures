@@ -1,7 +1,11 @@
-import client from "./httpClient";
+import client from "../utils/httpClient";
 
 class FileService {
-  baseUrl = client.baseUrl + "/files";
+  getDownloadLink(id){
+    return `${client.baseUrl}/files/${id}`;
+  }
 }
 
-export default new FileService();
+const service = new FileService();
+
+export default service;

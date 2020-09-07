@@ -6,9 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using Application.Common.Interfaces.Logging;
-using WebApi.Exceptions;
 
-namespace WebApi.Attributes
+namespace WebApi.OData
 {
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     internal class ODataAttribute : Attribute, IResultFilter

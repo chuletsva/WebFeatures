@@ -5,10 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Logging;
-using WebApi.Exceptions;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using WebApi.OData;
+using WebApi.Pagination;
 
 namespace WebApi.Configuration
 {
@@ -41,6 +42,11 @@ namespace WebApi.Configuration
                         case ODataException odata:
                             response.code = StatusCodes.Status400BadRequest;
                             response.body = odata.Message;
+                            break;
+
+                        case PaginationException pagination:
+                            response.code = StatusCodes.Status400BadRequest;
+                            response.body = pagination.Message;
                             break;
 
                         case Exception ex:
