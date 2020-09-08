@@ -34,7 +34,7 @@ namespace WebApi.Controllers
         [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(ProductInfoDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get([FromRoute] Guid id)
         {
             return Ok(await Mediator.Send(new GetProductQuery() { Id = id }));
         }
@@ -45,12 +45,14 @@ namespace WebApi.Controllers
         /// <returns>Список товаров</returns>
         /// <response code="200" cref="IQueryable{ProductInfoDto}">Успех</response>
         [HttpGet]
-        [ProducesResponseType(typeof(IQueryable<ProductListDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginationResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> Get(PaginationRequest request)
         {
             IQueryable<ProductListDto> products = await Mediator.Send(new GetProductsQuery());
 
-            return Ok(products.ApplyPagination(request));
+            PaginationResponse response = products.ApplyPagination(request);
+
+            return Ok(response);
         }
 
         /// <summary>
@@ -62,7 +64,7 @@ namespace WebApi.Controllers
         [OData]
         [HttpGet("{id:guid}/reviews")]
         [ProducesResponseType(typeof(IQueryable<ProductReviewInfoDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetReviews(Guid id)
+        public async Task<IActionResult> GetReviews([FromRoute] Guid id)
         {
             return Ok(await Mediator.Send(new GetProductReviewsQuery() { ProductId = id }));
         }
@@ -76,7 +78,7 @@ namespace WebApi.Controllers
         [OData]
         [HttpGet("{id:guid}/comments")]
         [ProducesResponseType(typeof(IQueryable<ProductCommentInfoDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetComments(Guid id)
+        public async Task<IActionResult> GetComments([FromRoute] Guid id)
         {
             return Ok(await Mediator.Send(new GetProductCommentsQuery() { ProductId = id }));
         }
@@ -91,7 +93,7 @@ namespace WebApi.Controllers
         [Authorize]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([Required] CreateProductCommand request)
+        public async Task<IActionResult> Create([FromBody, Required] CreateProductCommand request)
         {
             return Created(await Mediator.Send(request));
         }
@@ -105,8 +107,10 @@ namespace WebApi.Controllers
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update(Guid id, [Required] UpdateProductCommand request)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody, Required] UpdateProductCommand request)
         {
+            if (id != request.Id) return BadRequest();
+
             await Mediator.Send(request);
 
             return Ok();
@@ -121,7 +125,7 @@ namespace WebApi.Controllers
         [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationError), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             await Mediator.Send(new DeleteProductCommand() { Id = id });
 

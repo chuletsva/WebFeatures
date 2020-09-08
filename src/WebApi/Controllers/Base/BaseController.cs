@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace WebApi.Controllers.Base
 {
-    [ApiController]
+    //[ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
     public class BaseController : ControllerBase

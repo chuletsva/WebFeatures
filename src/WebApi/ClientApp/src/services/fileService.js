@@ -6,6 +6,4 @@ class FileService {
   }
 }
 
-const service = new FileService();
-
-export default service;
+export default new FileService();

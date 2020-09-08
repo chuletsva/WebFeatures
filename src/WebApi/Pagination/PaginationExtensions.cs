@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace WebApi.Pagination
 {
-    static class PaginationExtensions
+    internal static class PaginationExtensions
     {
         public static PaginationResponse ApplyPagination<T>(this IQueryable<T> queryable, PaginationRequest request)
         {

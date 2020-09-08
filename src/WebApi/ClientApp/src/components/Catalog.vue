@@ -1,12 +1,21 @@
 <template>
   <div class="catalog">
-    <b-pagination-nav :link-gen="linkGen" :number-of-pages="10" use-router></b-pagination-nav>
+    <paginate
+      :page-count="pagesCount"
+      :page-range="2"
+      :click-handler="fetchProducts"
+      :prev-text="'Prev'"
+      :next-text="'Next'"
+      :container-class="'pagination'"
+      :page-class="'page-item'"
+    ></paginate>
+
     <div class="d-flex flex-wrap align-content-md-center justify-content-center">
-      <div class="p-2" v-for="product in products" v-bind:key="product.id">
+      <div class="p-2" v-for="product in products" :key="product.id">
         <b-card
-          v-bind:title="product.name"
-          v-bind:img-src="product.pictureUrl"
-          v-bind:img-alt="product.name + ' image'"
+          :title="product.name"
+          :img-src="product.pictureUrl"
+          :img-alt="product.name + ' image'"
           img-top
           tag="article"
         >
@@ -26,21 +35,37 @@ import fileService from "../services/fileService";
 export default {
   data() {
     return {
+      perPage: 8,
+      pagesCount: null,
       products: []
     };
   },
-  created() {
-    productService.get().then(response => {
-      this.products = response.data;
+  methods: {
+    fetchProducts(pageNum) {
+      let pagination = {
+        skip: (pageNum - 1) * this.perPage,
+        top: this.perPage
+      };
 
-      this.products.forEach(product => {
-        if (product.pictureId === null) {
-          product.pictureUrl = require("../assets/missing.png");
-        } else {
-          product.pictureUrl = fileService.getDownloadLink(product.pictureId);
-        }
+      productService.get(pagination).then(response => {
+        this.products = response.data.items;
+
+        this.products.forEach(product => {
+          if (product.pictureId === null) {
+            product.pictureUrl = require("../assets/missing.png");
+          } else {
+            product.pictureUrl = fileService.getDownloadLink(product.pictureId);
+          }
+        });
+
+        console.log(response.data.lastPage);
+
+        this.pagesCount = response.data.lastPage;
       });
-    });
+    }
+  },
+  created() {
+    this.fetchProducts(1);
   }
 };
 </script>

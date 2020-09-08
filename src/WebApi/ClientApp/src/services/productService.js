@@ -1,18 +1,23 @@
 import client from "../utils/httpClient";
+import paginationQueryBuilder from "../utils/paginationQueryBuilder";
 
 class ProductService {
-  get(id) {
-    let path = "/products";
-    if (arguments.length === 1) {
-      path += id;
+  getById(id) {
+    return client.get(`/products/${id}`);
+  }
+  get(pagination) {
+    let subPath = "/products";
+
+    if (pagination !== undefined) {
+      let query = paginationQueryBuilder.build(pagination);
+      subPath += query;
     }
-    return client.get(path);
+
+    return client.get(subPath);
   }
   create(product) {
     return client.post("/products", product);
   }
 }
 
-const service = new ProductService();
-
-export default service;
+export default new ProductService();
