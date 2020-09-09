@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "front": "vue-cli-service serve",
+    "back": "dotnet run --project ../WebApi.csproj",
+    "dev": "start npm run front && start npm run back",
+    "check": "npm run lint"
   },
   "dependencies": {
     "axios": "^0.20.0",
@@ -22,10 +25,6 @@
     "@vue/cli-service": "~4.5.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-prettier": "^3.1.3",
-    "eslint-plugin-vue": "^6.2.2",
-    "prettier": "^1.19.1",
     "vue-template-compiler": "^2.6.11"
   }
 }

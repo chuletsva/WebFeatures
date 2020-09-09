@@ -1,4 +1,4 @@
-class PaginationQueryBuilder {
+export default new class PaginationQueryBuilder {
   build(pagination) {
     let params = [];
 
@@ -23,5 +23,3 @@ class PaginationQueryBuilder {
     return "?" + params.join("&");
   }
 }
-
-export default new PaginationQueryBuilder();

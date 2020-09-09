@@ -1,8 +1,15 @@
 <template>
   <div class="catalog">
-    <pagination-nav :pagesCount="pagesCount" :onClick="fetchProducts"></pagination-nav>
+    <pagination-nav
+      :pagesCount="pagesCount"
+      :perPage="perPage"
+      :currentPage="currentPage"
+      @page-changed="fetchProducts"
+    ></pagination-nav>
 
-    <div class="d-flex flex-wrap align-content-md-center justify-content-center">
+    <div
+      class="d-flex flex-wrap align-content-md-center justify-content-center"
+    >
       <div class="p-2" v-for="product in products" :key="product.id">
         <b-card
           :title="product.name"
@@ -24,18 +31,21 @@ import fileService from "../services/fileService";
 import PaginationNav from "./PaginationNav.vue";
 
 export default {
-  components:{
-    'pagination-nav': PaginationNav
+  components: {
+    "pagination-nav": PaginationNav
   },
   data() {
     return {
-      perPage: 8,
-      pagesCount: null,
+      perPage: 1,
+      pagesCount: 1,
+      currentPage: 1,
       products: []
     };
   },
   methods: {
-    fetchProducts(pageNum) {
+    fetchProducts(pageNum) {      
+      this.currentPage = pageNum;
+
       let pagination = {
         skip: (pageNum - 1) * this.perPage,
         top: this.perPage

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-class HttpClient {
+export default new class HttpClient {
   baseUrl = "https://localhost:5001/api";
 
   get(path) {
@@ -11,7 +11,3 @@ class HttpClient {
     return axios.post(this.baseUrl + path, body);
   }
 }
-
-const client = new HttpClient();
-
-export default client;

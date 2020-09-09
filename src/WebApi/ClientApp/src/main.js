@@ -1,5 +1,4 @@
 import Vue from "vue";
-// import Paginate from 'vuejs-paginate'
 import App from "./App.vue";
 import router from "./router";
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";

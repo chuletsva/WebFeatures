@@ -1,7 +1,7 @@
 import client from "../utils/httpClient";
 import paginationQueryBuilder from "../utils/paginationQueryBuilder";
 
-class ProductService {
+export default new class ProductService {
   getById(id) {
     return client.get(`/products/${id}`);
   }
@@ -19,5 +19,3 @@ class ProductService {
     return client.post("/products", product);
   }
 }
-
-export default new ProductService();

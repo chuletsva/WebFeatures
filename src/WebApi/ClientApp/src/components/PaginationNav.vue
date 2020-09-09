@@ -1,43 +1,76 @@
 <template>
   <div>
-    <button v-on:click="movePrev" :disabled="currentPage === 1">
+    <b-button :disabled="!hasPrevPage()" @click="changePage(prevPage)">
       Prev
-    </button>
-    <button
-      v-for="number in pagesCount"
-      :key="number"
-      v-on:click="onClick(number)"
+    </b-button>
+    <b-button
+      v-for="page in pages"
+      :key="page"
+      :variant="page === currentPage ? 'primary' : ''"
+      @click="changePage(page)"
+      >{{ page }}</b-button
     >
-      {{ number }}
-    </button>
-    <button v-on:click="moveNext" :disabled="currentPage === pagesCount">
+    <b-button :disabled="!hasNextPage()" @click="changePage(nextPage)">
       Next
-    </button>
+    </b-button>
   </div>
 </template>
 <script>
 export default {
   props: {
-    pagesCount: Number,
-    onClick: Function
-  },
-  data() {
-    return {
-      currentPage: 1
-    };
+    pagesCount: {
+      type: Number,
+      required: true,
+      default: 0
+    },
+    perPage: {
+      type: Number,
+      required: true,
+      default: 4
+    },
+    currentPage: {
+      type: Number,
+      required: true,
+      default: 1
+    },
+    pageRange: {
+      type: Number,
+      default: 2
+    }
   },
   methods: {
-    movePrev() {
-      this.currentPage--;
-      this.onClick(this.currentPage);
+    changePage(pageNum) {
+      this.$emit("page-changed", pageNum);
     },
-    moveNext() {
-      this.currentPage++;
-      this.onClick(this.currentPage);
+    hasPrevPage() {
+      return this.currentPage > 1;
+    },
+    hasNextPage() {
+      return this.currentPage < this.pagesCount;
+    }
+  },
+  computed: {
+    pages() {
+      const start = Math.max(this.currentPage - this.pageRange, 1);
+      const finish = Math.min(this.currentPage + this.pageRange, this.pagesCount);
+
+      let pages = [];
+
+      for (let i = start; i <= finish; i++) {
+        pages.push(i);
+      }
+      
+      return pages;
+    },
+    prevPage() {
+      return this.currentPage - 1;
+    },
+    nextPage() {
+      return this.currentPage + 1;
     }
   },
   created() {
-    this.onClick(this.currentPage);
+    this.changePage(this.currentPage);
   }
 };
 </script>
