@@ -1,10 +1,16 @@
 <template>
   <div>
-    <button v-show="currentPage != 1" v-on:click="movePrev">Prev</button>
-    <button v-for="number in pagesCount" :key="number" v-on:click="onClick(number)">
+    <button v-on:click="movePrev" :disabled="currentPage === 1">
+      Prev
+    </button>
+    <button
+      v-for="number in pagesCount"
+      :key="number"
+      v-on:click="onClick(number)"
+    >
       {{ number }}
     </button>
-    <button v-on:click="moveNext" v-show="currentPage != pagesCount">
+    <button v-on:click="moveNext" :disabled="currentPage === pagesCount">
       Next
     </button>
   </div>
@@ -13,15 +19,25 @@
 export default {
   props: {
     pagesCount: Number,
-    currentPage: Number,
     onClick: Function
   },
   data() {
-    return {};
+    return {
+      currentPage: 1
+    };
   },
   methods: {
-    movePrev() {},
-    moveNext() {}
+    movePrev() {
+      this.currentPage--;
+      this.onClick(this.currentPage);
+    },
+    moveNext() {
+      this.currentPage++;
+      this.onClick(this.currentPage);
+    }
+  },
+  created() {
+    this.onClick(this.currentPage);
   }
 };
 </script>

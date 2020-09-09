@@ -55,9 +55,6 @@ export default {
         this.pagesCount = response.data.lastPage;
       });
     }
-  },
-  created() {
-    this.fetchProducts(1);
   }
 };
 </script>
