@@ -45,7 +45,7 @@ namespace WebApi
             })
             .ConfigureApiBehaviorOptions(options =>
             {
-                options.SuppressModelStateInvalidFilter = true;
+                options.SuppressInferBindingSourcesForParameters = true;
                 options.SuppressMapClientErrors = true;
             });
 

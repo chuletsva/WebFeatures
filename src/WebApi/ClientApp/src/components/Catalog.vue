@@ -1,14 +1,6 @@
 <template>
   <div class="catalog">
-    <paginate
-      :page-count="pagesCount"
-      :page-range="2"
-      :click-handler="fetchProducts"
-      :prev-text="'Prev'"
-      :next-text="'Next'"
-      :container-class="'pagination'"
-      :page-class="'page-item'"
-    ></paginate>
+    <pagination-nav :pagesCount="pagesCount" :onClick="fetchProducts"></pagination-nav>
 
     <div class="d-flex flex-wrap align-content-md-center justify-content-center">
       <div class="p-2" v-for="product in products" :key="product.id">
@@ -19,9 +11,7 @@
           img-top
           tag="article"
         >
-          <b-link to="/">
-            <b-button variant="success">ADD TO BASKET</b-button>
-          </b-link>
+          <b-button variant="success">ADD TO BASKET</b-button>
         </b-card>
       </div>
     </div>
@@ -31,8 +21,12 @@
 <script>
 import productService from "../services/productService";
 import fileService from "../services/fileService";
+import PaginationNav from "./PaginationNav.vue";
 
 export default {
+  components:{
+    'pagination-nav': PaginationNav
+  },
   data() {
     return {
       perPage: 8,
@@ -57,8 +51,6 @@ export default {
             product.pictureUrl = fileService.getDownloadLink(product.pictureId);
           }
         });
-
-        console.log(response.data.lastPage);
 
         this.pagesCount = response.data.lastPage;
       });
